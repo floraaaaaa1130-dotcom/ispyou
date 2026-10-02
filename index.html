@@ -20,6 +20,7 @@
             font-family: 'Noto Sans KR', sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none; /* 방지: 스크래치 중 모바일 새로고침 */
         }
 
         .font-pixel { font-family: 'Press Start 2P', cursive; }
@@ -42,7 +43,7 @@
 
         /* Glitch Image Filter */
         .glitched-image {
-            filter: sepia(100%) hue-rotate(290deg) saturate(500%) contrast(150%) blur(1px);
+            filter: sepia(100%) hue-rotate(290deg) saturate(500%) contrast(150%) blur(2px);
             transition: all 0.5s ease;
         }
         .glitched-image.revealed {
@@ -64,15 +65,22 @@
         @keyframes blink { 50% { opacity: 0; } }
         
         /* Spycam Filter */
-        #spycam-video {
+        .spycam-video-filter {
             filter: grayscale(100%) sepia(100%) hue-rotate(290deg) saturate(400%) contrast(200%);
             object-fit: cover;
+            transform: scaleX(-1); /* 거울 모드 */
+        }
+
+        canvas.scratch-canvas {
+            touch-action: none; /* 모바일에서 스크롤 방지 */
+            cursor: crosshair;
         }
     </style>
 </head>
 <body class="text-sm">
     <div class="scanlines"></div>
 
+    <!-- 1. Intro Screen -->
     <div id="screen-intro" class="screen flex flex-col items-center justify-center min-h-screen bg-black p-4 z-50 fixed inset-0">
         <div class="w-full max-w-2xl text-left font-vt text-2xl lg:text-3xl text-[#00FF00] drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
             <p id="term-text" class="mb-6 typewriter-cursor"></p>
@@ -83,6 +91,7 @@
         </div>
     </div>
 
+    <!-- 2. ID Generation Screen -->
     <div id="screen-id-gen" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-40 fixed inset-0">
         <div class="border border-[#FF007F] p-8 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center">
             <h2 class="font-pixel text-[10px] text-[#00FF00] mb-6">> ID_GENERATOR.exe</h2>
@@ -94,6 +103,7 @@
         </div>
     </div>
 
+    <!-- 3. Intro Chat Screen -->
     <div id="screen-intro-chat" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-30 fixed inset-0 backdrop-blur-md">
         <div class="w-full max-w-md bg-[#050002] border border-[#333] h-[60vh] flex flex-col">
             <div class="border-b border-[#333] p-3 flex items-center bg-black">
@@ -112,6 +122,7 @@
         </div>
     </div>
 
+    <!-- 4. Main Dashboard Screen -->
     <div id="screen-main" class="screen hidden min-h-screen bg-black flex-col lg:flex-row w-full text-white">
         
         <!-- Mobile Header -->
@@ -134,19 +145,27 @@
         <div class="flex-grow flex flex-col relative h-[60vh] lg:h-screen overflow-y-auto bg-[#080305]">
             <!-- Profile Header -->
             <div class="p-4 border-b border-[#333] bg-black flex justify-between items-center sticky top-0 z-20">
-                <div class="flex flex-col">
-                    <h1 id="feed-target-id" class="font-pixel text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
-                    <div class="flex items-center gap-2">
-                        <span id="feed-target-status" class="font-vt text-lg text-gray-400">[현재 상태: 심박수 비정상]</span>
-                        <button id="btn-react" class="text-xl hover:scale-125 transition-transform" title="응급처치">🩹</button>
+                <div class="flex items-center gap-3">
+                    <img id="feed-target-pfp" src="" alt="profile" class="w-12 h-12 bg-[#222] border border-[#FF007F] object-cover rendering-pixelated">
+                    <div class="flex flex-col">
+                        <h1 id="feed-target-id" class="font-pixel text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
+                        <div class="flex items-center gap-2">
+                            <span id="feed-target-status" class="font-vt text-lg text-gray-400">[현재 상태: 심박수 비정상]</span>
+                            <button id="btn-react" class="text-xl hover:scale-125 transition-transform" title="응급처치">🩹</button>
+                        </div>
                     </div>
                 </div>
-                <button id="btn-open-dm" class="border border-[#00FF00] text-[#00FF00] px-3 py-2 font-pixel text-[8px] hover:bg-[#00FF00] hover:text-black">
-                    MESSAGE
-                </button>
+                <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <button id="btn-open-dm" class="border border-[#00FF00] text-[#00FF00] px-3 py-2 font-pixel text-[8px] hover:bg-[#00FF00] hover:text-black transition-colors">
+                        MESSAGE
+                    </button>
+                    <button id="btn-open-call" class="border border-[#FF007F] text-[#FF007F] px-3 py-2 font-pixel text-[8px] hover:bg-[#FF007F] hover:text-black transition-colors bg-[#2a0015]">
+                        CALL
+                    </button>
+                </div>
             </div>
             
-            <!-- Feed Grid -->
+            <!-- Feed Grid (Scratch Effect) -->
             <div class="p-4 border-b border-[#333]">
                 <h2 class="font-pixel text-[10px] text-gray-600 mb-4">> SECRET_DIARY.dat</h2>
                 <div id="feed-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -167,28 +186,29 @@
             </div>
         </div>
 
-        <!-- Right Column: Activity Log & Emo Card -->
+        <!-- Right Column: Public Chat (Anonymous) -->
         <div class="w-full lg:w-80 lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[40vh] lg:h-screen">
-            <!-- Emo Card -->
-            <div class="p-4 border-t lg:border-t-0 border-b border-[#333] bg-[#050002]">
-                <h2 class="font-pixel text-[10px] text-[#00FF00] mb-3">> MY_EMO_CARD</h2>
-                <div class="border border-dashed border-[#FF007F] p-3 bg-black">
-                    <div class="text-[10px] text-gray-500 font-pixel mb-1">ID:</div>
-                    <div class="my-user-id font-vt text-2xl text-white mb-2"></div>
-                    <div class="text-[10px] text-gray-500 font-pixel mb-1">COLLECTION:</div>
-                    <div id="card-stickers" class="flex gap-2 text-xl min-h-[28px] text-gray-700 font-vt text-sm">기록이 없습니다.</div>
-                </div>
+            <div class="p-4 border-b border-[#333] bg-[#050002] shrink-0">
+                <h2 class="font-pixel text-[10px] text-[#00FF00] mb-1">> PUBLIC_CHAT</h2>
+                <p class="font-vt text-gray-500">[ANONYMOUS_CHANNEL]</p>
             </div>
 
-            <!-- Activity Log -->
-            <div class="p-4 flex-grow flex flex-col overflow-hidden">
-                <h2 class="font-pixel text-[10px] text-gray-500 mb-3">> LIVE_LOG</h2>
-                <div id="activity-log" class="flex-grow overflow-y-auto space-y-1 pr-2">
-                    <div class="text-xs font-vt text-gray-600">[SYSTEM] 로그 모니터링 시작...</div>
+            <!-- Public Chat Log -->
+            <div class="p-4 flex-grow flex flex-col overflow-hidden bg-black">
+                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-2 pr-2">
+                    <div class="text-xs font-vt text-gray-600 border-b border-[#222] pb-1">[SYSTEM] 보안 채널이 생성되었습니다. 자유롭게 대화하세요.</div>
                 </div>
+            </div>
+            
+            <!-- Public Chat Input -->
+            <div class="p-2 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
+                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white font-vt text-lg px-2 py-1 focus:outline-none focus:border-[#FF007F]" placeholder="메시지 입력...">
+                <button id="public-chat-submit" class="text-black bg-[#FF007F] font-pixel text-[8px] px-3 py-1 hover:bg-white transition-colors">SEND</button>
             </div>
         </div>
     </div>
+
+    <!-- Modals -->
 
     <!-- DM Modal -->
     <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
@@ -202,28 +222,52 @@
         </div>
     </div>
 
-    <!-- Spycam (PIP) -->
-    <div id="spycam-container" class="hidden fixed bottom-4 right-4 w-28 h-36 lg:w-40 lg:h-48 border border-[#FF007F] bg-black z-[90] shadow-[0_0_15px_rgba(255,0,127,0.5)] flex-col">
-        <div class="absolute top-1 left-1 text-[8px] font-pixel text-[#00FF00] z-10 bg-black/80 px-1 animate-pulse">REC •</div>
-        <div class="flex-grow relative overflow-hidden bg-[#111]">
-            <video id="spycam-video" autoplay playsinline muted class="absolute inset-0 w-full h-full"></video>
-        </div>
-        <div class="h-6 bg-black flex items-center justify-center border-t border-[#FF007F]">
-            <marquee scrollamount="2" class="text-[8px] font-pixel text-[#FF007F]">본 영상은 기기 내에서만 출력되며 서버에 저장되지 않습니다.</marquee>
+    <!-- Call (Webcam) Modal -->
+    <div id="call-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[110] p-4 backdrop-blur-md">
+        <div class="w-full max-w-lg bg-black border border-[#FF007F] flex flex-col shadow-[0_0_50px_rgba(255,0,127,0.4)] relative">
+            
+            <!-- Call Header -->
+            <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d]">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                    <div class="font-pixel text-[10px] text-[#00FF00]">INCOMING_CALL...</div>
+                </div>
+                <div class="font-vt text-lg text-gray-400" id="call-target-name">@target</div>
+            </div>
+
+            <!-- Video Container -->
+            <div class="relative w-full aspect-video bg-[#111] overflow-hidden flex items-center justify-center">
+                <video id="call-video" autoplay playsinline muted class="spycam-video-filter absolute inset-0 w-full h-full hidden"></video>
+                <div id="call-connecting-text" class="font-vt text-2xl text-[#FF007F] animate-pulse">CONNECTING...</div>
+                
+                <!-- Scanline overlay specifically for video -->
+                <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%;"></div>
+            </div>
+
+            <!-- Call Controls -->
+            <div class="p-4 border-t border-[#FF007F] bg-black flex justify-center items-center">
+                <button id="btn-end-call" class="bg-red-600 text-white font-pixel text-[10px] px-6 py-3 hover:bg-red-500 transition-colors shadow-[0_0_15px_rgba(255,0,0,0.5)]">
+                    END CALL
+                </button>
+            </div>
+            
+            <div class="absolute bottom-1 right-2 pointer-events-none">
+                <span class="text-[8px] font-pixel text-[#FF007F] opacity-50">본 영상은 기기 내에서만 출력됩니다.</span>
+            </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script>
         // State Management
         const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaegee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
         let state = {
             userId: "",
             currentMember: members[0],
-            stickers: new Set(),
-            logInterval: null
+            videoStream: null
         };
 
-        // Utility: Hide all screens, show target
+        // Utility: Screen Switcher
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => {
                 s.classList.add('hidden');
@@ -236,7 +280,6 @@
             }
         }
 
-        // --- 1. Intro Sequence ---
         const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까? Y/N]";
         const termElement = document.getElementById('term-text');
         let charIndex = 0;
@@ -252,32 +295,12 @@
             }
         }
 
-        // Initialize Typewriter on Load
-        window.onload = () => {
-            setTimeout(typeWriter, 500);
-        };
+        window.onload = () => setTimeout(typeWriter, 500);
 
-        // --- STREAMING_CHUNK:Handling Setup Buttons & WebRTC ---
-        document.getElementById('btn-y').addEventListener('click', async () => {
+        document.getElementById('btn-y').addEventListener('click', () => {
             document.getElementById('term-choices').classList.add('hidden');
-            termElement.innerHTML += "<br><span class='text-gray-500'>[SYSTEM] 권한을 요청합니다...</span>";
-            
-            // WebRTC Request
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                const video = document.getElementById('spycam-video');
-                video.srcObject = stream;
-                document.getElementById('spycam-container').classList.remove('hidden');
-                document.getElementById('spycam-container').classList.add('flex');
-            } catch (err) {
-                console.log("Cam denied:", err);
-                const camContainer = document.getElementById('spycam-container');
-                camContainer.classList.remove('hidden');
-                camContainer.classList.add('flex');
-                document.getElementById('spycam-video').parentElement.innerHTML = `<div class="flex items-center justify-center h-full text-[#FF007F] font-pixel text-[8px] text-center">CAM<br>OFFLINE</div>`;
-            }
-
-            setTimeout(generateID, 1000);
+            termElement.innerHTML += "<br><span class='text-gray-500'>[SYSTEM] 권한 확인 중...</span>";
+            setTimeout(generateID, 1000); // Skip webcam here, just generate ID
         });
 
         document.getElementById('btn-n').addEventListener('click', () => {
@@ -286,7 +309,6 @@
             setTimeout(generateID, 1500);
         });
 
-        // --- 2. ID Generation ---
         function generateID() {
             switchScreen('screen-id-gen');
             const prefixes = ["우울한_", "블랙핑크_", "혼란스러운_", "glitch_", "사이버_", "비밀번호"];
@@ -295,13 +317,11 @@
             state.userId = prefixes[Math.floor(Math.random() * prefixes.length)] + suffixes[Math.floor(Math.random() * suffixes.length)];
             document.getElementById('generated-id').textContent = state.userId;
             
-            // Set User ID globally in DOM
             document.querySelectorAll('.my-user-id').forEach(el => el.textContent = state.userId);
 
             setTimeout(startIntroChat, 2000);
         }
 
-        // --- STREAMING_CHUNK:Handling Intro Chat Logic ---
         function startIntroChat() {
             switchScreen('screen-intro-chat');
             const box = document.getElementById('intro-chat-box');
@@ -339,7 +359,6 @@
         function handleIntroReply(msg) {
             document.getElementById('intro-chat-choices').classList.add('hidden');
             const box = document.getElementById('intro-chat-box');
-            
             appendChatMessage(box, state.userId, msg, 'user');
 
             setTimeout(() => {
@@ -348,12 +367,10 @@
             }, 1000);
         }
 
-        // --- STREAMING_CHUNK:Building Main Dashboard Interactions ---
         function initMainDashboard() {
             switchScreen('screen-main');
             renderMemberList();
             loadFeed(members[0]);
-            startActivityLog();
         }
 
         function renderMemberList() {
@@ -375,7 +392,6 @@
                 });
             });
             
-            // Select First
             if(document.querySelector('.member-btn')) {
                 document.querySelector('.member-btn').click();
             }
@@ -384,6 +400,8 @@
         function loadFeed(memberId) {
             state.currentMember = memberId;
             document.getElementById('feed-target-id').textContent = `@${memberId}`;
+            // Set profile picture using DiceBear
+            document.getElementById('feed-target-pfp').src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${memberId}&backgroundType=solid&backgroundColor=000000`;
             resetStatus();
             
             const grid = document.getElementById('feed-grid');
@@ -394,38 +412,23 @@
                 const cap = captions[i % captions.length];
                 const bg = colors[i % colors.length];
                 return `
-                    <div class="relative aspect-square border border-[#333] group overflow-hidden bg-black">
-                        <img src="https://placehold.co/400x400/${bg}/FF007F?text=ENCRYPTED" class="w-full h-full object-cover glitched-image absolute inset-0 z-0">
-                        <div class="overlay absolute inset-0 bg-black/40 flex items-center justify-center z-10 transition-opacity duration-300">
-                            <button class="btn-reveal text-3xl md:text-5xl hover:scale-110 drop-shadow-[0_0_10px_#FF007F] transition-transform">💖</button>
-                        </div>
-                        <div class="caption hidden absolute bottom-0 inset-x-0 bg-black/90 border-t border-[#FF007F] text-[#FF007F] p-2 font-vt text-lg z-20">
+                    <div class="relative aspect-square border border-[#333] group overflow-hidden bg-black feed-item-container">
+                        <img src="https://placehold.co/400x400/${bg}/FF007F?text=${memberId.toUpperCase()}" class="w-full h-full object-cover glitched-image absolute inset-0 z-0">
+                        
+                        <!-- Scratch Canvas -->
+                        <canvas class="scratch-canvas absolute inset-0 z-10 w-full h-full"></canvas>
+
+                        <div class="caption hidden absolute bottom-0 inset-x-0 bg-black/90 border-t border-[#FF007F] text-[#FF007F] p-2 font-vt text-lg z-20 pointer-events-none">
                             ${cap}
                         </div>
                     </div>
                 `;
             }).join('');
 
-            // Interaction: Reveal Image
-            document.querySelectorAll('.btn-reveal').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const container = this.closest('.relative');
-                    const img = container.querySelector('.glitched-image');
-                    const overlay = container.querySelector('.overlay');
-                    const caption = container.querySelector('.caption');
-                    
-                    img.src = `https://placehold.co/400x400/111/fff?text=${memberId.toUpperCase()}`;
-                    img.classList.add('revealed');
-                    overlay.classList.add('opacity-0', 'pointer-events-none');
-                    caption.classList.remove('hidden');
-                    
-                    addSticker('💔');
-                    logActivity(`[${state.userId}]님이 암호화된 데이터를 해독했습니다.`);
-                });
-            });
+            // Initialize Scratch Canvases after a tiny delay to ensure DOM layout is complete
+            setTimeout(initScratchCards, 50);
         }
 
-        // --- STREAMING_CHUNK:Reactions, Guestbook & Logs ---
         function resetStatus() {
             const statuses = ["[현재 상태: 심박수 비정상]", "[현재 상태: 뇌내 회로 꼬임]", "[현재 상태: 밤새 뒤척이는 중]"];
             const el = document.getElementById('feed-target-status');
@@ -435,42 +438,119 @@
         }
 
         document.getElementById('btn-react').addEventListener('click', () => {
-            logActivity(`[${state.userId}]님이 🩹 구급상자를 던졌습니다.`);
-            addSticker('🩹');
+            appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}에게 🩹 구급상자를 던졌습니다.`);
             const status = document.getElementById('feed-target-status');
             status.textContent = "[상태 업데이트: 조금 안도함]";
             status.classList.remove('text-gray-400');
             status.classList.add('text-[#FF007F]');
         });
 
-        function addSticker(emoji) {
-            if(!state.stickers.has(emoji)) {
-                state.stickers.add(emoji);
-                const container = document.getElementById('card-stickers');
-                if(state.stickers.size === 1) container.innerHTML = ''; // clear placeholder
-                container.innerHTML += `<span class="cursor-pointer drop-shadow-[0_0_5px_rgba(255,0,127,0.8)]">${emoji}</span>`;
-            }
+        function initScratchCards() {
+            document.querySelectorAll('.feed-item-container').forEach(container => {
+                const canvas = container.querySelector('.scratch-canvas');
+                const img = container.querySelector('.glitched-image');
+                const caption = container.querySelector('.caption');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                
+                // Match canvas internal resolution to display size
+                canvas.width = container.offsetWidth;
+                canvas.height = container.offsetHeight;
+
+                // Fill with Neon Pink Cover
+                ctx.fillStyle = '#FF007F';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add Text
+                ctx.fillStyle = '#000000';
+                ctx.font = '12px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                // Multiline text trick
+                ctx.fillText('SCRATCH', canvas.width/2, canvas.height/2 - 10);
+                ctx.fillText('TO DECODE', canvas.width/2, canvas.height/2 + 10);
+
+                let isDrawing = false;
+                let isRevealed = false;
+
+                function getMousePos(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    return { x: clientX - rect.left, y: clientY - rect.top };
+                }
+
+                function startDraw(e) {
+                    if(isRevealed) return;
+                    isDrawing = true;
+                    scratch(e);
+                }
+
+                function stopDraw() {
+                    if(!isDrawing) return;
+                    isDrawing = false;
+                    checkReveal();
+                }
+
+                function scratch(e) {
+                    if (!isDrawing || isRevealed) return;
+                    e.preventDefault(); // Prevent scrolling on mobile while scratching
+                    
+                    const pos = getMousePos(e);
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2); // 25px brush radius
+                    ctx.fill();
+                }
+
+                function checkReveal() {
+                    if(isRevealed) return;
+                    
+                    // Simple heuristic: check a grid of points to estimate cleared area
+                    const stride = 10;
+                    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    let transparentCount = 0;
+                    let totalChecked = 0;
+
+                    for (let y = 0; y < canvas.height; y += stride) {
+                        for (let x = 0; x < canvas.width; x += stride) {
+                            const index = (y * canvas.width + x) * 4;
+                            if (pixels[index + 3] === 0) { // Alpha channel
+                                transparentCount++;
+                            }
+                            totalChecked++;
+                        }
+                    }
+
+                    if (transparentCount / totalChecked > 0.45) { // 45% cleared
+                        isRevealed = true;
+                        canvas.style.transition = 'opacity 0.5s';
+                        canvas.style.opacity = '0';
+                        setTimeout(() => canvas.style.display = 'none', 500);
+                        
+                        img.classList.add('revealed');
+                        caption.classList.remove('hidden');
+                        appendPublicChat(`[SYSTEM] ${state.userId}님이 암호화된 기억을 해독했습니다.`);
+                    }
+                }
+
+                // Events
+                canvas.addEventListener('mousedown', startDraw);
+                canvas.addEventListener('mousemove', scratch);
+                canvas.addEventListener('mouseup', stopDraw);
+                canvas.addEventListener('mouseleave', stopDraw);
+
+                canvas.addEventListener('touchstart', startDraw, {passive: false});
+                canvas.addEventListener('touchmove', scratch, {passive: false});
+                canvas.addEventListener('touchend', stopDraw);
+            });
         }
 
-        function logActivity(text) {
-            const log = document.getElementById('activity-log');
-            const div = document.createElement('div');
-            div.className = 'text-xs font-vt text-gray-400 mb-1 border-b border-[#222] pb-1';
-            div.textContent = text;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-        }
+        // Handle resize issues for canvas
+        window.addEventListener('resize', () => {
+            // Re-init unrevealed canvases on resize to fix offsets
+            initScratchCards(); 
+        });
 
-        function startActivityLog() {
-            if(state.logInterval) clearInterval(state.logInterval);
-            state.logInterval = setInterval(() => {
-                const acts = ["님이 흔적을 남겼습니다.", "님이 접속했습니다.", "님이 염탐 중입니다.", "님이 데이터를 다운로드했습니다."];
-                const randomNum = Math.floor(Math.random() * 999);
-                logActivity(`[익명_${randomNum}]${acts[Math.floor(Math.random() * acts.length)]}`);
-            }, 3500);
-        }
-
-        // Guestbook Logic
         document.getElementById('gb-submit').addEventListener('click', submitGuestbook);
         document.getElementById('gb-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') submitGuestbook();
@@ -483,13 +563,10 @@
             
             appendGuestbook(state.userId, text, false);
             input.value = '';
-            logActivity(`[${state.userId}]님이 방명록을 작성했습니다.`);
 
-            // Easter Egg Trigger
             if(text.includes('안녕') || text.includes('누구') || text.includes('보고')) {
                 setTimeout(() => {
                     appendGuestbook(state.currentMember, "너 혹시... 그때 걔야? 읽었어.", true);
-                    addSticker('👁️');
                 }, 1500);
             }
         }
@@ -506,7 +583,39 @@
             list.scrollTop = list.scrollHeight;
         }
 
-        // --- STREAMING_CHUNK:Main DM Modal System ---
+        // Public Chat Logic
+        const publicChatLog = document.getElementById('public-chat-log');
+        const publicChatInput = document.getElementById('public-chat-input');
+        
+        document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
+        publicChatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitPublicChat();
+        });
+
+        function submitPublicChat() {
+            const text = publicChatInput.value.trim();
+            if(!text) return;
+            appendPublicChat(`[${state.userId}] ${text}`);
+            publicChatInput.value = '';
+        }
+
+        function appendPublicChat(text) {
+            const div = document.createElement('div');
+            div.className = 'text-sm font-vt text-gray-300 border-b border-[#222] pb-1';
+            
+            // Colorize System messages
+            if (text.startsWith('[SYSTEM]')) {
+                div.classList.add('text-gray-500', 'text-xs');
+            } else if (text.startsWith(`[${state.userId}]`)) {
+                div.classList.add('text-[#00FF00]');
+            }
+
+            div.textContent = text;
+            publicChatLog.appendChild(div);
+            publicChatLog.scrollTop = publicChatLog.scrollHeight;
+        }
+
+        // DM Logic
         const dmModal = document.getElementById('dm-modal');
         const dmMessages = document.getElementById('dm-messages');
         const dmChoices = document.getElementById('dm-choices');
@@ -527,7 +636,13 @@
             document.querySelectorAll('.dm-choice').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const reply = this.getAttribute('data-reply');
-                    sendMainDM(reply);
+                    appendChatMessage(dmMessages, state.userId, reply, 'user');
+                    dmChoices.innerHTML = ''; 
+                    
+                    setTimeout(() => {
+                        const botReplies = ["이상해. 네가 볼 때마다 시스템이 자꾸 오류가 나.", "나도 그래. 고장 난 것 같아.", "계속 지켜봐 줘."];
+                        appendChatMessage(dmMessages, state.currentMember, botReplies[Math.floor(Math.random() * botReplies.length)], 'bot');
+                    }, 1200);
                 });
             });
         });
@@ -537,22 +652,46 @@
             dmModal.classList.remove('flex');
         });
 
-        function sendMainDM(text) {
-            appendChatMessage(dmMessages, state.userId, text, 'user');
-            dmChoices.innerHTML = ''; // Hide choices
+        // Call (Webcam) Logic
+        const callModal = document.getElementById('call-modal');
+        const callVideo = document.getElementById('call-video');
+        const connectingText = document.getElementById('call-connecting-text');
+
+        document.getElementById('btn-open-call').addEventListener('click', async () => {
+            document.getElementById('call-target-name').textContent = `@${state.currentMember}`;
+            callModal.classList.remove('hidden');
+            callModal.classList.add('flex');
+            connectingText.classList.remove('hidden');
+            callVideo.classList.add('hidden');
             
-            setTimeout(() => {
-                const botReplies = [
-                    "이상해. 네가 볼 때마다 시스템이 자꾸 오류가 나.",
-                    "나도 그래. 고장 난 것 같아.",
-                    "계속 지켜봐 줘."
-                ];
-                const randomReply = botReplies[Math.floor(Math.random() * botReplies.length)];
-                appendChatMessage(dmMessages, state.currentMember, randomReply, 'bot');
-                addSticker('📱');
-                logActivity(`[${state.userId}]님이 암호화된 메시지를 받았습니다.`);
-            }, 1200);
-        }
+            try {
+                // Request Webcam
+                state.videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                callVideo.srcObject = state.videoStream;
+                callVideo.classList.remove('hidden');
+                connectingText.classList.add('hidden');
+            } catch (err) {
+                console.error("Cam denied/error:", err);
+                connectingText.textContent = "CAM_OFFLINE : ACCESS_DENIED";
+                connectingText.classList.replace('text-[#FF007F]', 'text-red-500');
+            }
+        });
+
+        document.getElementById('btn-end-call').addEventListener('click', () => {
+            // Stop all tracks to release camera hardware
+            if (state.videoStream) {
+                state.videoStream.getTracks().forEach(track => track.stop());
+                state.videoStream = null;
+            }
+            callVideo.srcObject = null;
+            callModal.classList.add('hidden');
+            callModal.classList.remove('flex');
+            
+            // Reset connecting text for next time
+            connectingText.textContent = "CONNECTING...";
+            connectingText.classList.replace('text-red-500', 'text-[#FF007F]');
+        });
+
     </script>
 </body>
 </html>
