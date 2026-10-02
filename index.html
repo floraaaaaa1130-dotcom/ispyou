@@ -302,7 +302,7 @@
                 alert: './assets/audio/alert.mp3'        // DM 알림음
             },
             'sion__5': {
-                profile: './assets/profile/sion.jpg', 
+                profile: './assets/profile/sion_profile.png', 
                 videoCall: './assets/video/sion_call.mp4',
                 voiceCall: './assets/audio/sion_voice.mp3',
                 feed: [
@@ -311,15 +311,35 @@
                 ]
             },
             'ri_ku_03': {
-                profile: './assets/profile/riku.jpg',
+                profile: './assets/profile/riku_profile.png',
                 videoCall: './assets/video/riku_call.mp4',
                 voiceCall: './assets/audio/riku_voice.mp3',
                 feed: [ './assets/feed/riku_pic1.jpg' ]
             },
-            // 'yushihihi_405': { ... }, 
-            // 'jaegee__zzang': { ... },
-            // 'ryo_hi_rose': { ... },
-            // 'sakusakusaku07': { ... }
+            'yushihihi_405': { 
+            profile: './assets/profile/yushi_profile.png',
+                videoCall: './assets/video/yushi_call.mp4',
+                voiceCall: './assets/audio/yushi_voice.mp3',
+                feed: [ './assets/feed/yushi_pic1.jpg'
+                       }, 
+            'jaehee__zzang': {
+                profile: './assets/profile/jaehee_profile.png',
+                videoCall: './assets/video/jaehee_call.mp4',
+                voiceCall: './assets/audio/jaehee_voice.mp3',
+                feed: [ './assets/feed/jaehee_pic1.jpg'
+                       },
+            'ryo_hi_rose': { 
+                profile: './assets/profile/ryo_profile.png',
+                videoCall: './assets/video/ryo_call.mp4',
+                voiceCall: './assets/audio/ryo_voice.mp3',
+                feed: [ './assets/feed/ryo_pic1.jpg'
+                       },
+            'sakusakusaku07': { 
+                profile: './assets/profile/sakuya_profile.png',
+                videoCall: './assets/video/sakuya_call.mp4',
+                voiceCall: './assets/audio/sakuya_voice.mp3',
+                feed: [ './assets/feed/sakuya_pic1.jpg'
+                       }
         };
 
         // ==========================================
@@ -369,7 +389,7 @@
         };
         // ==========================================
 
-        const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaegee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
+        const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaehee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
         
         const state = {
             userId: "",
@@ -387,7 +407,7 @@
                 'sion__5': "오늘 자꾸 열이 난다. 고장 난 것 같아.",
                 'ri_ku_03': "이게 무슨 감정인지 모르겠어.",
                 'yushihihi_405': "화면 너머로 자꾸 네가 보여.",
-                'jaegee__zzang': "심장이 너무 빨리 뛰어. 해킹당했나?",
+                'jaehee__zzang': "심장이 너무 빨리 뛰어. 해킹당했나?",
                 'ryo_hi_rose': "알 수 없는 에러 발생. 원인은 너야.",
                 'sakusakusaku07': "도망치고 싶은데, 눈을 뗄 수가 없어."
             },
@@ -730,15 +750,19 @@
         let chatBotInterval = null;
         
         function appendPublicChat(text, isUser = false) {
-            const div = document.createElement('div');
-            div.className = 'text-xs lg:text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed';
-            if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
-            else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
-            
-            div.textContent = text;
-            publicChatLog.appendChild(div);
-            publicChatLog.scrollTop = publicChatLog.scrollHeight;
-        }
+    const div = document.createElement('div');
+    // whitespace-pre-wrap 추가: 연속된 공백과 줄바꿈 유지
+    div.className = 'text-xs lg:text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
+    
+    if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
+    else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
+    
+    // textContent 대신 innerHTML 사용: 이미지/비디오 태그 렌더링을 위함
+    div.innerHTML = text;
+    
+    publicChatLog.appendChild(div);
+    publicChatLog.scrollTop = publicChatLog.scrollHeight;
+}
 
         document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
         publicChatInput.addEventListener('keypress', (e) => { 
@@ -755,13 +779,70 @@
 
         function startPublicChatBot() {
             const botMsgs = [
-                {name: '익명_09', msg: '다들 누구 보고 있어?'},
-                {name: 'glitch_xx', msg: '방금 해독 성공함 ㅋㅋ'},
-                {name: '핑크스파이', msg: '오늘 분위기 왜 이래'},
-                {name: 'User_404', msg: '연결 상태 불안정해.'},
-                {name: '해커_소년', msg: '누가 내 거 훔쳐봄?'},
-                {name: '비밀_11', msg: '비밀번호 알아낸 사람?'},
-                {name: '익명_09', msg: '지금 시스템 고장난 거 같은데'}
+                {name: 'sakusakusaku07', msg: `안녕`},
+                {name: 'sakusakusaku07', msg: `
+。o
+　　ｏ
+　　　。
+　　o　고독한
+　　。　남자의 등장 . . . 
+
+　　　　　Ｏ
+　　　　 ｏ
+　　　 。o`},
+                {name: 'sakusakusaku07', msg: `^_^`},
+                {name: 'sakusakusaku07', msg: '안녕하십니까'},
+                {name: 'sakusakusaku07', msg: 'hi'},
+                {name: 'jaehee__zzang', msg: 'ᗜ_ᗜ'},
+                {name: 'jaehee__zzan', msg: `나 요즘....
+                심장이
+                이상합니다<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'jaehee__zzan', msg: 'ㅍㅠㅠ'},
+                {name: '핑크스파이', msg: `그래?
+                나도 그래
+                ㅍㅠㅠ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'yushihihi_405', msg: '아무 일도 없는데'},
+                {name: 'yushihihi_405', msg: 'ㅋㅋㅋ'},
+                {name: 'sion__5', msg: '괜히 손에 땀이나네'},
+                {name: 'sion__5', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
+                {name: 'ryo_hi_rose', msg: '😬😬😬'},
+                {name: 'ryo_hi_rose', msg: '왜이러는거야'},
+                {name: 'ryo_hi_rose', msg: `
+    ここで一番混乱してる人
+              |
+              V<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'ryo_hi_rose', msg: '뭔데'},
+                {name: 'ryo_hi_rose', msg: `그냥 사진을
+                올리고 싶었던 거지 리쿠는`},            
+                {name: 'ryo_hi_rose', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
+                {name: 'ryo_hi_rose', msg: `잠만
+                    이거 사랑이라는데<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'ryo_hi_rose', msg: <span class="text-[8px]">`⠀⠀   ⠀
+    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
+⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
+⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
+⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀
+⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
+⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀
+⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠋⠀⠀
+                      ︵     ‌  ⠈     ︵
+                    (      ╲       /      /
+                      ╲       ╲/      /
+                           ╲       ╲ /
+                        ╭ ͡   ╲        ╲
+                   ╭ ͡  ╲        ╲      ﾉ
+              ╭ ͡  ╲       ╲       ╱
+                ╲      ╲        ╱`</span>},
+                {name: 'sion__5', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
+                {name: 'sion__5', msg: '응;'},
+                {name: 'jaehee__zzan', msg: `X<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: '응;'},
+                        
             ];
             let msgIdx = 0;
             
