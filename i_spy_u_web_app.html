@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>[ i_SPY_u.net ]</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-pink: #FF007F;
+            --neon-green: #00FF00;
+            --neon-blue: #00FFFF;
+        }
+
+        body {
+            background-color: black;
+            color: var(--neon-pink);
+            font-family: 'VT323', monospace;
+            overflow: hidden; /* Prevent scrolling on main body */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-pixel {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* CRT Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+        }
+
+        /* CRT Flicker */
+        .flicker {
+            animation: flicker 0.15s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            100% { opacity: 1; }
+        }
+
+        /* Glitch Text Effect */
+        .glitch-text {
+            position: relative;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 red;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 44px, 0); }
+            20% { clip: rect(65px, 9999px, 96px, 0); }
+            40% { clip: rect(23px, 9999px, 83px, 0); }
+            60% { clip: rect(78px, 9999px, 11px, 0); }
+            80% { clip: rect(45px, 9999px, 2px, 0); }
+            100% { clip: rect(12px, 9999px, 55px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            20% { clip: rect(3px, 9999px, 21px, 0); }
+            40% { clip: rect(44px, 9999px, 88px, 0); }
+            60% { clip: rect(12px, 9999px, 4px, 0); }
+            80% { clip: rect(88px, 9999px, 55px, 0); }
+            100% { clip: rect(33px, 9999px, 22px, 0); }
+        }
+
+        /* Blinking Cursor */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Custom Scrollbar for Chat */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-pink);
+        }
+
+        /* Idol Video Placeholder Animation */
+        .idol-bg {
+            background: radial-gradient(circle at center, #220011 0%, #000000 100%);
+            background-size: 200% 200%;
+            animation: breathing 4s ease-in-out infinite;
+        }
+        @keyframes breathing {
+            0% { background-position: 50% 50%; filter: brightness(1); }
+            50% { background-position: 50% 50%; filter: brightness(1.5); }
+            100% { background-position: 50% 50%; filter: brightness(1); }
+        }
+
+        /* Spycam Filters (Black & White with Pink overlay) */
+        .spycam-video {
+            filter: grayscale(100%) contrast(150%) brightness(0.8);
+            object-fit: cover;
+        }
+        .spycam-overlay {
+            background: rgba(255, 0, 127, 0.4);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="h-[100dvh] w-full relative flicker text-lg">
+
+    <!-- Global CRT Scanlines -->
+    <div class="scanlines"></div>
+
+    <div id="intro-screen" class="absolute inset-0 z-50 bg-black flex flex-col p-6 justify-center items-start text-[#00FF00]">
+        <div id="terminal-content" class="w-full">
+            <p class="mb-2">> CONNECTING TO SECURE SERVER...</p>
+            <p class="mb-2">> BYPASSING FIREWALL... <span class="text-[#FF007F]">SUCCESS</span></p>
+            <p class="mb-2">> GENERATING ANONYMOUS ID...</p>
+            <p class="mb-6 text-xl font-bold glitch-text text-[#00FFFF]" id="generated-id-display" data-text="">[ ID: ??? ]</p>
+            
+            <div id="prompt-area" class="hidden mt-8 border border-[#FF007F] p-4 bg-black/80 shadow-[0_0_15px_rgba(255,0,127,0.5)]">
+                <p class="text-[#FF007F] font-pixel text-xs leading-relaxed mb-6">
+                    [SYSTEM WARNING]<br><br>
+                    발신자가 당신의 존재를 확인하고 싶어 합니다.<br>
+                    응하시겠습니까?
+                </p>
+                <div class="flex space-x-6 justify-center">
+                    <button id="btn-yes" class="text-2xl font-bold text-[#FF007F] hover:text-white hover:bg-[#FF007F] px-4 py-2 transition-colors border border-[#FF007F] focus:outline-none">
+                        Y
+                    </button>
+                    <button id="btn-no" class="text-2xl font-bold text-gray-500 hover:text-white hover:bg-gray-700 px-4 py-2 transition-colors border border-gray-500 focus:outline-none">
+                        N
+                    </button>
+                </div>
+                <p class="mt-4 text-center text-[10px] text-gray-500">* Y 선택 시 기기 카메라에 접근합니다.</p>
+            </div>
+            
+            <p class="mt-4" id="intro-cursor">> <span class="cursor-blink bg-[#00FF00] w-3 h-5 inline-block align-middle"></span></p>
+        </div>
+    </div>
+
+    <div id="main-screen" class="hidden h-full flex flex-col bg-[#050505] relative">
+        
+        <!-- Header -->
+        <header class="h-12 border-b border-[#FF007F] flex items-center justify-between px-4 shrink-0 bg-black z-20 shadow-[0_0_10px_rgba(255,0,127,0.3)]">
+            <h1 class="font-pixel text-xs text-[#FF007F] glitch-text" data-text="[ i_SPY_u.net ]">[ i_SPY_u.net ]</h1>
+            <span id="header-username" class="text-[#00FFFF] text-sm bg-[#00FFFF]/10 px-2 py-1 rounded"></span>
+        </header>
+
+        <div id="video-area" class="flex-grow relative idol-bg overflow-hidden flex items-center justify-center border-b border-gray-800">
+            <!-- Simulated Idol Video Text -->
+            <div class="text-center z-10 px-4">
+                <div class="font-pixel text-[10px] text-[#FF007F]/60 mb-2 animate-pulse">[ SIGNAL DETECTED ]</div>
+                <div class="text-[#00FFFF]/30 text-4xl glitch-text" data-text="???">???</div>
+            </div>
+
+            <!-- Floating Spycam (User WebCam) -->
+            <div class="absolute top-4 right-4 w-28 h-36 border border-[#FF007F] bg-black shadow-[0_0_15px_rgba(255,0,127,0.4)] z-30 overflow-hidden flex flex-col group">
+                <div class="relative flex-grow bg-gray-900 flex items-center justify-center">
+                    <video id="user-cam" class="w-full h-full spycam-video" autoplay playsinline muted></video>
+                    <!-- Pink Overlay for that CCTV look -->
+                    <div class="absolute inset-0 spycam-overlay"></div>
+                    <!-- Error or loading state -->
+                    <div id="cam-status" class="absolute inset-0 flex items-center justify-center text-xs text-[#FF007F] text-center p-1 bg-black/80">
+                        AWAITING<br>FEED
+                    </div>
+                    <!-- REC indicator -->
+                    <div class="absolute top-1 right-1 flex items-center gap-1">
+                        <div class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+                        <span class="text-[8px] text-red-500 font-pixel">REC</span>
+                    </div>
+                </div>
+                <!-- Disclaimer -->
+                <div class="h-5 bg-[#FF007F] flex items-center justify-center text-black text-[9px] font-bold px-1 whitespace-nowrap overflow-hidden">
+                    <marquee scrollamount="2">기기 내에서만 출력됩니다. SECURE CONNECTION.</marquee>
+                </div>
+            </div>
+        </div>
+
+        <div id="chat-area" class="h-2/5 min-h-[250px] flex flex-col bg-black relative z-20">
+            <!-- Message List -->
+            <div id="message-list" class="flex-grow overflow-y-auto p-4 space-y-4 flex flex-col">
+                <!-- System Message -->
+                <div class="text-center text-xs text-gray-500 mb-2 border-b border-dashed border-gray-700 pb-2">
+                    연결이 암호화되었습니다.<br>상대방이 접속했습니다.
+                </div>
+                <!-- Messages will be injected here -->
+            </div>
+
+            <!-- Input Area -->
+            <div class="h-14 border-t border-[#FF007F]/50 flex items-center px-2 bg-[#0a0a0a]">
+                <span class="text-[#FF007F] mr-2 font-bold">></span>
+                <input type="text" id="chat-input" class="flex-grow bg-transparent text-[#00FF00] focus:outline-none placeholder-gray-600 font-mono text-lg" placeholder="메시지를 입력해..." autocomplete="off">
+                <button id="btn-send" class="ml-2 bg-[#FF007F]/20 text-[#FF007F] px-3 py-1 border border-[#FF007F] hover:bg-[#FF007F] hover:text-black transition-colors focus:outline-none">
+                    SEND
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data & State
+        const namePrefixes = ["비밀번호", "혼란스러운_", "glitch_", "핑크", "우울한_", "고장난", "cyber_"];
+        const nameSuffixes = ["486", "boy", "girl", "하트", "User99", "해골", "천사"];
+        let currentUsername = "";
+        let chatBlocked = true; // Prevent chatting until idol initiates
+
+        // DOM Elements
+        const elIntro = document.getElementById('intro-screen');
+        const elMain = document.getElementById('main-screen');
+        const elIdDisplay = document.getElementById('generated-id-display');
+        const elPrompt = document.getElementById('prompt-area');
+        const elBtnYes = document.getElementById('btn-yes');
+        const elBtnNo = document.getElementById('btn-no');
+        const elHeaderUsername = document.getElementById('header-username');
+        const elUserCam = document.getElementById('user-cam');
+        const elCamStatus = document.getElementById('cam-status');
+        const elMessageList = document.getElementById('message-list');
+        const elChatInput = document.getElementById('chat-input');
+        const elBtnSend = document.getElementById('btn-send');
+
+        function generateUsername() {
+            const pre = namePrefixes[Math.floor(Math.random() * namePrefixes.length)];
+            const suf = nameSuffixes[Math.floor(Math.random() * nameSuffixes.length)];
+            currentUsername = pre + suf;
+            elIdDisplay.innerText = `[ ID: ${currentUsername} ]`;
+            elIdDisplay.setAttribute('data-text', `[ ID: ${currentUsername} ]`);
+            elHeaderUsername.innerText = `@${currentUsername}`;
+        }
+
+        setTimeout(() => {
+            generateUsername();
+            setTimeout(() => {
+                document.getElementById('intro-cursor').classList.add('hidden');
+                elPrompt.classList.remove('hidden');
+            }, 1000);
+        }, 1500);
+
+        // Deny button (Easter egg)
+        elBtnNo.addEventListener('click', () => {
+            elBtnNo.innerText = "거부불가";
+            elBtnNo.classList.replace('text-gray-500', 'text-red-500');
+            setTimeout(() => { elBtnNo.innerText = "N"; elBtnNo.classList.replace('text-red-500', 'text-gray-500'); }, 1000);
+        });
+
+        elBtnYes.addEventListener('click', async () => {
+            // Start transition
+            elIntro.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+            
+            try {
+                // Request Webcam
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                elUserCam.srcObject = stream;
+                elCamStatus.style.display = 'none'; // Hide awaiting text
+            } catch (err) {
+                console.error("Camera access denied or error:", err);
+                elCamStatus.innerHTML = "<span class='text-red-500'>CAM OFFLINE<br>ACCESS DENIED</span>";
+            }
+
+            // Show main screen
+            setTimeout(() => {
+                elIntro.classList.add('hidden');
+                elMain.classList.remove('hidden');
+                startGameSequence();
+            }, 1000);
+        });
+
+        function addMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'w-full flex flex-col animate-[fadeIn_0.3s_ease-out]';
+            
+            if (sender === 'IDOL') {
+                msgDiv.innerHTML = `
+                    <span class="text-xs text-gray-500 mb-1">??? <span class="text-[#FF007F]">✓</span></span>
+                    <div class="bg-[#2a0015] border border-[#FF007F] text-[#FF007F] px-3 py-2 rounded-tr-lg rounded-br-lg rounded-bl-lg max-w-[85%] self-start shadow-[0_0_5px_rgba(255,0,127,0.3)]">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                msgDiv.innerHTML = `
+                    <span class="text-xs text-gray-500 mb-1 self-end">${currentUsername}</span>
+                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 rounded-tl-lg rounded-br-lg rounded-bl-lg max-w-[85%] self-end">
+                        ${text}
+                    </div>
+                `;
+            }
+            
+            elMessageList.appendChild(msgDiv);
+            elMessageList.scrollTop = elMessageList.scrollHeight;
+        }
+
+        // Handle Sending Message
+        function handleSend() {
+            const text = elChatInput.value.trim();
+            if (!text || chatBlocked) return;
+            
+            addMessage('USER', text);
+            elChatInput.value = '';
+            
+            // Simple bot reply logic based on user interaction
+            chatBlocked = true;
+            setTimeout(() => {
+                const replies = [
+                    "무슨 말인지 모르겠어. 머리가 복잡해.",
+                    "자꾸 그렇게 쳐다보지 마.",
+                    "네가 누군지 찾아낼 거야.",
+                    "시스템 오류인가... 심장이 이상해."
+                ];
+                const reply = replies[Math.floor(Math.random() * replies.length)];
+                addMessage('IDOL', reply);
+                chatBlocked = false;
+            }, 2000 + Math.random() * 1500);
+        }
+
+        elBtnSend.addEventListener('click', handleSend);
+        elChatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+
+        // Initial Idol Message Sequence
+        function startGameSequence() {
+            setTimeout(() => {
+                addMessage('IDOL', "누구야?");
+            }, 2500);
+            
+            setTimeout(() => {
+                addMessage('IDOL', "아까부터 지켜본 거 다 알아.");
+            }, 5000);
+
+            setTimeout(() => {
+                addMessage('IDOL', "지금 내 화면에 네 얼굴 다 보이거든.");
+                chatBlocked = false; // Allow user to reply now
+                elChatInput.focus();
+            }, 8000);
+        }
+
+        // Add custom keyframe for fade-in
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>
