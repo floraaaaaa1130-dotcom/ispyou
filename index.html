@@ -11,7 +11,9 @@
         :root {
             --neon-pink: #FF007F;
             --neon-green: #00FF00;
-            --bg-black: #050505;
+            --bg-black: #000000;
+            --panel-bg: #0a0508;
+            --border-color: #333333;
         }
 
         body {
@@ -19,110 +21,82 @@
             color: var(--neon-pink);
             font-family: 'Noto Sans KR', sans-serif;
             margin: 0;
-            overflow: hidden;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
         .font-pixel { font-family: 'Press Start 2P', cursive; }
         .font-vt { font-family: 'VT323', monospace; }
 
-        /* CRT Scanline Effect */
+        /* CRT Overlay */
         .scanlines {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.4));
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 9999;
         }
 
         /* Screen Flicker */
-        .flicker {
-            animation: crt-flicker 0.15s infinite;
-        }
+        .flicker { animation: crt-flicker 0.15s infinite; }
         @keyframes crt-flicker {
-            0% { opacity: 0.95; }
+            0% { opacity: 0.97; }
             50% { opacity: 1; }
             100% { opacity: 0.98; }
         }
 
-        /* Text Glitch */
-        .glitch-text { position: relative; display: inline-block; }
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text);
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: transparent;
+        /* Glitched Feed Image */
+        .glitch-img-container { position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--border-color); }
+        .glitch-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: contrast(200%) grayscale(100%) blur(5px);
+            transition: all 0.5s ease;
         }
-        .glitch-text::before {
-            left: 2px; text-shadow: -1px 0 #00FF00;
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        .glitch-img-container.revealed .glitch-img {
+            filter: none;
         }
-        .glitch-text::after {
-            left: -2px; text-shadow: -1px 0 #0000FF;
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        .glitch-img-container .glitch-overlay {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,0,127,0.3) 10px, rgba(255,0,127,0.3) 20px);
+            color: var(--neon-green); font-family: 'Press Start 2P', cursive; font-size: 10px;
+            text-shadow: 1px 1px 0 #000;
+            transition: opacity 0.5s;
         }
+        .glitch-img-container.revealed .glitch-overlay { opacity: 0; pointer-events: none; }
+        
+        .glitch-img-container .caption {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 8px;
+            background: rgba(0,0,0,0.8); color: white; font-family: 'VT323', monospace; font-size: 1.2rem;
+            transform: translateY(100%); transition: transform 0.5s ease;
+        }
+        .glitch-img-container.revealed .caption { transform: translateY(0); }
 
-        @keyframes glitch-anim {
-            0% { clip: rect(10px, 9999px, 44px, 0); }
-            20% { clip: rect(65px, 9999px, 96px, 0); }
-            40% { clip: rect(23px, 9999px, 83px, 0); }
-            60% { clip: rect(78px, 9999px, 11px, 0); }
-            80% { clip: rect(45px, 9999px, 2px, 0); }
-            100% { clip: rect(12px, 9999px, 55px, 0); }
-        }
-        @keyframes glitch-anim-2 {
-            0% { clip: rect(65px, 9999px, 100px, 0); }
-            20% { clip: rect(3px, 9999px, 21px, 0); }
-            40% { clip: rect(44px, 9999px, 88px, 0); }
-            60% { clip: rect(12px, 9999px, 4px, 0); }
-            80% { clip: rect(88px, 9999px, 55px, 0); }
-            100% { clip: rect(33px, 9999px, 22px, 0); }
-        }
-
-        /* Image Glitch Overlay */
-        .img-glitch-overlay {
-            position: absolute; inset: 0;
-            background-color: var(--neon-pink);
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.5) 10px, rgba(0,0,0,0.5) 20px);
-            mix-blend-mode: overlay;
-            z-index: 10;
-            transition: opacity 0.5s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            color: #000;
-            text-shadow: 1px 1px 0px var(--neon-green);
-        }
-        .feed-item.revealed .img-glitch-overlay { opacity: 0; pointer-events: none; }
-        .feed-item.revealed img { filter: none !important; }
-        .feed-img { filter: grayscale(100%) contrast(200%); transition: filter 0.5s ease; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #111; border: 1px solid #333; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-pink); }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-pink); border-radius: 3px; }
 
         .typewriter::after { content: '|'; animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* Screens */
-        .screen { display: none; width: 100vw; height: 100vh; overflow: hidden; position: absolute; top: 0; left: 0; }
-        .screen.active { display: flex; flex-direction: column; }
+        /* App Screens */
+        .app-screen { display: none; width: 100vw; height: 100vh; overflow: hidden; }
+        .app-screen.active { display: flex; }
+
+        /* Spycam Filter */
+        #spycam-video {
+            filter: grayscale(100%) sepia(100%) hue-rotate(290deg) saturate(300%) contrast(150%);
+            object-fit: cover;
+        }
     </style>
 </head>
-<body class="flicker text-sm lg:text-base">
+<body class="flicker">
 
-    <!-- Global CRT Overlay -->
     <div class="scanlines"></div>
 
-    <!-- 1. Intro Screen -->
-    <div id="intro-screen" class="screen active bg-black items-center justify-center p-4">
-        <div class="w-full max-w-2xl text-left font-vt text-xl lg:text-3xl text-[var(--neon-green)] drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
+    <div id="screen-intro" class="app-screen active bg-black items-center justify-center p-4">
+        <div class="w-full max-w-2xl text-left font-vt text-2xl lg:text-4xl text-[var(--neon-green)] drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
             <p id="term-text" class="mb-6"></p>
             <div id="term-choices" class="hidden flex gap-8 mt-4">
                 <button id="btn-y" class="hover:text-white hover:bg-[var(--neon-green)] hover:text-black px-2 transition-all">> [Y]es</button>
@@ -131,233 +105,146 @@
         </div>
     </div>
 
-    <!-- 2. ID Generation Screen -->
-    <div id="id-screen" class="screen bg-[#050002] items-center justify-center p-4">
-        <div class="border-2 border-[var(--neon-pink)] p-8 max-w-md w-full bg-black shadow-[0_0_30px_rgba(255,0,127,0.4)] text-center relative">
-            <div class="absolute top-2 left-2 text-[10px] font-pixel text-gray-500">ID_GEN.exe</div>
-            <h2 class="font-vt text-2xl text-[var(--neon-green)] mb-2 mt-4">> 그림자 신분 생성 완료</h2>
-            <p class="text-xs text-gray-400 mb-8">본 시스템 내에서 당신의 활동은 다음 닉네임으로 기록됩니다.</p>
-            
-            <div class="bg-[#1a000d] border border-[var(--neon-pink)] p-4 mb-8">
-                <span id="generated-id" class="font-pixel text-lg lg:text-xl text-[var(--neon-pink)] glitch-text" data-text="LOADING...">LOADING...</span>
+    <div id="screen-id-gen" class="app-screen bg-black items-center justify-center p-4">
+        <div class="border border-[var(--neon-pink)] p-8 max-w-sm w-full bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.3)] text-center relative">
+            <h2 class="font-pixel text-[10px] text-[var(--neon-green)] mb-6">> ID_GENERATOR.exe</h2>
+            <p class="text-xs text-gray-400 mb-4 font-vt text-lg">새로운 그림자 신분이 부여되었습니다.</p>
+            <div class="bg-black border border-dashed border-[var(--neon-pink)] p-4 mb-4">
+                <span id="generated-id" class="font-pixel text-sm text-[var(--neon-pink)] animate-pulse">LOADING...</span>
             </div>
-
-            <button id="btn-enter" class="w-full bg-transparent border border-[var(--neon-pink)] text-[var(--neon-pink)] py-3 font-pixel text-xs hover:bg-[var(--neon-pink)] hover:text-black transition-colors shadow-[0_0_10px_rgba(255,0,127,0.2)]">
-                접속하기 [ENTER]
-            </button>
+            <p class="text-[10px] text-gray-600 font-pixel">자동으로 연결됩니다...</p>
         </div>
     </div>
 
-    <!-- 3. Intro Chat Screen -->
-    <div id="intro-chat-screen" class="screen bg-black items-center justify-center p-4">
-        <div class="w-full max-w-md bg-[#0a0a0a] border border-[#333] h-[60vh] flex flex-col shadow-[0_0_20px_rgba(255,0,127,0.1)]">
-            <div class="border-b border-[#333] p-3 flex items-center bg-[#111]">
-                <div class="w-8 h-8 rounded-full bg-[var(--neon-pink)] flex items-center justify-center font-pixel text-[8px] text-black mr-3">WISH</div>
-                <span class="font-vt text-xl text-gray-200">UNKNOWN_SENDER</span>
+    <div id="screen-intro-chat" class="app-screen bg-black items-center justify-center p-4">
+        <div class="w-full max-w-md bg-[var(--panel-bg)] border border-[var(--border-color)] h-[60vh] flex flex-col">
+            <div class="border-b border-[var(--border-color)] p-3 flex items-center bg-black">
+                <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
+                <span class="font-pixel text-[10px] text-gray-400">ENCRYPTED_CONNECTION</span>
             </div>
-            
-            <div id="intro-chat-box" class="flex-grow p-4 flex flex-col justify-center space-y-4">
-                <!-- Messages will be injected here -->
+            <div id="intro-chat-box" class="flex-grow p-4 flex flex-col gap-4 overflow-y-auto">
+                <!-- Chat injected via JS -->
             </div>
-
-            <div class="p-4 border-t border-[#333] flex justify-end">
-                <button id="btn-chat-continue" class="hidden text-[var(--neon-pink)] font-pixel text-xs animate-pulse hover:text-white">
-                    [ ... ]
+            <div id="intro-chat-choices" class="p-4 border-t border-[var(--border-color)] bg-black hidden">
+                <button id="btn-intro-reply" class="w-full text-left font-vt text-xl text-[var(--neon-green)] hover:bg-[#111] p-2 border border-transparent hover:border-[var(--neon-green)] transition-all">
+                    > "지나가던 사람"
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 4. Main Screen -->
-    <div id="main-screen" class="screen bg-[#050505]">
+    <div id="screen-main" class="app-screen bg-[var(--bg-black)] flex-col lg:flex-row text-white">
         
-        <!-- Mobile Top Nav (Activity Ticker) -->
-        <div class="lg:hidden w-full bg-[#111] border-b border-[var(--neon-pink)] p-1 overflow-hidden shrink-0">
-            <marquee scrollamount="3" class="text-[10px] font-pixel text-[var(--neon-green)]">
-                [SYSTEM] 다크웹 네트워크에 연결되었습니다... <span id="mobile-ticker-content"></span>
-            </marquee>
+        <!-- Mobile Header -->
+        <div class="lg:hidden p-3 border-b border-[var(--neon-pink)] flex justify-between items-center bg-black shrink-0">
+            <span class="font-pixel text-[12px] text-[var(--neon-pink)]">i_SPY_u</span>
+            <span id="mobile-user-id" class="font-vt text-lg text-[var(--neon-green)]"></span>
         </div>
 
-        <div class="flex flex-col lg:flex-row w-full h-full overflow-hidden">
+        <!-- Left Column: Member List -->
+        <div class="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] bg-black flex lg:flex-col overflow-x-auto lg:overflow-y-auto shrink-0 z-10">
+            <div class="p-4 border-b border-[var(--border-color)] hidden lg:block">
+                <h2 class="font-pixel text-[10px] text-[var(--neon-pink)]">> TARGET_LIST</h2>
+            </div>
+            <div id="member-list" class="flex lg:flex-col p-2 lg:p-0 gap-2 lg:gap-0">
+                <!-- Members injected here -->
+            </div>
+        </div>
+
+        <!-- Center Column: Feed -->
+        <div class="flex-grow flex flex-col relative h-[40vh] lg:h-full overflow-hidden bg-[var(--panel-bg)]">
+            <!-- Header (Profile + React + DM) -->
+            <div class="p-4 border-b border-[var(--border-color)] bg-black flex justify-between items-center z-20 shrink-0">
+                <div class="flex items-center gap-3">
+                    <h1 id="feed-target-id" class="font-pixel text-sm text-white drop-shadow-[2px_2px_0_#FF007F]">TARGET</h1>
+                    <span id="feed-target-status" class="hidden md:inline font-vt text-lg text-gray-400">[현재 상태: 뇌내 회로 꼬임]</span>
+                    <button id="btn-react" class="text-xl hover:scale-125 transition-transform" title="반응 보내기">🩹</button>
+                </div>
+                <button id="btn-open-dm" class="border border-[var(--neon-green)] text-[var(--neon-green)] px-3 py-1 font-pixel text-[8px] hover:bg-[var(--neon-green)] hover:text-black transition-colors">
+                    SEND_DM
+                </button>
+            </div>
             
-            <!-- Left: Members Sidebar -->
-            <div class="w-full lg:w-1/5 border-b lg:border-b-0 lg:border-r border-[var(--neon-pink)] flex lg:flex-col overflow-x-auto lg:overflow-y-auto shrink-0 bg-black z-10">
-                <div class="p-3 lg:p-4 border-b border-[#333] hidden lg:block">
-                    <h2 class="font-pixel text-[10px] text-[var(--neon-green)]">> TARGETS</h2>
-                </div>
-                <div class="flex lg:flex-col p-2 lg:p-0 gap-2 lg:gap-0" id="member-list">
-                    <!-- Injected via JS -->
-                </div>
-            </div>
-
-            <!-- Center: Profile & Feed -->
-            <div class="flex-grow flex flex-col h-full overflow-y-auto relative bg-[#0a0508]" id="main-feed-area">
-                
-                <!-- Profile Header -->
-                <div class="p-4 lg:p-6 border-b border-[#333] bg-black sticky top-0 z-20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 border-2 border-[var(--neon-pink)] p-1">
-                            <img src="https://placehold.co/100x100/111/FF007F?text=?" class="w-full h-full object-cover filter grayscale">
-                        </div>
-                        <div>
-                            <h1 id="profile-id" class="font-pixel text-sm lg:text-base text-white glitch-text mb-1" data-text="sion__5">sion__5</h1>
-                            <div class="flex items-center gap-2">
-                                <span id="profile-status" class="font-vt text-lg text-gray-400">[현재 상태: 머릿속 회로 꼬임]</span>
-                                <button class="react-btn hover:scale-125 transition-transform" data-emoji="🩹">🩹</button>
-                                <button class="react-btn hover:scale-125 transition-transform" data-emoji="❓">❓</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="btn-open-dm" class="bg-transparent border border-[var(--neon-green)] text-[var(--neon-green)] px-4 py-2 font-pixel text-[10px] hover:bg-[var(--neon-green)] hover:text-black transition-colors flex items-center gap-2">
-                        <span>💬</span> 메시지 보내기
-                    </button>
-                </div>
-
-                <!-- Glitch Feed Grid (Feature 4-1) -->
-                <div class="p-4 lg:p-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="feed-grid">
-                    <!-- Feed Items Injected via JS -->
-                </div>
-
-                <!-- Guestbook (Feature 4-4) -->
-                <div class="p-4 lg:p-6 border-t border-[#333] mt-auto bg-black">
-                    <h3 class="font-pixel text-[10px] text-[var(--neon-green)] mb-4">> ANONYMOUS_BOARD</h3>
-                    <div class="flex items-center mb-4">
-                        <span class="text-[var(--neon-pink)] mr-2">></span>
-                        <input type="text" id="gb-input" class="flex-grow bg-transparent border-b border-[#333] text-white focus:outline-none focus:border-[var(--neon-pink)] font-vt text-xl pb-1" placeholder="흔적을 남기세요..." autocomplete="off">
-                        <button id="gb-submit" class="ml-4 text-[var(--neon-pink)] font-pixel text-[10px] hover:text-white">[WRITE]</button>
-                    </div>
-                    <div id="gb-list" class="space-y-3 max-h-40 overflow-y-auto pr-2">
-                        <!-- Guestbook entries -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Activity Log -->
-            <div class="hidden lg:flex w-1/4 border-l border-[var(--neon-pink)] flex-col bg-[#050505] shrink-0">
-                <div class="p-4 border-b border-[#333]">
-                    <h2 class="font-pixel text-[10px] text-[var(--neon-green)]">> ACTIVITY_LOG</h2>
-                </div>
-                <div class="flex-grow p-4 overflow-hidden relative">
-                    <div id="activity-ticker" class="absolute bottom-0 left-0 w-full p-4 space-y-2 flex flex-col justify-end transition-all">
-                        <!-- Ticker Items Injected via JS -->
-                    </div>
+            <!-- Feed Grid -->
+            <div class="flex-grow overflow-y-auto p-4">
+                <div id="feed-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Feed items injected here -->
                 </div>
             </div>
         </div>
 
-        <!-- Floating Emo-Card Button -->
-        <button id="btn-emo-card" class="fixed bottom-6 right-6 w-12 h-12 bg-[var(--neon-pink)] rounded-full flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(255,0,127,0.6)] hover:scale-110 transition-transform z-50">
-            🪪
-        </button>
+        <!-- Right Column: Profile, Activity, Guestbook -->
+        <div class="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-[var(--border-color)] bg-black flex flex-col shrink-0 h-[50vh] lg:h-full overflow-y-auto">
+            
+            <!-- Emo Card (Profile) -->
+            <div class="p-4 border-b border-[var(--border-color)] bg-[#050002]">
+                <h2 class="font-pixel text-[10px] text-[var(--neon-green)] mb-3">> MY_EMO_CARD</h2>
+                <div class="border border-dashed border-[var(--neon-pink)] p-3">
+                    <div class="text-[10px] text-gray-500 font-pixel mb-1">ID:</div>
+                    <div id="card-id" class="font-vt text-2xl text-white mb-3"></div>
+                    <div class="text-[10px] text-gray-500 font-pixel mb-1">DATA:</div>
+                    <div id="card-stickers" class="flex gap-2 text-xl min-h-[28px]">
+                        <span class="text-gray-700 text-xs font-vt">파편을 모으세요.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="p-4 border-b border-[var(--border-color)] h-32 lg:h-48 flex flex-col">
+                <h2 class="font-pixel text-[10px] text-[var(--neon-green)] mb-2">> LIVE_LOG</h2>
+                <div id="activity-log" class="flex-grow overflow-y-auto space-y-1">
+                    <div class="text-xs font-vt text-gray-500">[SYSTEM] 로그 모니터링 시작...</div>
+                </div>
+            </div>
+
+            <!-- Guestbook -->
+            <div class="p-4 flex-grow flex flex-col bg-[#050505]">
+                <h2 class="font-pixel text-[10px] text-[var(--neon-pink)] mb-3">> GUESTBOOK</h2>
+                <div id="guestbook-list" class="flex-grow overflow-y-auto space-y-2 mb-3 min-h-[100px]">
+                    <!-- Messages -->
+                </div>
+                <div class="flex gap-2 shrink-0">
+                    <input type="text" id="gb-input" class="flex-grow bg-transparent border-b border-[var(--border-color)] text-white font-vt text-xl focus:outline-none focus:border-[var(--neon-pink)]" placeholder="익명 메시지...">
+                    <button id="gb-submit" class="text-[var(--neon-green)] font-pixel text-[10px] hover:text-white">SEND</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- DM Modal (Feature 4-2) -->
+    <!-- DM Modal -->
     <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="w-full max-w-md bg-[#0a0a0a] border border-[var(--neon-pink)] flex flex-col h-[70vh] shadow-[0_0_30px_rgba(255,0,127,0.3)]">
-            <div class="p-3 border-b border-[var(--neon-pink)] flex justify-between items-center bg-black">
-                <div class="font-pixel text-[10px] text-[var(--neon-pink)]">ENCRYPTED_DM :: <span id="dm-target-name"></span></div>
+        <div class="w-full max-w-md bg-black border border-[var(--neon-pink)] flex flex-col h-[60vh]">
+            <div class="p-3 border-b border-[var(--neon-pink)] flex justify-between items-center">
+                <div class="font-pixel text-[10px] text-[var(--neon-pink)]">DM :: <span id="dm-target-name"></span></div>
                 <button id="btn-close-dm" class="text-white hover:text-[var(--neon-pink)] font-vt text-xl">X</button>
             </div>
-            
-            <div id="dm-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
-                <div class="text-center text-[10px] text-gray-600 font-pixel mb-4">연결이 불안정합니다.</div>
-            </div>
-
-            <div id="dm-choices" class="p-4 border-t border-[#333] flex flex-col gap-2 bg-black">
-                <!-- Choices injected here -->
-            </div>
+            <div id="dm-messages" class="flex-grow p-4 overflow-y-auto space-y-4"></div>
+            <div id="dm-choices" class="p-4 border-t border-[var(--border-color)] bg-[#0a0005]"></div>
         </div>
     </div>
 
-    <!-- Emo-Card Modal (Feature 4-5) -->
-    <div id="card-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="w-full max-w-sm bg-black border-2 border-dashed border-[var(--neon-green)] p-6 relative transform rotate-1">
-            <button id="btn-close-card" class="absolute top-2 right-3 text-[var(--neon-green)] hover:text-white font-vt text-2xl">X</button>
-            <div class="text-center mb-6">
-                <h2 class="font-pixel text-[12px] text-[var(--neon-green)] mb-1">SPY_ID_CARD</h2>
-                <div class="text-xs text-gray-500 font-vt text-lg">TOP SECRET</div>
-            </div>
-            
-            <div class="flex items-center gap-4 mb-6 border-b border-[#333] pb-6">
-                <div class="w-16 h-16 bg-[#111] border border-[var(--neon-pink)] flex items-center justify-center text-3xl">
-                    👁️
-                </div>
-                <div>
-                    <div class="text-[10px] text-gray-500 font-pixel mb-1">ALIAS:</div>
-                    <div id="card-id-display" class="text-[var(--neon-pink)] font-pixel text-sm lg:text-base glitch-text" data-text=""></div>
-                </div>
-            </div>
-
-            <div>
-                <div class="text-[10px] text-gray-500 font-pixel mb-2">COLLECTED DATA:</div>
-                <div id="sticker-container" class="min-h-[60px] bg-[#0a0a0a] border border-[#333] p-3 flex flex-wrap gap-2 items-center">
-                    <span class="text-gray-700 text-xs font-vt text-lg w-full text-center" id="sticker-empty">아직 수집된 파편이 없습니다.</span>
-                </div>
-            </div>
-            
-            <div class="mt-6 text-center">
-                <button onclick="alert('클립보드에 카드가 복사되었습니다. (가상)')" class="bg-[var(--neon-green)] text-black px-4 py-2 font-pixel text-[8px] hover:bg-white transition-colors">
-                    SHARE_TO_WEB
-                </button>
-            </div>
-        </div>
+    <!-- Spycam (PIP) -->
+    <div id="spycam-container" class="fixed bottom-4 left-4 w-24 h-32 lg:w-32 lg:h-40 border-2 border-[var(--neon-pink)] bg-black z-40 shadow-[0_0_15px_rgba(255,0,127,0.5)] overflow-hidden">
+        <div class="absolute top-1 left-1 text-[8px] font-pixel text-[var(--neon-green)] z-10 bg-black/50 px-1">REC •</div>
+        <video id="spycam-video" autoplay playsinline muted class="w-full h-full"></video>
     </div>
 
     <script>
-        // --- State ---
-        const members = [
-            { id: 'sion__5', status: '머릿속 회로 꼬임', color: '#FF0000' },
-            { id: 'ri_ku_03', status: '알 수 없는 에러', color: '#00FF00' },
-            { id: 'yushihihi_405', status: '밤새 뒤척이는 중', color: '#0000FF' },
-            { id: 'jaegee__zzang', status: '시스템 과부하', color: '#FFFF00' },
-            { id: 'ryo_hi_rose', status: '감정 데이터 충돌', color: '#FF00FF' },
-            { id: 'sakusakusaku07', status: '연결 지연 중...', color: '#00FFFF' }
-        ];
-
-        const prefixes = ["비밀번호", "핑크", "혼란스러운_", "glitch_", "다크", "사이버_"];
-        const suffixes = ["486", "블랙하트", "User99", "boy", "천사", "해골"];
-        
+        // --- App State ---
+        const memberList = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaegee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
         let state = {
             userId: "",
-            currentMember: members[0],
-            stickers: new Set(),
-            chatStep: 0,
-            feedRevealedCount: 0
+            currentMember: memberList[0],
+            stickers: new Set()
         };
 
-        // UI Elements
-        const screens = {
-            intro: document.getElementById('intro-screen'),
-            idGen: document.getElementById('id-screen'),
-            introChat: document.getElementById('intro-chat-screen'),
-            main: document.getElementById('main-screen')
-        };
-
-        function switchScreen(screenName) {
-            Object.values(screens).forEach(s => s.classList.remove('active'));
-            screens[screenName].classList.add('active');
+        // --- Screen Management ---
+        function showScreen(id) {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        function addSticker(emoji) {
-            if(!state.stickers.has(emoji)) {
-                state.stickers.add(emoji);
-                updateCardUI();
-                showActivity(`[SYSTEM] 새로운 데이터 조각 '${emoji}' 획득`);
-            }
-        }
-
-        function updateCardUI() {
-            const container = document.getElementById('sticker-container');
-            const emptyTxt = document.getElementById('sticker-empty');
-            if(state.stickers.size > 0) {
-                emptyTxt.style.display = 'none';
-                container.innerHTML = Array.from(state.stickers).map(s => `<span class="text-2xl drop-shadow-[0_0_5px_rgba(255,255,255,0.5)] transform hover:scale-125 transition-transform cursor-pointer">${s}</span>`).join('');
-            }
-        }
-
-        // --- STREAMING_CHUNK: Implementing screen transitions and typing effects... ---
-        
-        // 1. Terminal Intro
+        // --- 1. Intro Screen ---
         const termText = document.getElementById('term-text');
         const msg = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까? Y/N]";
         let typeIdx = 0;
@@ -375,312 +262,281 @@
             }
         }
 
-        document.getElementById('btn-n').onclick = () => {
-            termText.innerHTML = "<span class="text-red-500">ACCESS DENIED. 도망칠 수 없습니다.</span>";
-            document.getElementById('term-choices').style.display = 'none';
-            setTimeout(() => switchScreen('idGen'), 1500);
-        };
-        
         document.getElementById('btn-y').onclick = () => {
-            switchScreen('idGen');
+            showScreen('screen-id-gen');
             generateID();
         };
 
-        // 2. ID Gen
-        function generateID() {
-            const p = prefixes[Math.floor(Math.random() * prefixes.length)];
-            const s = suffixes[Math.floor(Math.random() * suffixes.length)];
-            state.userId = p + s;
-            
-            const idEl = document.getElementById('generated-id');
-            idEl.innerText = state.userId;
-            idEl.setAttribute('data-text', state.userId);
-            
-            document.getElementById('card-id-display').innerText = state.userId;
-            document.getElementById('card-id-display').setAttribute('data-text', state.userId);
-        }
-
-        document.getElementById('btn-enter').onclick = () => {
-            switchScreen('introChat');
-            startIntroChat();
+        document.getElementById('btn-n').onclick = () => {
+            // Fix: Using backticks to avoid quote issues
+            termText.innerHTML = `<span class="text-red-500">ACCESS DENIED. 거부할 수 없습니다.</span>`;
+            document.getElementById('term-choices').style.display = 'none';
+            setTimeout(() => {
+                showScreen('screen-id-gen');
+                generateID();
+            }, 1500);
         };
 
-        // 3. Intro Chat
+        // --- 2. ID Generation ---
+        function generateID() {
+            const prefixes = ["우울한_", "블랙핑크_", "혼란스러운_", "glitch_", "사이버_", "비밀번호"];
+            const suffixes = ["486", "천사", "User99", "boy", "해골", "하트"];
+            state.userId = prefixes[Math.floor(Math.random() * prefixes.length)] + suffixes[Math.floor(Math.random() * suffixes.length)];
+            
+            document.getElementById('generated-id').innerText = state.userId;
+            
+            // Auto transition after 2 seconds
+            setTimeout(() => {
+                showScreen('screen-intro-chat');
+                startIntroChat();
+            }, 2000);
+        }
+
+        // --- 3. Intro Chat ---
         function startIntroChat() {
             const box = document.getElementById('intro-chat-box');
             box.innerHTML = '';
             
             setTimeout(() => {
-                box.innerHTML = `
-                    <div class="flex flex-col animate-[fadeIn_0.5s_ease-out]">
+                box.innerHTML += `
+                    <div class="flex flex-col">
                         <span class="text-[10px] text-gray-500 mb-1">UNKNOWN</span>
-                        <div class="bg-[#2a0015] border border-[var(--neon-pink)] text-[var(--neon-pink)] px-4 py-3 rounded-tr-xl rounded-br-xl rounded-bl-xl max-w-[80%] shadow-[0_0_10px_rgba(255,0,127,0.2)] font-vt text-xl">
+                        <div class="bg-[#2a0015] border border-[var(--neon-pink)] text-white px-3 py-2 max-w-[80%] font-vt text-xl">
                             누구야? 지켜보는 거 다 알아.
                         </div>
                     </div>
                 `;
                 setTimeout(() => {
-                    document.getElementById('btn-chat-continue').classList.remove('hidden');
+                    document.getElementById('intro-chat-choices').classList.remove('hidden');
                 }, 1000);
             }, 1000);
         }
 
-        document.getElementById('btn-chat-continue').onclick = () => {
-            switchScreen('main');
-            initMainDashboard();
+        document.getElementById('btn-intro-reply').onclick = (e) => {
+            document.getElementById('intro-chat-choices').classList.add('hidden');
+            const box = document.getElementById('intro-chat-box');
+            
+            // User reply
+            box.innerHTML += `
+                <div class="flex flex-col items-end mt-4">
+                    <span class="text-[10px] text-gray-500 mb-1">ME (${state.userId})</span>
+                    <div class="bg-[#002200] border border-[var(--neon-green)] text-[var(--neon-green)] px-3 py-2 max-w-[80%] font-vt text-xl">
+                        지나가던 사람.
+                    </div>
+                </div>
+            `;
+
+            // Bot final reply
+            setTimeout(() => {
+                box.innerHTML += `
+                    <div class="flex flex-col mt-4">
+                        <span class="text-[10px] text-gray-500 mb-1">UNKNOWN</span>
+                        <div class="bg-[#2a0015] border border-[var(--neon-pink)] text-white px-3 py-2 max-w-[80%] font-vt text-xl">
+                            ...들어오든가.
+                        </div>
+                    </div>
+                `;
+                
+                // Auto transition to main
+                setTimeout(() => {
+                    initMainDashboard();
+                }, 1500);
+            }, 1000);
         };
 
-        // --- STREAMING_CHUNK: Implementing main dashboard interactions (Feed, DM, Guestbook)... ---
-        
-        // 4. Main Dashboard Setup
+        // --- 4. Main Dashboard ---
         function initMainDashboard() {
-            renderMembersList();
-            loadMemberProfile(members[0]);
-            startActivityTicker();
+            showScreen('screen-main');
+            document.getElementById('card-id').innerText = state.userId;
+            document.getElementById('mobile-user-id').innerText = state.userId;
+            
+            renderMembers();
+            loadFeed(memberList[0]);
+            startActivityLog();
+            initSpycam();
         }
 
-        function renderMembersList() {
-            const listEl = document.getElementById('member-list');
-            listEl.innerHTML = members.map(m => `
-                <div class="member-tab lg:border-b lg:border-[#333] p-3 cursor-pointer hover:bg-[#111] transition-colors flex items-center gap-3 shrink-0 lg:shrink" data-id="${m.id}">
-                    <div class="w-8 h-8 bg-[#111] border border-[var(--neon-pink)] flex items-center justify-center font-pixel text-[8px] text-[var(--neon-pink)]">W</div>
-                    <span class="font-pixel text-[8px] lg:text-[10px] ${m.id === state.currentMember.id ? 'text-[var(--neon-green)]' : 'text-gray-400'}">${m.id}</span>
+        function renderMembers() {
+            const list = document.getElementById('member-list');
+            list.innerHTML = memberList.map(id => `
+                <div class="member-btn p-3 cursor-pointer border-b lg:border-b-0 lg:border-l-2 border-transparent hover:bg-[#111] transition-all font-pixel text-[8px] lg:text-[10px] text-gray-400 flex-shrink-0" data-id="${id}">
+                    > ${id}
                 </div>
             `).join('');
 
-            document.querySelectorAll('.member-tab').forEach(tab => {
-                tab.onclick = (e) => {
-                    const id = e.currentTarget.getAttribute('data-id');
-                    const mem = members.find(m => m.id === id);
-                    if(mem) loadMemberProfile(mem);
-                    
-                    // Update active styling
-                    document.querySelectorAll('.member-tab span').forEach(s => {
-                        s.classList.remove('text-[var(--neon-green)]');
-                        s.classList.add('text-gray-400');
+            document.querySelectorAll('.member-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    document.querySelectorAll('.member-btn').forEach(b => {
+                        b.classList.remove('text-[var(--neon-green)]', 'border-[var(--neon-green)]');
+                        b.classList.add('text-gray-400', 'border-transparent');
                     });
-                    e.currentTarget.querySelector('span').classList.add('text-[var(--neon-green)]');
-                    e.currentTarget.querySelector('span').classList.remove('text-gray-400');
+                    const target = e.currentTarget;
+                    target.classList.remove('text-gray-400', 'border-transparent');
+                    target.classList.add('text-[var(--neon-green)]', 'border-[var(--neon-green)]');
+                    
+                    loadFeed(target.getAttribute('data-id'));
                 };
             });
+            // Select first
+            document.querySelector('.member-btn').click();
         }
 
-        function loadMemberProfile(member) {
-            state.currentMember = member;
-            const idEl = document.getElementById('profile-id');
-            idEl.innerText = member.id;
-            idEl.setAttribute('data-text', member.id);
-            document.getElementById('profile-status').innerText = `[현재 상태: ${member.status}]`;
+        function loadFeed(memberId) {
+            state.currentMember = memberId;
+            document.getElementById('feed-target-id').innerText = memberId;
             
-            // Generate Fake Glitch Feed
-            const feedEl = document.getElementById('feed-grid');
-            const placeholderColors = ['111111', '220011', '001100', '000011', '1a001a'];
+            const grid = document.getElementById('feed-grid');
+            const captions = ["오늘 자꾸 열이 난다. 고장 난 것 같아.", "이게 무슨 감정인지 모르겠어.", "자꾸 네가 보여."];
             
-            feedEl.innerHTML = Array(6).fill(0).map((_, i) => {
-                const color = placeholderColors[Math.floor(Math.random() * placeholderColors.length)];
-                const cap = ["오늘 자꾸 열이 난다. 고장 난 것 같아.", "네가 자꾸 보이는데 환각인가?", "이 감정의 이름이 뭐야?"][i%3];
+            grid.innerHTML = Array(6).fill(0).map((_, i) => {
+                const color = ['111', '2a0015', '002200'][i % 3];
+                const cap = captions[i % captions.length];
                 return `
-                    <div class="feed-item relative aspect-square bg-[#0a0a0a] border border-[#333] overflow-hidden group">
-                        <img src="https://placehold.co/400x400/${color}/FF007F?text=SECRET" class="feed-img absolute inset-0 w-full h-full object-cover z-0">
-                        <div class="img-glitch-overlay">CLICK_TO_DECRYPT</div>
-                        <div class="absolute bottom-0 left-0 w-full bg-black/80 p-2 text-[var(--neon-pink)] font-vt text-sm opacity-0 group-[.revealed]:opacity-100 transition-opacity z-20 transform translate-y-full group-[.revealed]:translate-y-0 duration-300">
-                            "${cap}"
-                        </div>
+                    <div class="glitch-img-container aspect-square w-full">
+                        <img src="https://placehold.co/400x400/${color}/FF007F?text=HIDDEN" class="glitch-img">
+                        <div class="glitch-overlay">CLICK</div>
+                        <div class="caption">${cap}</div>
                     </div>
                 `;
             }).join('');
 
-            // Glitch Reveal Logic (Feature 4-1)
-            document.querySelectorAll('.feed-item').forEach(item => {
-                item.onclick = function() {
+            // Click to reveal
+            document.querySelectorAll('.glitch-img-container').forEach(el => {
+                el.onclick = function() {
                     if(!this.classList.contains('revealed')) {
                         this.classList.add('revealed');
-                        state.feedRevealedCount++;
-                        if(state.feedRevealedCount === 1) addSticker('💔');
-                        if(state.feedRevealedCount === 3) addSticker('🦇');
-                        showActivity(`[${state.userId}]님이 암호화된 데이터를 해독했습니다.`);
+                        addSticker('💔');
+                        logActivity(`[${state.userId}]님이 암호화된 사진을 해독했습니다.`);
                     }
                 };
             });
-            
-            // Clear guestbook UI on member change
-            document.getElementById('gb-list').innerHTML = '';
         }
 
-        // Status Reactions
-        document.querySelectorAll('.react-btn').forEach(btn => {
-            btn.onclick = (e) => {
-                const emoji = e.currentTarget.getAttribute('data-emoji');
-                showActivity(`[${state.userId}]님이 ${state.currentMember.id}에게 ${emoji} 반응을 보냈습니다.`);
-                
-                const statusEl = document.getElementById('profile-status');
-                statusEl.classList.add('text-[var(--neon-pink)]');
-                setTimeout(() => statusEl.classList.remove('text-[var(--neon-pink)]'), 500);
-                
-                if(emoji === '🩹') addSticker('🩹');
-            };
-        });
+        // Stickers
+        function addSticker(emoji) {
+            if(!state.stickers.has(emoji)) {
+                state.stickers.add(emoji);
+                const container = document.getElementById('card-stickers');
+                if(state.stickers.size === 1) container.innerHTML = '';
+                container.innerHTML += `<span class="hover:scale-125 transition-transform cursor-pointer drop-shadow-[0_0_5px_rgba(255,0,127,0.8)]">${emoji}</span>`;
+            }
+        }
 
-        // --- DM System (Feature 4-2) ---
+        // React Button
+        document.getElementById('btn-react').onclick = () => {
+            logActivity(`[${state.userId}]님이 🩹 반응을 보냈습니다.`);
+            addSticker('🩹');
+            const status = document.getElementById('feed-target-status');
+            status.style.color = 'var(--neon-pink)';
+            setTimeout(() => status.style.color = '', 500);
+        };
+
+        // Activity Log
+        function logActivity(text) {
+            const log = document.getElementById('activity-log');
+            const div = document.createElement('div');
+            div.className = 'text-xs font-vt text-gray-400 mb-1';
+            div.innerText = text;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function startActivityLog() {
+            setInterval(() => {
+                const acts = ["님이 흔적을 남겼습니다.", "님이 접속했습니다.", "님이 상태를 확인 중입니다."];
+                const randomUser = "User_" + Math.floor(Math.random() * 999);
+                logActivity(`[${randomUser}]${acts[Math.floor(Math.random() * acts.length)]}`);
+            }, 4000);
+        }
+
+        // Guestbook
+        document.getElementById('gb-submit').onclick = () => {
+            const input = document.getElementById('gb-input');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            appendGb(state.userId, text, false);
+            input.value = '';
+            logActivity(`[${state.userId}]님이 방명록을 작성했습니다.`);
+
+            if(text.includes('안녕') || text.includes('누구')) {
+                setTimeout(() => {
+                    appendGb(state.currentMember, "너 혹시... 그때 걔야?", true);
+                    addSticker('👁️');
+                }, 1500);
+            }
+        };
+
+        function appendGb(name, text, isMember) {
+            const list = document.getElementById('guestbook-list');
+            const div = document.createElement('div');
+            div.className = `p-2 border-l-2 ${isMember ? 'border-[var(--neon-pink)] bg-[#1a000d]' : 'border-[var(--neon-green)] bg-[#001100]'}`;
+            div.innerHTML = `
+                <div class="font-pixel text-[8px] ${isMember ? 'text-[var(--neon-pink)]' : 'text-[var(--neon-green)]'} mb-1">${name}</div>
+                <div class="font-vt text-lg text-gray-200">${text}</div>
+            `;
+            list.appendChild(div);
+            list.scrollTop = list.scrollHeight;
+        }
+
+        // --- 5. DM Modal ---
         const dmModal = document.getElementById('dm-modal');
         const dmMessages = document.getElementById('dm-messages');
         const dmChoices = document.getElementById('dm-choices');
 
         document.getElementById('btn-open-dm').onclick = () => {
-            document.getElementById('dm-target-name').innerText = state.currentMember.id;
+            document.getElementById('dm-target-name').innerText = state.currentMember;
             dmModal.classList.remove('hidden');
             dmModal.classList.add('flex');
-            initDMChat();
+            
+            dmMessages.innerHTML = '';
+            dmChoices.innerHTML = `
+                <button onclick="sendDM('자꾸 쳐다보게 돼.')" class="w-full text-left font-vt text-xl text-gray-300 hover:text-[var(--neon-pink)] py-2">> "자꾸 쳐다보게 돼."</button>
+            `;
         };
-        
+
         document.getElementById('btn-close-dm').onclick = () => {
             dmModal.classList.add('hidden');
             dmModal.classList.remove('flex');
         };
 
-        function appendDM(sender, text) {
-            const div = document.createElement('div');
-            div.className = 'flex flex-col animate-[fadeIn_0.3s_ease-out]';
-            if(sender === 'IDOL') {
-                div.innerHTML = `
-                    <span class="text-[10px] text-gray-500 mb-1">${state.currentMember.id}</span>
-                    <div class="bg-[#2a0015] border border-[var(--neon-pink)] text-[var(--neon-pink)] px-3 py-2 rounded-tr-lg rounded-br-lg rounded-bl-lg max-w-[80%] self-start font-vt text-lg">
-                        ${text}
-                    </div>
-                `;
-            } else {
-                div.innerHTML = `
-                    <span class="text-[10px] text-gray-500 mb-1 self-end">${state.userId} (Me)</span>
-                    <div class="bg-[#002200] border border-[var(--neon-green)] text-[var(--neon-green)] px-3 py-2 rounded-tl-lg rounded-br-lg rounded-bl-lg max-w-[80%] self-end font-vt text-lg">
-                        ${text}
-                    </div>
-                `;
-            }
-            dmMessages.appendChild(div);
-            dmMessages.scrollTop = dmMessages.scrollHeight;
-        }
-
-        function initDMChat() {
-            dmMessages.innerHTML = '<div class="text-center text-[10px] text-gray-600 font-pixel mb-4">ENCRYPTED CONNECTION ESTABLISHED</div>';
-            dmChoices.innerHTML = '';
-            
-            setTimeout(() => {
-                appendDM('IDOL', "계속 지켜보고 있었던 거 알아. 왜 그러는 거야?");
-                setDMChoices([
-                    { text: "그냥 지나가던 사람", next: "a" },
-                    { text: "네가 자꾸 신경 쓰여서", next: "b" }
-                ]);
-            }, 800);
-        }
-
-        function setDMChoices(choices) {
-            dmChoices.innerHTML = '';
-            choices.forEach(c => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left bg-black border border-[#333] text-gray-300 py-3 px-4 font-vt text-lg hover:border-[var(--neon-pink)] hover:text-[var(--neon-pink)] transition-colors';
-                btn.innerText = `> ${c.text}`;
-                btn.onclick = () => {
-                    appendDM('USER', c.text);
-                    dmChoices.innerHTML = '';
-                    handleDMReply(c.next);
-                };
-                dmChoices.appendChild(btn);
-            });
-        }
-
-        function handleDMReply(path) {
-            setTimeout(() => {
-                if(path === 'a') {
-                    appendDM('IDOL', "거짓말. 화면 너머로 심장 소리 다 들리는데.");
-                    addSticker('☠️');
-                    setDMChoices([{text: "들켰네.", next: "end"}]);
-                } else if(path === 'b') {
-                    appendDM('IDOL', "나도 그래. 시스템이 고장 난 것 같아. 너 때문이야.");
-                    addSticker('💓');
-                    setDMChoices([{text: "내가 고쳐줄게.", next: "end"}]);
-                } else {
-                    appendDM('IDOL', "[SYSTEM] 상대방이 연결을 끊었습니다.");
-                }
-            }, 1000);
-        }
-
-        // --- Guestbook (Feature 4-4) ---
-        const gbBtn = document.getElementById('gb-submit');
-        const gbInput = document.getElementById('gb-input');
-        const gbList = document.getElementById('gb-list');
-
-        gbBtn.onclick = () => {
-            const text = gbInput.value.trim();
-            if(!text) return;
-
-            appendGuestbook(state.userId, text);
-            gbInput.value = '';
-            showActivity(`[${state.userId}]님이 방명록을 남겼습니다.`);
-
-            // Keyword Auto-reply
-            if(text.includes('안녕') || text.includes('누구야')) {
-                setTimeout(() => {
-                    appendGuestbook(state.currentMember.id, "너 혹시... 그때 걔야? 읽었어.", true);
-                }, 1500);
-            }
-        };
-
-        gbInput.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') gbBtn.click();
-        });
-
-        function appendGuestbook(name, text, isIdol = false) {
-            const div = document.createElement('div');
-            div.className = `p-2 border-l-2 ${isIdol ? 'border-[var(--neon-pink)] bg-[#1a000d]' : 'border-[var(--neon-green)] bg-[#051105]'} animate-[fadeIn_0.3s_ease-out] mb-2`;
-            div.innerHTML = `
-                <div class="text-[8px] font-pixel ${isIdol ? 'text-[var(--neon-pink)]' : 'text-[var(--neon-green)]'} mb-1">${name}</div>
-                <div class="font-vt text-lg text-gray-300">${text}</div>
+        window.sendDM = function(text) {
+            dmMessages.innerHTML += `
+                <div class="text-right mb-2">
+                    <span class="text-[8px] font-pixel text-gray-500 mb-1 inline-block">ME</span><br>
+                    <div class="inline-block bg-[#002200] border border-[var(--neon-green)] text-[var(--neon-green)] px-3 py-2 font-vt text-xl">${text}</div>
+                </div>
             `;
-            gbList.insertBefore(div, gbList.firstChild);
-        }
-
-        // --- Activity Ticker & Card ---
-        const ticker = document.getElementById('activity-ticker');
-        const mobTicker = document.getElementById('mobile-ticker-content');
-        
-        function showActivity(text) {
-            // Desktop
-            const p = document.createElement('div');
-            p.className = 'text-xs font-vt text-gray-500 animate-[fadeIn_0.5s_ease-out] break-words';
-            p.innerText = text;
-            ticker.appendChild(p);
-            if(ticker.children.length > 10) ticker.removeChild(ticker.firstChild);
+            dmChoices.innerHTML = '';
             
-            // Mobile
-            mobTicker.innerText = ` || ${text} || ` + mobTicker.innerText;
-        }
-
-        function startActivityTicker() {
-            setInterval(() => {
-                const randomUser = prefixes[Math.floor(Math.random()*prefixes.length)] + suffixes[Math.floor(Math.random()*suffixes.length)];
-                const actions = ["님이 흔적을 남겼습니다.", "님이 접속했습니다.", "님이 데이터를 훔쳐보고 있습니다."];
-                showActivity(`[${randomUser}]${actions[Math.floor(Math.random()*actions.length)]}`);
-            }, 3000);
-        }
-
-        // Emo Card Modal
-        document.getElementById('btn-emo-card').onclick = () => {
-            document.getElementById('card-modal').classList.remove('hidden');
-            document.getElementById('card-modal').classList.add('flex');
-        };
-        document.getElementById('btn-close-card').onclick = () => {
-            document.getElementById('card-modal').classList.add('hidden');
-            document.getElementById('card-modal').classList.remove('flex');
+            setTimeout(() => {
+                dmMessages.innerHTML += `
+                    <div class="text-left mb-2">
+                        <span class="text-[8px] font-pixel text-[var(--neon-pink)] mb-1 inline-block">${state.currentMember}</span><br>
+                        <div class="inline-block bg-[#2a0015] border border-[var(--neon-pink)] text-white px-3 py-2 font-vt text-xl">나도 그래. 시스템이 고장 났나 봐.</div>
+                    </div>
+                `;
+                addSticker('📱');
+            }, 1000);
         };
 
-        // Add tailwind keyframes manually for JS added classes
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        `;
-        document.head.appendChild(style);
+        // --- 6. Spycam (WebRTC) ---
+        // try-catch 블록을 사용하여 카메라 권한 거부 시에도 앱이 멈추지 않도록 처리합니다.
+        async function initSpycam() {
+            const video = document.getElementById('spycam-video');
+            const container = document.getElementById('spycam-container');
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = stream;
+            } catch (err) {
+                console.log("Spycam access denied or unavailable: ", err);
+                // 권한 거부 시 에러 없이 대체 UI 표시
+                container.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-[#111] text-red-500 font-pixel text-[8px] text-center p-2 border border-red-500">CAM<br>OFFLINE</div>`;
+            }
+        }
 
-        // Start App
+        // Start Intro on Load
         window.onload = typeWriter;
 
     </script>
