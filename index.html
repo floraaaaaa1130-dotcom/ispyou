@@ -108,33 +108,40 @@
     </div>
 
     <!-- 3. Main Application Layout -->
-    <div id="screen-main" class="screen hidden min-h-screen bg-black flex-col lg:flex-row w-full text-white">
+    <!-- h-[100dvh] ensures it fits mobile screens perfectly without scrolling the body -->
+    <div id="screen-main" class="screen hidden h-[100dvh] bg-black flex-col lg:flex-row w-full text-white overflow-hidden relative">
         
-        <!-- Mobile Header -->
-        <div class="lg:hidden p-3 border-b border-[#FF007F] flex justify-between items-center bg-black shrink-0">
+        <!-- Mobile Header (Added Hamburger Menu) -->
+        <div class="lg:hidden p-3 border-b border-[#FF007F] flex justify-between items-center bg-black shrink-0 z-40 relative">
+            <button id="btn-toggle-nav" class="text-[#FF007F] font-pixel text-lg p-1 hover:text-white transition-colors">☰</button>
             <span class="font-pixel text-[12px] text-[#FF007F]">i_SPY_u</span>
             <span class="my-user-id font-vt text-lg text-[#00FF00]"></span>
         </div>
 
-        <!-- Left Column: Following List -->
-        <div class="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-[#333] bg-[#030001] flex lg:flex-col overflow-x-auto lg:overflow-y-auto shrink-0">
-            <div class="p-4 border-b border-[#333] hidden lg:block bg-black">
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-[45] hidden lg:hidden backdrop-blur-sm"></div>
+
+        <!-- Left Column: Following List (Drawer on Mobile, Fixed column on PC) -->
+        <div id="left-sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 z-[50] w-64 border-r border-[#333] bg-[#030001] transition-transform duration-300 flex flex-col shrink-0 h-full">
+            <div class="p-4 border-b border-[#333] bg-black flex justify-between items-center shrink-0">
                 <h2 class="font-pixel text-[10px] text-[#FF007F]">> FOLLOWING</h2>
+                <!-- Close button for mobile -->
+                <button id="btn-close-nav" class="lg:hidden text-white hover:text-[#FF007F] font-vt text-2xl">X</button>
             </div>
-            <div id="member-list" class="flex lg:flex-col p-2 lg:p-0">
+            <div id="member-list" class="flex flex-col overflow-y-auto flex-grow">
                 <!-- Dynamically populated -->
             </div>
         </div>
 
-        <!-- Center Column: Grid Feed & Guestbook -->
-        <div class="flex-grow flex flex-col relative h-[60vh] lg:h-screen overflow-hidden bg-[#080305]">
+        <!-- Center Column: Grid Feed (Takes full remaining space) -->
+        <div class="flex-grow flex flex-col relative h-full overflow-hidden bg-[#080305]">
             <!-- Profile Header -->
             <div class="p-4 border-b border-[#333] bg-black flex flex-wrap justify-between items-center shrink-0 z-20 gap-4">
                 <div class="flex items-center gap-3 w-full lg:w-auto">
                     <img id="feed-target-pfp" src="" alt="profile" class="w-16 h-16 bg-[#111] border-2 border-[#FF007F] object-cover rendering-pixelated rounded-sm">
                     <div class="flex flex-col flex-grow">
                         <h1 id="feed-target-id" class="font-pixel text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
-                        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+                        <div class="flex flex-col xl:flex-row xl:items-center gap-2">
                             <span id="feed-target-status" class="font-vt text-xl text-[#FF007F] transition-all bg-[#1a000d] px-2 py-1 rounded border border-[#FF007F]">[현재 상태: 로딩중]</span>
                             <div class="flex gap-2">
                                 <button class="btn-react text-xl hover:scale-125 transition-transform drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]" title="❤️">❤️</button>
@@ -154,33 +161,25 @@
                 </div>
             </div>
             
-            <!-- Grid Feed Area (Scrollable) -->
+            <!-- Grid Feed Guide Area -->
             <div class="p-2 border-b border-[#333] bg-[#050002] shrink-0">
                 <h2 class="font-pixel text-[10px] text-gray-600 mb-1">> ENCRYPTED_FEED.dat</h2>
                 <p class="font-vt text-gray-500 animate-pulse text-xs">※ 각 사진을 10% 이상 거칠게 긁어서 해독하세요.</p>
             </div>
             
+            <!-- Grid Feed Area (Scrollable) -->
             <div class="flex-grow bg-[#050002] overflow-y-auto p-1 scroll-smooth">
-                <!-- 3-Column Instagram Style Grid -->
-                <div id="feed-grid" class="grid grid-cols-3 gap-1">
+                <!-- 3-Column Instagram Style Grid (Large & Responsive) -->
+                <div id="feed-grid" class="grid grid-cols-3 gap-1 lg:gap-2">
                     <!-- Dynamically populated via JS -->
                 </div>
             </div>
-            
-            <!-- Guestbook -->
-            <div class="p-4 border-t border-[#333] bg-black shrink-0">
-                 <h2 class="font-pixel text-[10px] text-[#FF007F] mb-3">> GUESTBOOK</h2>
-                 <div id="guestbook-list" class="space-y-2 mb-3 max-h-[100px] overflow-y-auto pr-2"></div>
-                 <div class="flex gap-2 border border-[#333] p-1 bg-[#050505]">
-                    <input type="text" id="gb-input" class="flex-grow bg-transparent text-white font-vt text-xl px-2 focus:outline-none" placeholder="익명 흔적 남기기...">
-                    <button id="gb-submit" class="text-[#00FF00] font-pixel text-[10px] hover:text-white px-2">ENTER</button>
-                </div>
-            </div>
+            <!-- 방명록 기능은 요청에 따라 완전히 삭제되었습니다 -->
         </div>
 
         <!-- Right Column: Public Chat (Auto Live Log) -->
-        <div class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[40vh] lg:h-screen">
-            <div class="p-4 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center">
+        <div class="w-full lg:w-[350px] lg:border-l border-[#t333] bg-black flex flex-col shrink-0 h-[35vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30">
+            <div class="p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center">
                 <h2 class="font-pixel text-[10px] text-[#00FF00]">> PUBLIC_CHAT</h2>
                 <div class="flex items-center gap-2">
                     <div id="live-indicator" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -188,7 +187,7 @@
                 </div>
             </div>
 
-            <div class="p-4 flex-grow flex flex-col overflow-hidden bg-black">
+            <div class="p-3 flex-grow flex flex-col overflow-hidden bg-black">
                 <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-3 pr-2 scroll-smooth">
                     <div class="text-sm font-vt text-gray-500 border-b border-[#222] pb-1">[SYSTEM] 글로벌 감청 채널 접속 완료.</div>
                 </div>
@@ -231,13 +230,9 @@
         </div>
     </div>
 
-    <!-- 6. Video/Voice Call Modal (Updated to 9:16) -->
+    <!-- 6. Video/Voice Call Modal (9:16 Aspect Ratio Maintained) -->
     <div id="call-modal" class="fixed inset-0 bg-black/95 hidden flex-col justify-center z-[110] p-0 md:p-4 backdrop-blur-md overflow-hidden">
-        
-        <!-- Max width constraint for Desktop, Fullscreen for Mobile -->
         <div class="w-full max-w-[450px] mx-auto bg-black border-0 md:border border-[#FF007F] flex flex-col h-full md:h-[85vh] shadow-[0_0_50px_rgba(255,0,127,0.4)] relative">
-            
-            <!-- Call Header -->
             <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d] shrink-0 z-30">
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
@@ -246,27 +241,22 @@
                 <div class="font-vt text-lg text-gray-400" id="call-target-name-modal">@target</div>
             </div>
 
-            <!-- Video/Voice Container (9:16 Aspect Ratio) -->
+            <!-- Video/Voice Container (9:16) -->
             <div class="relative w-full flex-grow bg-[#050505] overflow-hidden flex items-center justify-center border-b border-[#333]">
-                
-                <!-- Main Member Background (9:16) -->
                 <div id="member-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black">
-                    <!-- Placeholder cover logic -->
                     <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-30 glitched-image scale-110">
                     <div id="call-center-text" class="text-[#FF007F] font-vt text-2xl lg:text-4xl animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2 text-center w-full">> CONNECTED_BUT_GLITCHING <</div>
                 </div>
                 
-                <!-- User PIP Webcam (9:16 aspect ratio) -->
+                <!-- PIP Webcam (9:16) -->
                 <div id="pip-container" class="absolute bottom-6 right-4 w-28 sm:w-36 aspect-[9/16] bg-black border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.5)] z-20 overflow-hidden">
                     <video id="user-cam" autoplay playsinline muted class="pip-cam w-full h-full object-cover"></video>
                     <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 font-pixel text-[8px] text-red-500">NO CAM ACCESS</div>
                 </div>
                 
-                <!-- CRT Scanline overlay -->
                 <div class="absolute inset-0 pointer-events-none z-10" style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%); background-size: 100% 4px;"></div>
             </div>
 
-            <!-- Call Controls -->
             <div class="p-4 bg-[#0a0005] flex justify-center items-center shrink-0 z-30">
                 <button id="btn-end-call" class="bg-red-600 text-white font-pixel text-[12px] px-10 py-4 hover:bg-red-500 transition-colors shadow-[0_0_20px_rgba(255,0,0,0.6)]">
                     END CALL
@@ -277,8 +267,6 @@
 
     <script>
         // === 📝 사용자 설정 스크립트 영역 ===
-        // 영상통화(고백 상태) 종료 후 자동으로 발송되는 DM 시퀀스입니다.
-        // 유저가 답장할 때마다 아래 순서대로 봇이 하나씩 답변을 보냅니다.
         const userScripts = {
             'default': [
                 { type: 'photo', url: 'https://placehold.co/300x400/222/FF007F?text=SECRET_PHOTO', text: '방금 통화... 너 맞지?' },
@@ -286,11 +274,8 @@
                 { type: 'text', text: '계속 지켜보고 있었던 거 다 알아.' },
                 { type: 'text', text: '이제 네가 답할 차례야.' }
             ],
-            // 'sion__5': [ ... ], 다른 멤버들도 이 형태로 커스텀 가능합니다.
         };
-        // =====================================
 
-        // Data & State Management
         const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaegee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
         
         const state = {
@@ -313,7 +298,6 @@
                 'ryo_hi_rose': "알 수 없는 에러 발생. 원인은 너야.",
                 'sakusakusaku07': "도망치고 싶은데, 눈을 뗄 수가 없어."
             },
-            // For DM Logic
             dmHistory: {},
             hasFinishedVideoCall: {},
             postCallDmStep: {},
@@ -321,7 +305,7 @@
         };
 
         members.forEach(m => {
-            state.scratchedState[m] = {}; // Grid별 스크래치 상태 저장
+            state.scratchedState[m] = {}; 
             state.statusIndex[m] = 0;
             state.dmHistory[m] = [];
             state.hasFinishedVideoCall[m] = false;
@@ -391,6 +375,23 @@
             initMainDashboard();
         });
 
+        /* --- Mobile Sidebar Toggle Logic --- */
+        const leftSidebar = document.getElementById('left-sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        document.getElementById('btn-toggle-nav').addEventListener('click', () => {
+            leftSidebar.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+        });
+
+        const closeSidebar = () => {
+            leftSidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        };
+
+        document.getElementById('btn-close-nav').addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
         /* --- 3. Main Dashboard --- */
         function initMainDashboard() {
             switchScreen('screen-main');
@@ -402,7 +403,7 @@
         function renderMemberList() {
             const list = document.getElementById('member-list');
             list.innerHTML = members.map(id => `
-                <button class="member-btn w-full text-left p-4 border-b lg:border-b-0 lg:border-l-2 border-[#333] hover:bg-[#111] transition-all font-pixel text-[10px] text-gray-500 flex-shrink-0" data-id="${id}">
+                <button class="member-btn w-full text-left p-4 border-b border-[#333] hover:bg-[#111] transition-all font-pixel text-[10px] text-gray-500 flex-shrink-0" data-id="${id}">
                     > @${id}
                 </button>
             `).join('');
@@ -411,6 +412,7 @@
                 btn.addEventListener('click', (e) => {
                     const targetId = e.currentTarget.getAttribute('data-id');
                     loadFeed(targetId);
+                    if(window.innerWidth < 1024) closeSidebar(); // 모바일에서 클릭 시 서랍 닫기
                 });
             });
         }
@@ -419,7 +421,6 @@
         function loadFeed(memberId) {
             state.currentMember = memberId;
             
-            // UI Active State
             document.querySelectorAll('.member-btn').forEach(b => {
                 b.classList.remove('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
                 if(b.getAttribute('data-id') === memberId) {
@@ -427,17 +428,14 @@
                 }
             });
 
-            // Header Update
             document.getElementById('feed-target-id').textContent = `@${memberId}`;
             document.getElementById('feed-target-pfp').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${memberId}&backgroundColor=111111`;
             document.getElementById('feed-target-status').textContent = state.statusFlow[state.statusIndex[memberId]];
             
-            // Grid Update
             const grid = document.getElementById('feed-grid');
             grid.innerHTML = '';
             
-            // 가상의 9개 사진 로드 (나중에 실제 이미지 URL로 교체 가능)
-            const numPhotos = 9; 
+            const numPhotos = 12; // 스크롤 테스트를 위해 사진 12장 
             for(let i = 0; i < numPhotos; i++) {
                 if(state.scratchedState[memberId][i] === undefined) {
                     state.scratchedState[memberId][i] = false;
@@ -455,15 +453,14 @@
                         <canvas class="scratch-canvas absolute inset-0 z-10 w-full h-full" 
                                 style="display: ${isRevealed ? 'none' : 'block'}"></canvas>
                         
-                        <div class="caption-layer ${isRevealed ? '' : 'hidden'} absolute bottom-0 inset-x-0 bg-black/80 border-t border-[#FF007F] p-1 pointer-events-none z-20">
-                            <p class="font-vt text-[#FF007F] text-xs leading-tight">${state.captions[memberId]} (#${i+1})</p>
+                        <div class="caption-layer ${isRevealed ? '' : 'hidden'} absolute bottom-0 inset-x-0 bg-black/80 border-t border-[#FF007F] p-1 md:p-2 pointer-events-none z-20">
+                            <p class="font-vt text-[#FF007F] text-xs md:text-sm leading-tight line-clamp-2">${state.captions[memberId]}</p>
                         </div>
                     </div>
                 `;
             }
             
-            // 캔버스 크기 계산을 위해 약간의 딜레이 후 로직 바인딩
-            setTimeout(() => initGridScratchLogic(memberId), 100);
+            setTimeout(() => initGridScratchLogic(memberId), 150);
         }
 
         function initGridScratchLogic(memberId) {
@@ -472,19 +469,18 @@
             items.forEach(item => {
                 const idx = item.getAttribute('data-idx');
                 const canvas = item.querySelector('canvas');
-                if(canvas.style.display === 'none') return; // 이미 해독됨
+                if(canvas.style.display === 'none') return; 
                 
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                canvas.width = item.offsetWidth || 150;
-                canvas.height = item.offsetHeight || 150;
+                // 해상도 이슈 방지 위해 실제 요소 크기 반영
+                canvas.width = item.getBoundingClientRect().width || 150;
+                canvas.height = item.getBoundingClientRect().height || 150;
 
-                // 핑크 오버레이
                 ctx.fillStyle = '#FF007F';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // 텍스트
                 ctx.fillStyle = '#000000';
-                ctx.font = '10px "Press Start 2P"';
+                ctx.font = '12px "Press Start 2P"';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('SCRATCH', canvas.width/2, canvas.height/2);
@@ -505,9 +501,8 @@
                     
                     ctx.globalCompositeOperation = 'destination-out';
                     ctx.beginPath();
-                    // 거친 동전 스크래치 브러시 (다각형)
                     const numPoints = 6 + Math.floor(Math.random() * 4); 
-                    const baseRadius = 15; // 모바일 격자 크기에 맞춰 브러시 축소
+                    const baseRadius = 15; 
                     
                     for (let i = 0; i < numPoints; i++) {
                         const angle = (i / numPoints) * Math.PI * 2;
@@ -532,7 +527,6 @@
                         total++;
                     }
                     
-                    // 10% 긁으면 해금
                     if (transparent / total > 0.10) { 
                         state.scratchedState[memberId][idx] = true;
                         
@@ -598,7 +592,7 @@
             appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 영상통화를 시도 중입니다...`);
         }
 
-        /* --- Public Chat (Auto Live Log - Stops automatically) --- */
+        /* --- Public Chat --- */
         const publicChatLog = document.getElementById('public-chat-log');
         const publicChatInput = document.getElementById('public-chat-input');
         let chatBotInterval = null;
@@ -641,7 +635,7 @@
                     clearInterval(chatBotInterval);
                     document.getElementById('live-indicator').classList.remove('bg-green-500', 'animate-pulse');
                     document.getElementById('live-indicator').classList.add('bg-red-600');
-                    return; // 스크립트 끝나면 멈춤
+                    return; 
                 }
                 const data = botMsgs[msgIdx++];
                 appendPublicChat(`[${data.name}] ${data.msg}`);
@@ -657,7 +651,6 @@
             const memberId = state.currentMember;
             document.getElementById('dm-target-name').textContent = `@${memberId}`;
             
-            // 기존 대화 내역 렌더링
             dmMessages.innerHTML = '';
             state.dmHistory[memberId].forEach(msg => renderDMSingle(msg));
             
@@ -680,20 +673,17 @@
             
             const memberId = state.currentMember;
             
-            // 1. 유저 메시지 저장 및 출력
             appendDMChat(state.userId, text, 'user', memberId);
             dmInput.value = '';
             
-            // 2. 고백 후(영상통화 후) 상태일 경우에만 봇이 답장 스크립트 실행
             if (state.hasFinishedVideoCall[memberId]) {
                 let step = state.postCallDmStep[memberId];
                 let script = state.postCallScripts[memberId];
                 
                 if (step < script.length) {
                     const nextMsg = script[step];
-                    state.postCallDmStep[memberId] = step + 1; // 다음 스텝으로
+                    state.postCallDmStep[memberId] = step + 1;
                     
-                    // 1초 뒤 답장
                     setTimeout(() => {
                         appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url);
                     }, 1000);
@@ -705,7 +695,6 @@
             const msgObj = { name, text, type, photoUrl };
             state.dmHistory[memberId].push(msgObj);
             
-            // 모달이 열려있고 대상이 일치하면 즉시 렌더링
             if (!dmModal.classList.contains('hidden') && state.currentMember === memberId) {
                 renderDMSingle(msgObj);
             }
@@ -737,27 +726,6 @@
             dmMessages.scrollTop = dmMessages.scrollHeight;
         }
 
-        /* --- Guestbook --- */
-        document.getElementById('gb-submit').addEventListener('click', submitGuestbook);
-        document.getElementById('gb-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') submitGuestbook(); });
-
-        function submitGuestbook() {
-            const input = document.getElementById('gb-input');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            const list = document.getElementById('guestbook-list');
-            const div = document.createElement('div');
-            div.className = `p-2 border-l-2 text-sm border-[#00FF00] bg-[#001a00] mb-2`;
-            div.innerHTML = `
-                <div class="font-pixel text-[8px] text-[#00FF00] mb-1">${state.userId}</div>
-                <div class="font-vt text-lg text-gray-200">${text}</div>
-            `;
-            list.appendChild(div);
-            list.scrollTop = list.scrollHeight;
-            input.value = '';
-        }
-
         /* --- Video/Voice Call Logic --- */
         const callModal = document.getElementById('call-modal');
         const incomingModal = document.getElementById('incoming-call-modal');
@@ -777,7 +745,6 @@
 
         async function startCall(isVideo) {
             document.getElementById('call-target-name-modal').textContent = `@${state.currentMember}`;
-            // 랜덤 백그라운드 색상 부여로 프로필 배경 차별화
             const bgColors = ['111111', '1a000d', '001a00'];
             const randomBg = bgColors[members.indexOf(state.currentMember) % bgColors.length];
             document.getElementById('call-member-img').src = `https://placehold.co/400x711/${randomBg}/FF007F?text=${state.currentMember}_CAM`;
@@ -819,7 +786,6 @@
             appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}의 통화를 무시했습니다.`);
         });
 
-        // 📞 영상통화 종료 시 1번째 DM 자동 발송 트리거
         document.getElementById('btn-end-call').addEventListener('click', () => {
             if (state.videoStream) {
                 state.videoStream.getTracks().forEach(track => track.stop());
@@ -834,16 +800,14 @@
 
             const current = state.currentMember;
             
-            // 영상통화(상태3 이상)를 마쳤고, 아직 통화 후 시퀀스를 안 했다면
             if (state.statusIndex[current] >= 3 && !state.hasFinishedVideoCall[current]) {
                 state.hasFinishedVideoCall[current] = true;
                 
-                // 2초 뒤 첫 번째 DM 세트 전송
                 setTimeout(() => {
                     let script = state.postCallScripts[current];
                     if (script && script.length > 0) {
                         const firstMsg = script[0];
-                        state.postCallDmStep[current] = 1; // 스텝 증가
+                        state.postCallDmStep[current] = 1; 
                         appendDMChat(current, firstMsg.text, 'bot', current, firstMsg.url);
                         appendPublicChat(`[SYSTEM] ⚠️ @${current}로부터 새로운 다이렉트 메시지가 도착했습니다.`);
                     }
