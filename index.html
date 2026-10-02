@@ -20,13 +20,12 @@
             font-family: 'Noto Sans KR', sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none; /* 방지: 스크래치 중 모바일 새로고침 */
+            overscroll-behavior-y: none;
         }
 
         .font-pixel { font-family: 'Press Start 2P', cursive; }
         .font-vt { font-family: 'VT323', monospace; }
 
-        /* CRT Overlay & Flicker */
         .scanlines {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
@@ -41,21 +40,18 @@
             100% { opacity: 0.98; }
         }
 
-        /* Glitch Image Filter */
         .glitched-image {
-            filter: sepia(100%) hue-rotate(290deg) saturate(500%) contrast(150%) blur(2px);
+            filter: sepia(100%) hue-rotate(290deg) saturate(500%) contrast(150%) blur(3px);
             transition: all 0.5s ease;
         }
         .glitched-image.revealed {
             filter: grayscale(30%) contrast(120%);
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: var(--neon-pink); }
 
-        /* Typewriter Cursor */
         .typewriter-cursor::after {
             content: '█';
             animation: blink 1s step-end infinite;
@@ -64,28 +60,36 @@
         }
         @keyframes blink { 50% { opacity: 0; } }
         
-        /* Spycam Filter */
-        .spycam-video-filter {
-            filter: grayscale(100%) sepia(100%) hue-rotate(290deg) saturate(400%) contrast(200%);
-            object-fit: cover;
-            transform: scaleX(-1); /* 거울 모드 */
+        canvas.scratch-canvas {
+            touch-action: none;
+            cursor: crosshair;
         }
 
-        canvas.scratch-canvas {
-            touch-action: none; /* 모바일에서 스크롤 방지 */
-            cursor: crosshair;
+        .pip-cam {
+            filter: grayscale(1) contrast(1.5) sepia(1) hue-rotate(270deg);
+            transform: scaleX(-1);
+        }
+        
+        .ringing-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
     </style>
 </head>
 <body class="text-sm">
     <div class="scanlines"></div>
 
-    <!-- 1. Intro Screen -->
+    <!-- 1. Intro Terminal Screen -->
     <div id="screen-intro" class="screen flex flex-col items-center justify-center min-h-screen bg-black p-4 z-50 fixed inset-0">
         <div class="w-full max-w-2xl text-left font-vt text-2xl lg:text-3xl text-[#00FF00] drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
             <p id="term-text" class="mb-6 typewriter-cursor"></p>
             <div id="term-choices" class="hidden flex gap-8 mt-8">
-                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-2 transition-all">> [Y]es (접근 허용)</button>
+                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-2 transition-all">> [Y]es (훔쳐보기)</button>
                 <button id="btn-n" class="hover:text-[#FF007F] px-2 transition-all">> [N]o</button>
             </div>
         </div>
@@ -93,36 +97,17 @@
 
     <!-- 2. ID Generation Screen -->
     <div id="screen-id-gen" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-40 fixed inset-0">
-        <div class="border border-[#FF007F] p-8 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center">
+        <div class="border border-[#FF007F] p-8 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center relative overflow-hidden">
             <h2 class="font-pixel text-[10px] text-[#00FF00] mb-6">> ID_GENERATOR.exe</h2>
-            <p class="text-gray-400 mb-4 font-vt text-xl">새로운 그림자 신분이 부여되었습니다.</p>
-            <div class="bg-black border border-dashed border-[#FF007F] p-4 mb-4">
+            <p class="text-gray-400 mb-4 font-vt text-xl">이름이 부여되었습니다.</p>
+            <div class="bg-black border border-dashed border-[#FF007F] p-4 mb-6 relative z-10">
                 <span id="generated-id" class="font-pixel text-xs text-[#FF007F] animate-pulse">LOADING...</span>
             </div>
-            <p class="text-[10px] text-gray-600 font-pixel">연결 중...</p>
+            <button id="btn-enter-main" class="hidden bg-[#FF007F] text-black font-pixel text-[10px] px-6 py-3 hover:bg-white transition-colors w-full">접속하기</button>
         </div>
     </div>
 
-    <!-- 3. Intro Chat Screen -->
-    <div id="screen-intro-chat" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-30 fixed inset-0 backdrop-blur-md">
-        <div class="w-full max-w-md bg-[#050002] border border-[#333] h-[60vh] flex flex-col">
-            <div class="border-b border-[#333] p-3 flex items-center bg-black">
-                <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse mr-2"></div>
-                <span class="font-pixel text-[10px] text-gray-500">ENCRYPTED_DM</span>
-            </div>
-            <div id="intro-chat-box" class="flex-grow p-4 flex flex-col gap-4 overflow-y-auto"></div>
-            <div id="intro-chat-choices" class="p-4 border-t border-[#333] bg-black hidden">
-                <button id="btn-intro-reply" class="w-full text-left font-vt text-xl text-[#00FF00] hover:bg-[#111] p-2 border border-transparent hover:border-[#00FF00]">
-                    > "지나가던 사람"
-                </button>
-                <button id="btn-intro-reply-2" class="w-full text-left font-vt text-xl text-[#00FF00] hover:bg-[#111] p-2 border border-transparent hover:border-[#00FF00] mt-2">
-                    > "네가 자꾸 신경 쓰여서"
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. Main Dashboard Screen -->
+    <!-- 3. Main Application Layout -->
     <div id="screen-main" class="screen hidden min-h-screen bg-black flex-col lg:flex-row w-full text-white">
         
         <!-- Mobile Header -->
@@ -137,80 +122,89 @@
                 <h2 class="font-pixel text-[10px] text-[#FF007F]">> FOLLOWING</h2>
             </div>
             <div id="member-list" class="flex lg:flex-col p-2 lg:p-0">
-                <!-- Injected via JS -->
+                <!-- Dynamically populated -->
             </div>
         </div>
 
         <!-- Center Column: Main Feed & Guestbook -->
         <div class="flex-grow flex flex-col relative h-[60vh] lg:h-screen overflow-y-auto bg-[#080305]">
             <!-- Profile Header -->
-            <div class="p-4 border-b border-[#333] bg-black flex justify-between items-center sticky top-0 z-20">
-                <div class="flex items-center gap-3">
-                    <img id="feed-target-pfp" src="" alt="profile" class="w-12 h-12 bg-[#222] border border-[#FF007F] object-cover rendering-pixelated">
-                    <div class="flex flex-col">
+            <div class="p-4 border-b border-[#333] bg-black flex flex-wrap justify-between items-center sticky top-0 z-20 gap-4">
+                <div class="flex items-center gap-3 w-full lg:w-auto">
+                    <img id="feed-target-pfp" src="" alt="profile" class="w-16 h-16 bg-[#111] border-2 border-[#FF007F] object-cover rendering-pixelated rounded-sm">
+                    <div class="flex flex-col flex-grow">
                         <h1 id="feed-target-id" class="font-pixel text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
-                        <div class="flex items-center gap-2">
-                            <span id="feed-target-status" class="font-vt text-lg text-gray-400">[현재 상태: 심박수 비정상]</span>
-                            <button id="btn-react" class="text-xl hover:scale-125 transition-transform" title="응급처치">🩹</button>
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+                            <span id="feed-target-status" class="font-vt text-xl text-[#FF007F] transition-all bg-[#1a000d] px-2 py-1 rounded border border-[#FF007F]">[현재 상태: 로딩중]</span>
+                            <div class="flex gap-2">
+                                <button class="btn-react text-xl hover:scale-125 transition-transform drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]" title="❤️">❤️</button>
+                                <button class="btn-react text-xl hover:scale-125 transition-transform drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]" title="🩹">🩹</button>
+                                <button class="btn-react text-xl hover:scale-125 transition-transform drop-shadow-[0_0_5px_rgba(0,100,255,0.8)]" title="❓">❓</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-2 shrink-0">
-                    <button id="btn-open-dm" class="border border-[#00FF00] text-[#00FF00] px-3 py-2 font-pixel text-[8px] hover:bg-[#00FF00] hover:text-black transition-colors">
-                        MESSAGE
-                    </button>
-                    <button id="btn-open-call" class="border border-[#FF007F] text-[#FF007F] px-3 py-2 font-pixel text-[8px] hover:bg-[#FF007F] hover:text-black transition-colors bg-[#2a0015]">
+                <div class="flex gap-2 w-full lg:w-auto justify-end">
+                    <!-- CALL BUTTON ADDED -->
+                    <button id="btn-call-member" class="flex-1 lg:flex-none border border-[#FF007F] text-[#FF007F] px-4 py-2 font-pixel text-[10px] hover:bg-[#FF007F] hover:text-black transition-colors bg-[#1a000d]">
                         CALL
+                    </button>
+                    <button id="btn-open-dm" class="flex-1 lg:flex-none border border-[#00FF00] text-[#00FF00] px-4 py-2 font-pixel text-[10px] hover:bg-[#00FF00] hover:text-black transition-colors bg-[#001a00]">
+                        DM 보내기
                     </button>
                 </div>
             </div>
             
-            <!-- Feed Grid (Scratch Effect) -->
-            <div class="p-4 border-b border-[#333]">
-                <h2 class="font-pixel text-[10px] text-gray-600 mb-4">> SECRET_DIARY.dat</h2>
-                <div id="feed-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <!-- Images Injected via JS -->
+            <!-- Feed Photo (Scratch Effect) -->
+            <div class="p-6 flex-grow flex flex-col items-center justify-center bg-[#050002]">
+                <h2 class="font-pixel text-[10px] text-gray-600 mb-4 w-full max-w-md text-left">> ENCRYPTED_IMAGE.dat</h2>
+                <div id="feed-photo-container" class="relative w-full max-w-md aspect-[3/4] border-2 border-[#333] overflow-hidden bg-black shadow-[0_0_15px_rgba(255,0,127,0.1)]">
+                    <img id="feed-photo-img" src="" class="w-full h-full object-cover glitched-image absolute inset-0 z-0">
+                    <canvas id="feed-scratch-canvas" class="scratch-canvas absolute inset-0 z-10 w-full h-full"></canvas>
+                    <div id="feed-photo-caption" class="hidden absolute bottom-0 inset-x-0 bg-black/90 border-t-2 border-[#FF007F] text-white p-4 font-vt text-2xl z-20 pointer-events-none backdrop-blur-sm">
+                        <!-- Caption injected here -->
+                    </div>
                 </div>
+                <p id="scratch-hint" class="font-vt text-gray-500 mt-4 animate-pulse">※ 거칠게 긁어서 감정을 해독하세요. (10% 이상)</p>
             </div>
-
+            
             <!-- Guestbook -->
-            <div class="p-4 flex-grow flex flex-col bg-black">
-                <h2 class="font-pixel text-[10px] text-[#FF007F] mb-3">> GUESTBOOK</h2>
-                <div id="guestbook-list" class="flex-grow space-y-3 mb-4 max-h-[300px] overflow-y-auto pr-2">
-                    <!-- Guestbook Entries -->
-                </div>
-                <div class="flex gap-2 shrink-0 border border-[#333] p-1 bg-[#050505]">
-                    <input type="text" id="gb-input" class="flex-grow bg-transparent text-white font-vt text-xl px-2 focus:outline-none" placeholder="익명으로 흔적 남기기...">
+            <div class="p-4 border-t border-[#333] bg-black">
+                 <h2 class="font-pixel text-[10px] text-[#FF007F] mb-3">> GUESTBOOK</h2>
+                 <div id="guestbook-list" class="space-y-2 mb-3 max-h-[150px] overflow-y-auto pr-2"></div>
+                 <div class="flex gap-2 border border-[#333] p-1 bg-[#050505]">
+                    <input type="text" id="gb-input" class="flex-grow bg-transparent text-white font-vt text-xl px-2 focus:outline-none" placeholder="익명 흔적 남기기...">
                     <button id="gb-submit" class="text-[#00FF00] font-pixel text-[10px] hover:text-white px-2">ENTER</button>
                 </div>
             </div>
         </div>
 
-        <!-- Right Column: Public Chat (Anonymous) -->
-        <div class="w-full lg:w-80 lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[40vh] lg:h-screen">
-            <div class="p-4 border-b border-[#333] bg-[#050002] shrink-0">
-                <h2 class="font-pixel text-[10px] text-[#00FF00] mb-1">> PUBLIC_CHAT</h2>
-                <p class="font-vt text-gray-500">[ANONYMOUS_CHANNEL]</p>
+        <!-- Right Column: Public Chat (Auto Live Log) -->
+        <div class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[40vh] lg:h-screen">
+            <div class="p-4 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center">
+                <h2 class="font-pixel text-[10px] text-[#00FF00]">> PUBLIC_CHAT</h2>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="font-vt text-sm text-green-500">LIVE</span>
+                </div>
             </div>
 
             <!-- Public Chat Log -->
             <div class="p-4 flex-grow flex flex-col overflow-hidden bg-black">
-                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-2 pr-2">
-                    <div class="text-xs font-vt text-gray-600 border-b border-[#222] pb-1">[SYSTEM] 보안 채널이 생성되었습니다. 자유롭게 대화하세요.</div>
+                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-3 pr-2 scroll-smooth">
+                    <div class="text-sm font-vt text-gray-500 border-b border-[#222] pb-1">[SYSTEM] 글로벌 감청 채널 접속 완료.</div>
                 </div>
             </div>
             
             <!-- Public Chat Input -->
             <div class="p-2 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
-                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white font-vt text-lg px-2 py-1 focus:outline-none focus:border-[#FF007F]" placeholder="메시지 입력...">
+                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white font-vt text-lg px-2 py-1 focus:outline-none focus:border-[#FF007F]" placeholder="터미널 입력...">
                 <button id="public-chat-submit" class="text-black bg-[#FF007F] font-pixel text-[8px] px-3 py-1 hover:bg-white transition-colors">SEND</button>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-
-    <!-- DM Modal -->
+    <!-- 4. DM Modal -->
     <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
         <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[70vh] lg:h-[60vh] shadow-[0_0_30px_rgba(255,0,127,0.2)]">
             <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#0a0005]">
@@ -218,56 +212,97 @@
                 <button id="btn-close-dm" class="text-white hover:text-[#FF007F] font-vt text-2xl">X</button>
             </div>
             <div id="dm-messages" class="flex-grow p-4 overflow-y-auto space-y-4"></div>
-            <div id="dm-choices" class="p-4 border-t border-[#333] bg-black"></div>
+            <div class="p-3 border-t border-[#333] bg-[#050505] flex gap-2">
+                <input type="text" id="dm-input" class="flex-grow bg-transparent text-[#00FF00] font-vt text-xl px-2 focus:outline-none border-b border-[#333] focus:border-[#00FF00]" placeholder="메세지 전송..." autocomplete="off">
+                <button id="btn-send-dm" class="text-black bg-[#00FF00] font-pixel text-[8px] px-3 py-2 hover:bg-white transition-colors">SEND</button>
+            </div>
         </div>
     </div>
 
-    <!-- Call (Webcam) Modal -->
-    <div id="call-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[110] p-4 backdrop-blur-md">
-        <div class="w-full max-w-lg bg-black border border-[#FF007F] flex flex-col shadow-[0_0_50px_rgba(255,0,127,0.4)] relative">
+    <!-- 5. Incoming Call Modal -->
+    <div id="incoming-call-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
+        <div class="w-full max-w-sm bg-black border-2 border-[#FF007F] p-6 text-center ringing-animation shadow-[0_0_40px_rgba(255,0,127,0.5)]">
+            <div class="text-[#FF007F] text-5xl mb-4">⚠️</div>
+            <h3 class="font-pixel text-[12px] text-[#00FF00] mb-2">> INCOMING_CALL</h3>
+            <p class="font-vt text-2xl text-white mb-8">[SYSTEM] <span id="incoming-caller-name" class="text-[#FF007F]"></span>님이 영상통화를 요청합니다.</p>
+            <div class="flex gap-4 justify-center">
+                <button id="btn-accept-call" class="bg-[#00FF00] text-black font-pixel text-[10px] px-6 py-3 hover:bg-white transition-colors flex-1">수락 (ACCEPT)</button>
+                <button id="btn-reject-call" class="bg-red-600 text-white font-pixel text-[10px] px-6 py-3 hover:bg-red-400 transition-colors flex-1">거절 (REJECT)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Video/Voice Call Modal -->
+    <div id="call-modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center z-[110] p-4 backdrop-blur-md">
+        <div class="w-full max-w-5xl bg-black border border-[#FF007F] flex flex-col shadow-[0_0_50px_rgba(255,0,127,0.4)] relative">
             
             <!-- Call Header -->
             <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d]">
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <div class="font-pixel text-[10px] text-[#00FF00]">INCOMING_CALL...</div>
+                    <!-- Title ID Added -->
+                    <div class="font-pixel text-[10px] text-[#00FF00]" id="call-title-text">ENCRYPTED_VIDEO_CALL...</div>
                 </div>
-                <div class="font-vt text-lg text-gray-400" id="call-target-name">@target</div>
+                <div class="font-vt text-lg text-gray-400" id="call-target-name-modal">@target</div>
             </div>
 
-            <!-- Video Container -->
-            <div class="relative w-full aspect-video bg-[#111] overflow-hidden flex items-center justify-center">
-                <video id="call-video" autoplay playsinline muted class="spycam-video-filter absolute inset-0 w-full h-full hidden"></video>
-                <div id="call-connecting-text" class="font-vt text-2xl text-[#FF007F] animate-pulse">CONNECTING...</div>
+            <!-- Video/Voice Container (16:9 Aspect Ratio) -->
+            <div class="relative w-full aspect-video bg-[#050505] overflow-hidden flex items-center justify-center border-b border-[#333]">
+                <div id="member-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black">
+                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-30 glitched-image">
+                    <!-- Center Text ID Added -->
+                    <div id="call-center-text" class="text-[#FF007F] font-vt text-3xl lg:text-5xl animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2">> CONNECTED_BUT_GLITCHING <</div>
+                </div>
                 
-                <!-- Scanline overlay specifically for video -->
-                <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%;"></div>
+                <!-- PIP Container ID Added -->
+                <div id="pip-container" class="absolute bottom-4 right-4 w-28 md:w-48 aspect-[3/4] md:aspect-video bg-black border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.5)] z-20 overflow-hidden">
+                    <video id="user-cam" autoplay playsinline muted class="pip-cam w-full h-full object-cover"></video>
+                    <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 font-pixel text-[8px] text-red-500">NO CAM ACCESS</div>
+                </div>
+                
+                <div class="absolute inset-0 pointer-events-none z-10" style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%); background-size: 100% 4px;"></div>
             </div>
 
             <!-- Call Controls -->
-            <div class="p-4 border-t border-[#FF007F] bg-black flex justify-center items-center">
-                <button id="btn-end-call" class="bg-red-600 text-white font-pixel text-[10px] px-6 py-3 hover:bg-red-500 transition-colors shadow-[0_0_15px_rgba(255,0,0,0.5)]">
+            <div class="p-4 bg-[#0a0005] flex justify-center items-center">
+                <button id="btn-end-call" class="bg-red-600 text-white font-pixel text-[12px] px-10 py-4 hover:bg-red-500 transition-colors shadow-[0_0_20px_rgba(255,0,0,0.6)]">
                     END CALL
                 </button>
-            </div>
-            
-            <div class="absolute bottom-1 right-2 pointer-events-none">
-                <span class="text-[8px] font-pixel text-[#FF007F] opacity-50">본 영상은 기기 내에서만 출력됩니다.</span>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script>
-        // State Management
+        // Data & State Management
         const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaegee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
-        let state = {
+        
+        const state = {
             userId: "",
             currentMember: members[0],
-            videoStream: null
+            videoStream: null,
+            scratchedState: {}, 
+            statusIndex: {}, 
+            statusFlow: [
+                "[현재 상태: ??심박수 비정상??]", 
+                "[현재 상태: ..조금 안도함..]", 
+                "[현재 상태: !!무언가를 깨달음!!]", 
+                "[현재 상태: ♡♡고백하고 싶음♡♡]"
+            ],
+            captions: {
+                'sion__5': "오늘 자꾸 열이 난다. 고장 난 것 같아.",
+                'ri_ku_03': "이게 무슨 감정인지 모르겠어.",
+                'yushihihi_405': "화면 너머로 자꾸 네가 보여.",
+                'jaegee__zzang': "심장이 너무 빨리 뛰어. 해킹당했나?",
+                'ryo_hi_rose': "알 수 없는 에러 발생. 원인은 너야.",
+                'sakusakusaku07': "도망치고 싶은데, 눈을 뗄 수가 없어."
+            }
         };
 
-        // Utility: Screen Switcher
+        members.forEach(m => {
+            state.scratchedState[m] = false;
+            state.statusIndex[m] = 0;
+        });
+
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => {
                 s.classList.add('hidden');
@@ -280,6 +315,7 @@
             }
         }
 
+        /* --- 1. Terminal Intro --- */
         const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까? Y/N]";
         const termElement = document.getElementById('term-text');
         let charIndex = 0;
@@ -299,326 +335,293 @@
 
         document.getElementById('btn-y').addEventListener('click', () => {
             document.getElementById('term-choices').classList.add('hidden');
-            termElement.innerHTML += "<br><span class='text-gray-500'>[SYSTEM] 권한 확인 중...</span>";
-            setTimeout(generateID, 1000); // Skip webcam here, just generate ID
+            termElement.innerHTML += "<br><br><span class='text-gray-500 font-vt text-xl'>[SYSTEM] 우회 경로 확보 중...</span>";
+            setTimeout(generateID, 1000);
         });
 
         document.getElementById('btn-n').addEventListener('click', () => {
-            termElement.innerHTML = "<span class='text-red-500'>[ERROR] 거부할 수 없습니다. 운명입니다.</span>";
+            termElement.innerHTML += "<br><br><span class='text-red-500 font-vt text-xl'>[ERROR] 거부할 수 없습니다. 당신은 이미 훔쳐보고 있습니다.</span>";
             document.getElementById('term-choices').classList.add('hidden');
             setTimeout(generateID, 1500);
         });
 
+        /* --- 2. ID Generator --- */
         function generateID() {
             switchScreen('screen-id-gen');
-            const prefixes = ["우울한_", "블랙핑크_", "혼란스러운_", "glitch_", "사이버_", "비밀번호"];
-            const suffixes = ["486", "천사", "User99", "boy", "해골", "하트"];
+            const prefixes = ["우울한_", "블랙핑크_", "혼란스러운_", "glitch_", "사이버_", "비밀번호", "검은눈물_"];
+            const suffixes = ["486", "천사", "User99", "boy", "해골", "하트", "XX"];
             
             state.userId = prefixes[Math.floor(Math.random() * prefixes.length)] + suffixes[Math.floor(Math.random() * suffixes.length)];
             document.getElementById('generated-id').textContent = state.userId;
             
             document.querySelectorAll('.my-user-id').forEach(el => el.textContent = state.userId);
-
-            setTimeout(startIntroChat, 2000);
-        }
-
-        function startIntroChat() {
-            switchScreen('screen-intro-chat');
-            const box = document.getElementById('intro-chat-box');
             
             setTimeout(() => {
-                appendChatMessage(box, 'UNKNOWN', '누구야? 아까부터 쳐다보는 거 다 알아.', 'bot');
-                setTimeout(() => {
-                    document.getElementById('intro-chat-choices').classList.remove('hidden');
-                }, 1000);
-            }, 1000);
+                document.getElementById('btn-enter-main').classList.remove('hidden');
+            }, 800);
         }
 
-        function appendChatMessage(container, name, text, type) {
-            const div = document.createElement('div');
-            if (type === 'bot') {
-                div.className = 'flex flex-col';
-                div.innerHTML = `
-                    <span class="text-[10px] text-[#FF007F] font-pixel mb-1">${name}</span>
-                    <div class="bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] font-vt text-xl rounded-br-xl">${text}</div>
-                `;
-            } else {
-                div.className = 'flex flex-col items-end mt-2';
-                div.innerHTML = `
-                    <span class="text-[10px] text-gray-500 font-pixel mb-1">ME (${state.userId})</span>
-                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] font-vt text-xl rounded-bl-xl">${text}</div>
-                `;
-            }
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
+        document.getElementById('btn-enter-main').addEventListener('click', () => {
+            initMainDashboard();
+        });
 
-        document.getElementById('btn-intro-reply').addEventListener('click', () => handleIntroReply("지나가던 사람."));
-        document.getElementById('btn-intro-reply-2').addEventListener('click', () => handleIntroReply("네가 자꾸 신경 쓰여서."));
-
-        function handleIntroReply(msg) {
-            document.getElementById('intro-chat-choices').classList.add('hidden');
-            const box = document.getElementById('intro-chat-box');
-            appendChatMessage(box, state.userId, msg, 'user');
-
-            setTimeout(() => {
-                appendChatMessage(box, 'UNKNOWN', '...들어오든가. 어차피 숨길 것도 없어.', 'bot');
-                setTimeout(initMainDashboard, 1500);
-            }, 1000);
-        }
-
+        /* --- 3. Main Dashboard --- */
         function initMainDashboard() {
             switchScreen('screen-main');
             renderMemberList();
             loadFeed(members[0]);
+            startPublicChatBot();
         }
 
         function renderMemberList() {
             const list = document.getElementById('member-list');
             list.innerHTML = members.map(id => `
-                <button class="member-btn w-full text-left p-3 border-b lg:border-b-0 lg:border-l-2 border-[#333] hover:bg-[#111] transition-all font-pixel text-[8px] lg:text-[10px] text-gray-500 flex-shrink-0" data-id="${id}">
+                <button class="member-btn w-full text-left p-4 border-b lg:border-b-0 lg:border-l-2 border-[#333] hover:bg-[#111] transition-all font-pixel text-[10px] text-gray-500 flex-shrink-0" data-id="${id}">
                     > @${id}
                 </button>
             `).join('');
 
             document.querySelectorAll('.member-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.member-btn').forEach(b => {
-                        b.classList.remove('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#111]');
-                    });
-                    const target = e.currentTarget;
-                    target.classList.add('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#111]');
-                    loadFeed(target.getAttribute('data-id'));
+                    const targetId = e.currentTarget.getAttribute('data-id');
+                    loadFeed(targetId);
                 });
             });
-            
-            if(document.querySelector('.member-btn')) {
-                document.querySelector('.member-btn').click();
-            }
         }
 
         function loadFeed(memberId) {
             state.currentMember = memberId;
-            document.getElementById('feed-target-id').textContent = `@${memberId}`;
-            // Set profile picture using DiceBear
-            document.getElementById('feed-target-pfp').src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${memberId}&backgroundType=solid&backgroundColor=000000`;
-            resetStatus();
             
-            const grid = document.getElementById('feed-grid');
-            const captions = ["오늘 자꾸 열이 난다. 고장 난 것 같아.", "이게 무슨 감정인지 모르겠어.", "자꾸 네가 보여.", "심장이 너무 빨리 뛰어.", "알 수 없는 에러 발생."];
-            const colors = ['2a0015', '002200', '111111'];
-            
-            grid.innerHTML = Array(6).fill(0).map((_, i) => {
-                const cap = captions[i % captions.length];
-                const bg = colors[i % colors.length];
-                return `
-                    <div class="relative aspect-square border border-[#333] group overflow-hidden bg-black feed-item-container">
-                        <img src="https://placehold.co/400x400/${bg}/FF007F?text=${memberId.toUpperCase()}" class="w-full h-full object-cover glitched-image absolute inset-0 z-0">
-                        
-                        <!-- Scratch Canvas -->
-                        <canvas class="scratch-canvas absolute inset-0 z-10 w-full h-full"></canvas>
-
-                        <div class="caption hidden absolute bottom-0 inset-x-0 bg-black/90 border-t border-[#FF007F] text-[#FF007F] p-2 font-vt text-lg z-20 pointer-events-none">
-                            ${cap}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Initialize Scratch Canvases after a tiny delay to ensure DOM layout is complete
-            setTimeout(initScratchCards, 50);
-        }
-
-        function resetStatus() {
-            const statuses = ["[현재 상태: 심박수 비정상]", "[현재 상태: 뇌내 회로 꼬임]", "[현재 상태: 밤새 뒤척이는 중]"];
-            const el = document.getElementById('feed-target-status');
-            el.textContent = statuses[Math.floor(Math.random() * statuses.length)];
-            el.classList.remove('text-[#FF007F]');
-            el.classList.add('text-gray-400');
-        }
-
-        document.getElementById('btn-react').addEventListener('click', () => {
-            appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}에게 🩹 구급상자를 던졌습니다.`);
-            const status = document.getElementById('feed-target-status');
-            status.textContent = "[상태 업데이트: 조금 안도함]";
-            status.classList.remove('text-gray-400');
-            status.classList.add('text-[#FF007F]');
-        });
-
-        function initScratchCards() {
-            document.querySelectorAll('.feed-item-container').forEach(container => {
-                const canvas = container.querySelector('.scratch-canvas');
-                const img = container.querySelector('.glitched-image');
-                const caption = container.querySelector('.caption');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                
-                // Match canvas internal resolution to display size
-                canvas.width = container.offsetWidth;
-                canvas.height = container.offsetHeight;
-
-                // Fill with Neon Pink Cover
-                ctx.fillStyle = '#FF007F';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Add Text
-                ctx.fillStyle = '#000000';
-                ctx.font = '12px "Press Start 2P"';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                // Multiline text trick
-                ctx.fillText('SCRATCH', canvas.width/2, canvas.height/2 - 10);
-                ctx.fillText('TO DECODE', canvas.width/2, canvas.height/2 + 10);
-
-                let isDrawing = false;
-                let isRevealed = false;
-
-                function getMousePos(e) {
-                    const rect = canvas.getBoundingClientRect();
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    return { x: clientX - rect.left, y: clientY - rect.top };
+            document.querySelectorAll('.member-btn').forEach(b => {
+                b.classList.remove('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
+                if(b.getAttribute('data-id') === memberId) {
+                    b.classList.add('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
                 }
-
-                function startDraw(e) {
-                    if(isRevealed) return;
-                    isDrawing = true;
-                    scratch(e);
-                }
-
-                function stopDraw() {
-                    if(!isDrawing) return;
-                    isDrawing = false;
-                    checkReveal();
-                }
-
-                function scratch(e) {
-                    if (!isDrawing || isRevealed) return;
-                    e.preventDefault(); // Prevent scrolling on mobile while scratching
-                    
-                    const pos = getMousePos(e);
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2); // 25px brush radius
-                    ctx.fill();
-                }
-
-                function checkReveal() {
-                    if(isRevealed) return;
-                    
-                    // Simple heuristic: check a grid of points to estimate cleared area
-                    const stride = 10;
-                    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                    let transparentCount = 0;
-                    let totalChecked = 0;
-
-                    for (let y = 0; y < canvas.height; y += stride) {
-                        for (let x = 0; x < canvas.width; x += stride) {
-                            const index = (y * canvas.width + x) * 4;
-                            if (pixels[index + 3] === 0) { // Alpha channel
-                                transparentCount++;
-                            }
-                            totalChecked++;
-                        }
-                    }
-
-                    if (transparentCount / totalChecked > 0.45) { // 45% cleared
-                        isRevealed = true;
-                        canvas.style.transition = 'opacity 0.5s';
-                        canvas.style.opacity = '0';
-                        setTimeout(() => canvas.style.display = 'none', 500);
-                        
-                        img.classList.add('revealed');
-                        caption.classList.remove('hidden');
-                        appendPublicChat(`[SYSTEM] ${state.userId}님이 암호화된 기억을 해독했습니다.`);
-                    }
-                }
-
-                // Events
-                canvas.addEventListener('mousedown', startDraw);
-                canvas.addEventListener('mousemove', scratch);
-                canvas.addEventListener('mouseup', stopDraw);
-                canvas.addEventListener('mouseleave', stopDraw);
-
-                canvas.addEventListener('touchstart', startDraw, {passive: false});
-                canvas.addEventListener('touchmove', scratch, {passive: false});
-                canvas.addEventListener('touchend', stopDraw);
             });
-        }
 
-        // Handle resize issues for canvas
-        window.addEventListener('resize', () => {
-            // Re-init unrevealed canvases on resize to fix offsets
-            initScratchCards(); 
-        });
-
-        document.getElementById('gb-submit').addEventListener('click', submitGuestbook);
-        document.getElementById('gb-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') submitGuestbook();
-        });
-
-        function submitGuestbook() {
-            const input = document.getElementById('gb-input');
-            const text = input.value.trim();
-            if(!text) return;
+            document.getElementById('feed-target-id').textContent = `@${memberId}`;
+            document.getElementById('feed-target-pfp').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${memberId}&backgroundColor=111111`;
             
-            appendGuestbook(state.userId, text, false);
-            input.value = '';
+            const currentStatusIndex = state.statusIndex[memberId];
+            document.getElementById('feed-target-status').textContent = state.statusFlow[currentStatusIndex];
+            
+            const imgEl = document.getElementById('feed-photo-img');
+            const canvasEl = document.getElementById('feed-scratch-canvas');
+            const captionEl = document.getElementById('feed-photo-caption');
+            const hintEl = document.getElementById('scratch-hint');
+            
+            const bgColors = ['1a000d', '002200', '111111', '1a1a00'];
+            const bgColor = bgColors[members.indexOf(memberId) % bgColors.length];
+            imgEl.src = `https://placehold.co/400x533/${bgColor}/FF007F?text=${memberId}`;
+            captionEl.textContent = state.captions[memberId];
 
-            if(text.includes('안녕') || text.includes('누구') || text.includes('보고')) {
-                setTimeout(() => {
-                    appendGuestbook(state.currentMember, "너 혹시... 그때 걔야? 읽었어.", true);
-                }, 1500);
+            if (state.scratchedState[memberId]) {
+                canvasEl.style.display = 'none';
+                imgEl.classList.add('revealed');
+                captionEl.classList.remove('hidden');
+                hintEl.classList.add('hidden');
+            } else {
+                canvasEl.style.display = 'block';
+                canvasEl.style.opacity = '1';
+                imgEl.classList.remove('revealed');
+                captionEl.classList.add('hidden');
+                hintEl.classList.remove('hidden');
+                setTimeout(initScratchLogic, 50);
             }
         }
 
-        function appendGuestbook(name, text, isMember) {
-            const list = document.getElementById('guestbook-list');
-            const div = document.createElement('div');
-            div.className = `p-2 border-l-2 ${isMember ? 'border-[#FF007F] bg-[#1a000d]' : 'border-[#00FF00] bg-[#001a00]'}`;
-            div.innerHTML = `
-                <div class="font-pixel text-[8px] ${isMember ? 'text-[#FF007F]' : 'text-[#00FF00]'} mb-1">${name}</div>
-                <div class="font-vt text-lg text-gray-200">${text}</div>
-            `;
-            list.appendChild(div);
-            list.scrollTop = list.scrollHeight;
+        /* --- Status System & Auto Call Logic --- */
+        let callTimeout = null;
+
+        document.querySelectorAll('.btn-react').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const memberId = state.currentMember;
+                let sIdx = state.statusIndex[memberId];
+                
+                if (sIdx < 3) {
+                    sIdx++;
+                    state.statusIndex[memberId] = sIdx;
+                    
+                    const newStatusText = state.statusFlow[sIdx];
+                    const statusEl = document.getElementById('feed-target-status');
+                    
+                    statusEl.style.color = '#fff';
+                    setTimeout(() => statusEl.style.color = '#FF007F', 200);
+                    statusEl.textContent = newStatusText;
+                    
+                    appendPublicChat(`[SYSTEM] ${state.userId}님이 @${memberId}에게 리액션을 보냈습니다.`);
+                    
+                    if (sIdx === 3) {
+                        clearTimeout(callTimeout);
+                        callTimeout = setTimeout(() => {
+                            showIncomingCall(memberId);
+                        }, 1500);
+                    }
+                }
+            });
+        });
+
+        function showIncomingCall(memberId) {
+            document.getElementById('incoming-caller-name').textContent = `@${memberId}`;
+            document.getElementById('incoming-call-modal').classList.remove('hidden');
+            document.getElementById('incoming-call-modal').classList.add('flex');
+            appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 영상통화를 시도 중입니다...`);
         }
 
-        // Public Chat Logic
+        /* --- Scratch Photo Logic --- */
+        function initScratchLogic() {
+            const canvas = document.getElementById('feed-scratch-canvas');
+            if (canvas.style.display === 'none') return; 
+
+            const container = document.getElementById('feed-photo-container');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+
+            ctx.fillStyle = '#FF007F';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#000000';
+            ctx.font = '20px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SCRATCH ME', canvas.width/2, canvas.height/2);
+
+            let isDrawing = false;
+            let currentMemberAtInit = state.currentMember; 
+
+            function getMousePos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            function scratch(e) {
+                if (!isDrawing) return;
+                e.preventDefault(); 
+                
+                const pos = getMousePos(e);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                
+                const numPoints = 8 + Math.floor(Math.random() * 5); 
+                const baseRadius = 25; 
+                
+                for (let i = 0; i < numPoints; i++) {
+                    const angle = (i / numPoints) * Math.PI * 2;
+                    const radius = baseRadius * (0.4 + Math.random() * 0.9);
+                    const px = pos.x + Math.cos(angle) * radius;
+                    const py = pos.y + Math.sin(angle) * radius;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function checkReveal() {
+                if(!isDrawing) return;
+                const stride = 15;
+                const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                let transparentCount = 0;
+                let totalChecked = 0;
+
+                for (let y = 0; y < canvas.height; y += stride) {
+                    for (let x = 0; x < canvas.width; x += stride) {
+                        const alpha = pixels[(y * canvas.width + x) * 4 + 3];
+                        if (alpha === 0) transparentCount++;
+                        totalChecked++;
+                    }
+                }
+
+                if (transparentCount / totalChecked > 0.10) { 
+                    revealCurrentPhoto(currentMemberAtInit);
+                }
+            }
+
+            function revealCurrentPhoto(memberId) {
+                state.scratchedState[memberId] = true;
+                
+                canvas.style.transition = 'opacity 0.6s ease';
+                canvas.style.opacity = '0';
+                
+                document.getElementById('feed-photo-img').classList.add('revealed');
+                document.getElementById('feed-photo-caption').classList.remove('hidden');
+                document.getElementById('scratch-hint').classList.add('hidden');
+                
+                setTimeout(() => canvas.style.display = 'none', 600);
+                appendPublicChat(`[SYSTEM] ${state.userId}님이 @${memberId}의 숨겨진 감정을 엿보았습니다.`);
+            }
+
+            const startDraw = (e) => { isDrawing = true; scratch(e); };
+            const stopDraw = () => { if(isDrawing){ checkReveal(); isDrawing = false; } };
+
+            canvas.onmousedown = startDraw;
+            canvas.onmousemove = scratch;
+            canvas.onmouseup = stopDraw;
+            canvas.onmouseleave = stopDraw;
+
+            canvas.ontouchstart = (e) => startDraw(e);
+            canvas.ontouchmove = (e) => scratch(e);
+            canvas.ontouchend = stopDraw;
+        }
+
+        window.addEventListener('resize', () => {
+            if(document.getElementById('screen-main').classList.contains('flex')) {
+               if(!state.scratchedState[state.currentMember]) initScratchLogic();
+            }
+        });
+
+        /* --- Public Chat (Auto Live Log) --- */
         const publicChatLog = document.getElementById('public-chat-log');
         const publicChatInput = document.getElementById('public-chat-input');
+        let chatBotInterval = null;
         
-        document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
-        publicChatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') submitPublicChat();
-        });
-
-        function submitPublicChat() {
-            const text = publicChatInput.value.trim();
-            if(!text) return;
-            appendPublicChat(`[${state.userId}] ${text}`);
-            publicChatInput.value = '';
-        }
-
-        function appendPublicChat(text) {
+        function appendPublicChat(text, isUser = false) {
             const div = document.createElement('div');
-            div.className = 'text-sm font-vt text-gray-300 border-b border-[#222] pb-1';
+            div.className = 'text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed';
             
-            // Colorize System messages
             if (text.startsWith('[SYSTEM]')) {
                 div.classList.add('text-gray-500', 'text-xs');
-            } else if (text.startsWith(`[${state.userId}]`)) {
-                div.classList.add('text-[#00FF00]');
+            } else if (isUser) {
+                div.classList.add('text-[#00FF00]', 'font-bold');
             }
-
             div.textContent = text;
             publicChatLog.appendChild(div);
             publicChatLog.scrollTop = publicChatLog.scrollHeight;
         }
 
-        // DM Logic
+        document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
+        publicChatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitPublicChat(); });
+
+        function submitPublicChat() {
+            const text = publicChatInput.value.trim();
+            if(!text) return;
+            appendPublicChat(`[${state.userId}] ${text}`, true);
+            publicChatInput.value = '';
+        }
+
+        function startPublicChatBot() {
+            const botNames = ['익명_09', 'glitch_xx', '핑크스파이', 'User_404', '해커_소년', '비밀_11'];
+            const botMsgs = [
+                "다들 누구 보고 있어?", "방금 해독 성공함 ㅋㅋ", "오늘 분위기 왜 이래", 
+                "연결 상태 불안정해.", "누가 내 거 훔쳐봄?", "비밀번호 알아낸 사람?", 
+                "지금 고장난 거 같은데", "계속 에러 뜬다", "나 방금 DM 옴 뭐라고 답해야하지"
+            ];
+            
+            chatBotInterval = setInterval(() => {
+                const name = botNames[Math.floor(Math.random() * botNames.length)];
+                const msg = botMsgs[Math.floor(Math.random() * botMsgs.length)];
+                appendPublicChat(`[${name}] ${msg}`);
+            }, 2500); 
+        }
+
+        /* --- DM Modal --- */
         const dmModal = document.getElementById('dm-modal');
         const dmMessages = document.getElementById('dm-messages');
-        const dmChoices = document.getElementById('dm-choices');
+        const dmInput = document.getElementById('dm-input');
 
         document.getElementById('btn-open-dm').addEventListener('click', () => {
             document.getElementById('dm-target-name').textContent = `@${state.currentMember}`;
@@ -626,25 +629,8 @@
             dmModal.classList.add('flex');
             
             dmMessages.innerHTML = '';
-            appendChatMessage(dmMessages, state.currentMember, '지금 나 지켜보고 있지?', 'bot');
-            
-            dmChoices.innerHTML = `
-                <button class="dm-choice w-full text-left font-vt text-xl text-gray-400 hover:text-[#00FF00] p-2 hover:bg-[#111] transition-colors" data-reply="응, 계속 보고 있었어.">> "응, 계속 보고 있었어."</button>
-                <button class="dm-choice w-full text-left font-vt text-xl text-gray-400 hover:text-[#FF007F] p-2 hover:bg-[#111] transition-colors mt-2" data-reply="글쎄, 무슨 소리인지.">> "글쎄, 무슨 소리인지."</button>
-            `;
-
-            document.querySelectorAll('.dm-choice').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const reply = this.getAttribute('data-reply');
-                    appendChatMessage(dmMessages, state.userId, reply, 'user');
-                    dmChoices.innerHTML = ''; 
-                    
-                    setTimeout(() => {
-                        const botReplies = ["이상해. 네가 볼 때마다 시스템이 자꾸 오류가 나.", "나도 그래. 고장 난 것 같아.", "계속 지켜봐 줘."];
-                        appendChatMessage(dmMessages, state.currentMember, botReplies[Math.floor(Math.random() * botReplies.length)], 'bot');
-                    }, 1200);
-                });
-            });
+            appendDMChat(state.currentMember, '지금 나 훔쳐보고 있지?', 'bot');
+            dmInput.focus();
         });
 
         document.getElementById('btn-close-dm').addEventListener('click', () => {
@@ -652,44 +638,140 @@
             dmModal.classList.remove('flex');
         });
 
-        // Call (Webcam) Logic
-        const callModal = document.getElementById('call-modal');
-        const callVideo = document.getElementById('call-video');
-        const connectingText = document.getElementById('call-connecting-text');
+        document.getElementById('btn-send-dm').addEventListener('click', sendDM);
+        dmInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendDM(); });
 
-        document.getElementById('btn-open-call').addEventListener('click', async () => {
-            document.getElementById('call-target-name').textContent = `@${state.currentMember}`;
-            callModal.classList.remove('hidden');
-            callModal.classList.add('flex');
-            connectingText.classList.remove('hidden');
-            callVideo.classList.add('hidden');
+        function sendDM() {
+            const text = dmInput.value.trim();
+            if(!text) return;
             
-            try {
-                // Request Webcam
-                state.videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                callVideo.srcObject = state.videoStream;
-                callVideo.classList.remove('hidden');
-                connectingText.classList.add('hidden');
-            } catch (err) {
-                console.error("Cam denied/error:", err);
-                connectingText.textContent = "CAM_OFFLINE : ACCESS_DENIED";
-                connectingText.classList.replace('text-[#FF007F]', 'text-red-500');
+            appendDMChat(state.userId, text, 'user');
+            dmInput.value = '';
+            
+            setTimeout(() => {
+                const replies = ["네가 누군데?", "안 돼?", "너도 그러고 있잖아"];
+                const botReply = replies[Math.floor(Math.random() * replies.length)];
+                appendDMChat(state.currentMember, botReply, 'bot');
+            }, 1000);
+        }
+
+        function appendDMChat(name, text, type) {
+            const div = document.createElement('div');
+            if (type === 'bot') {
+                div.className = 'flex flex-col';
+                div.innerHTML = `
+                    <span class="text-[10px] text-[#FF007F] font-pixel mb-1">${name}</span>
+                    <div class="bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] font-vt text-xl rounded-br-xl break-words">${text}</div>
+                `;
+            } else {
+                div.className = 'flex flex-col items-end mt-2';
+                div.innerHTML = `
+                    <span class="text-[10px] text-gray-500 font-pixel mb-1">ME</span>
+                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] font-vt text-xl rounded-bl-xl break-words">${text}</div>
+                `;
             }
+            dmMessages.appendChild(div);
+            dmMessages.scrollTop = dmMessages.scrollHeight;
+        }
+
+        /* --- Guestbook --- */
+        document.getElementById('gb-submit').addEventListener('click', submitGuestbook);
+        document.getElementById('gb-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') submitGuestbook(); });
+
+        function submitGuestbook() {
+            const input = document.getElementById('gb-input');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const list = document.getElementById('guestbook-list');
+            const div = document.createElement('div');
+            div.className = `p-2 border-l-2 text-sm border-[#00FF00] bg-[#001a00] mb-2`;
+            div.innerHTML = `
+                <div class="font-pixel text-[8px] text-[#00FF00] mb-1">${state.userId}</div>
+                <div class="font-vt text-lg text-gray-200">${text}</div>
+            `;
+            list.appendChild(div);
+            list.scrollTop = list.scrollHeight;
+            input.value = '';
+        }
+
+        /* --- Video/Voice Call Logic --- */
+        const callModal = document.getElementById('call-modal');
+        const incomingModal = document.getElementById('incoming-call-modal');
+        const userCam = document.getElementById('user-cam');
+        const camErrorMsg = document.getElementById('cam-error-msg');
+        
+        // 1. Outgoing Call Trigger
+        document.getElementById('btn-call-member').addEventListener('click', () => {
+            // Check if status is maxed out (3)
+            const isVideo = state.statusIndex[state.currentMember] >= 3;
+            startCall(isVideo);
         });
 
+        // 2. Incoming Call Accept
+        document.getElementById('btn-accept-call').addEventListener('click', () => {
+            incomingModal.classList.add('hidden');
+            incomingModal.classList.remove('flex');
+            startCall(true); // Auto-incoming calls are always Video Calls
+        });
+
+        // Core Call Execution Logic
+        async function startCall(isVideo) {
+            document.getElementById('call-target-name-modal').textContent = `@${state.currentMember}`;
+            document.getElementById('call-member-img').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${state.currentMember}&backgroundColor=111111`;
+            
+            callModal.classList.remove('hidden');
+            callModal.classList.add('flex');
+            
+            const pipContainer = document.getElementById('pip-container');
+            const titleText = document.getElementById('call-title-text');
+            const centerText = document.getElementById('call-center-text');
+            camErrorMsg.classList.add('hidden');
+
+            if (isVideo) {
+                // Video Mode
+                pipContainer.classList.remove('hidden');
+                titleText.textContent = "ENCRYPTED_VIDEO_CALL...";
+                centerText.textContent = "> CONNECTED_BUT_GLITCHING <";
+                
+                try {
+                    state.videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    userCam.srcObject = state.videoStream;
+                    appendPublicChat(`[SYSTEM] 스파이캠(PIP) 연결 성공. 대상이 당신을 보고 있습니다.`);
+                } catch (err) {
+                    console.error("Camera access denied or unavailable:", err);
+                    camErrorMsg.classList.remove('hidden');
+                    camErrorMsg.classList.add('flex');
+                    appendPublicChat(`[ERROR] 카메라 접근 실패. 음성 전용으로 우회합니다.`);
+                }
+            } else {
+                // Voice Mode (No Cam)
+                pipContainer.classList.add('hidden');
+                titleText.textContent = "ENCRYPTED_VOICE_CALL...";
+                centerText.textContent = "> AUDIO_ONLY_CONNECTION 🔉 <";
+                appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}에게 음성 통화를 연결했습니다.`);
+            }
+        }
+
+        // Incoming Call Reject
+        document.getElementById('btn-reject-call').addEventListener('click', () => {
+            incomingModal.classList.add('hidden');
+            incomingModal.classList.remove('flex');
+            appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}의 통화를 무시했습니다.`);
+        });
+
+        // End Call
         document.getElementById('btn-end-call').addEventListener('click', () => {
-            // Stop all tracks to release camera hardware
             if (state.videoStream) {
                 state.videoStream.getTracks().forEach(track => track.stop());
                 state.videoStream = null;
             }
-            callVideo.srcObject = null;
+            userCam.srcObject = null;
+            
             callModal.classList.add('hidden');
             callModal.classList.remove('flex');
             
-            // Reset connecting text for next time
-            connectingText.textContent = "CONNECTING...";
-            connectingText.classList.replace('text-red-500', 'text-[#FF007F]');
+            appendPublicChat(`[SYSTEM] @${state.currentMember}와의 통화 연결이 종료되었습니다.`);
         });
 
     </script>
