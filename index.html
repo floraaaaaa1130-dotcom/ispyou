@@ -295,11 +295,11 @@
         // ==========================================
         const ASSETS = {
             sfx: {
-                click: './assets/audio/click.mp3',       // 버튼 클릭 소리 (전자음)
-                type: './assets/audio/type.mp3',         // 타자 치는 소리
-                scratch: './assets/audio/scratch.mp3',   // 지지직 긁는 소리 (동전, 노이즈)
-                ringtone: './assets/audio/ring.mp3',     // 전화벨 소리 (기괴한 느낌)
-                alert: './assets/audio/alert.mp3'        // DM 알림음
+                click: './assets/audio/click.mp3',       
+                type: './assets/audio/type.mp3',         
+                scratch: './assets/audio/scratch.mp3',   
+                ringtone: './assets/audio/ring.mp3',     
+                alert: './assets/audio/alert.mp3'        
             },
             'sion__5': {
                 profile: './assets/profile/sion_profile.png', 
@@ -307,7 +307,7 @@
                 voiceCall: './assets/audio/sion_voice.mp3',
                 feed: [
                     './assets/feed/sion_pic1.jpg',
-                    './assets/feed/sion_pic2.jpg',
+                    './assets/feed/sion_pic2.jpg'
                 ]
             },
             'ri_ku_03': {
@@ -317,29 +317,29 @@
                 feed: [ './assets/feed/riku_pic1.jpg' ]
             },
             'yushihihi_405': { 
-            profile: './assets/profile/yushi_profile.png',
+                profile: './assets/profile/yushi_profile.png',
                 videoCall: './assets/video/yushi_call.mp4',
                 voiceCall: './assets/audio/yushi_voice.mp3',
-                feed: [ './assets/feed/yushi_pic1.jpg'
-                       }, 
+                feed: [ './assets/feed/yushi_pic1.jpg' ] // 오타 수정: ] 추가
+            }, 
             'jaehee__zzang': {
                 profile: './assets/profile/jaehee_profile.png',
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall: './assets/audio/jaehee_voice.mp3',
-                feed: [ './assets/feed/jaehee_pic1.jpg'
-                       },
+                feed: [ './assets/feed/jaehee_pic1.jpg' ] // 오타 수정: ] 추가
+            },
             'ryo_hi_rose': { 
                 profile: './assets/profile/ryo_profile.png',
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall: './assets/audio/ryo_voice.mp3',
-                feed: [ './assets/feed/ryo_pic1.jpg'
-                       },
+                feed: [ './assets/feed/ryo_pic1.jpg' ] // 오타 수정: ] 추가
+            },
             'sakusakusaku07': { 
                 profile: './assets/profile/sakuya_profile.png',
                 videoCall: './assets/video/sakuya_call.mp4',
                 voiceCall: './assets/audio/sakuya_voice.mp3',
-                feed: [ './assets/feed/sakuya_pic1.jpg'
-                       }
+                feed: [ './assets/feed/sakuya_pic1.jpg' ] // 오타 수정: ] 추가
+            }
         };
 
         // ==========================================
@@ -349,9 +349,8 @@
         let scratchAudioLoop = null;
 
         function playSFX(type) {
-            if(!ASSETS.sfx[type]) return; // 파일 경로가 없으면 무시
+            if(!ASSETS.sfx[type]) return; 
             
-            // 링톤처럼 반복 재생이 필요한 경우 분기
             if(type === 'ringtone' || type === 'scratch') {
                 if(!audioNodes[type]) {
                     audioNodes[type] = new Audio(ASSETS.sfx[type]);
@@ -361,7 +360,6 @@
                 return;
             }
 
-            // 단발성 사운드 (클릭, 타이핑)
             const audio = new Audio(ASSETS.sfx[type]);
             audio.play().catch(e => console.log('Audio blocked'));
         }
@@ -426,7 +424,6 @@
             state.postCallScripts[m] = dmScripts[m] || dmScripts['default'];
         });
 
-        // 공통 클릭 사운드 부여
         document.addEventListener('click', (e) => {
             if(e.target.tagName.toLowerCase() === 'button') playSFX('click');
         });
@@ -452,7 +449,7 @@
             if (charIndex < introText.length) {
                 termElement.textContent += introText.charAt(charIndex);
                 charIndex++;
-                if(charIndex % 3 === 0) playSFX('type'); // 타이핑 소리
+                if(charIndex % 3 === 0) playSFX('type'); 
                 setTimeout(typeWriter, 50);
             } else {
                 termElement.classList.remove('typewriter-cursor');
@@ -601,7 +598,6 @@
                 const imgSrc = item.getAttribute('data-src');
                 const canvas = item.querySelector('canvas');
                 
-                // 이미 해금된 사진이면 클릭 시 팝업만 열리도록 바인딩
                 if(canvas.style.display === 'none') {
                     item.classList.remove('cursor-crosshair');
                     item.classList.add('cursor-pointer');
@@ -672,7 +668,6 @@
                         
                         setTimeout(() => {
                             canvas.style.display = 'none';
-                            // 해독 완료 시 포인터 변경 및 클릭 팝업 이벤트 부여
                             item.classList.remove('cursor-crosshair');
                             item.classList.add('cursor-pointer');
                             item.onclick = () => openPhotoPopup(imgSrc);
@@ -683,14 +678,14 @@
 
                 const startDraw = (e) => { 
                     isDrawing = true; 
-                    playSFX('scratch'); // 스크래치 사운드 시작
+                    playSFX('scratch');
                     scratch(e); 
                 };
                 const stopDraw = () => { 
                     if(isDrawing){ 
                         checkReveal(); 
                         isDrawing = false; 
-                        stopSFX('scratch'); // 스크래치 사운드 멈춤
+                        stopSFX('scratch');
                     } 
                 };
 
@@ -740,7 +735,7 @@
             document.getElementById('incoming-call-modal').classList.remove('hidden');
             document.getElementById('incoming-call-modal').classList.add('flex');
             
-            playSFX('ringtone'); // 벨소리 시작
+            playSFX('ringtone'); 
             appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 영상통화를 시도 중입니다...`);
         }
 
@@ -750,19 +745,19 @@
         let chatBotInterval = null;
         
         function appendPublicChat(text, isUser = false) {
-    const div = document.createElement('div');
-    // whitespace-pre-wrap 추가: 연속된 공백과 줄바꿈 유지
-    div.className = 'text-xs lg:text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
-    
-    if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
-    else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
-    
-    // textContent 대신 innerHTML 사용: 이미지/비디오 태그 렌더링을 위함
-    div.innerHTML = text;
-    
-    publicChatLog.appendChild(div);
-    publicChatLog.scrollTop = publicChatLog.scrollHeight;
-}
+            const div = document.createElement('div');
+            // whitespace-pre-wrap 추가: 연속된 공백과 줄바꿈 유지
+            div.className = 'text-xs lg:text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
+            
+            if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
+            else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
+            
+            // textContent 대신 innerHTML 사용: 이미지/비디오 태그 렌더링 및 태그 구조 유지
+            div.innerHTML = text;
+            
+            publicChatLog.appendChild(div);
+            publicChatLog.scrollTop = publicChatLog.scrollHeight;
+        }
 
         document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
         publicChatInput.addEventListener('keypress', (e) => { 
@@ -782,22 +777,22 @@
                 {name: 'sakusakusaku07', msg: `안녕`},
                 {name: 'sakusakusaku07', msg: `
 。o
-　　ｏ
-　　　。
-　　o　고독한
-　　。　남자의 등장 . . . 
+  ｏ
+   。
+  o 고독한
+  。 남자의 등장 . . . 
 
-　　　　　Ｏ
-　　　　 ｏ
-　　　 。o`},
+     Ｏ
+     ｏ
+    。o`},
                 {name: 'sakusakusaku07', msg: `^_^`},
                 {name: 'sakusakusaku07', msg: '안녕하십니까'},
                 {name: 'sakusakusaku07', msg: 'hi'},
                 {name: 'jaehee__zzang', msg: 'ᗜ_ᗜ'},
-                {name: 'jaehee__zzan', msg: `나 요즘....
+                {name: 'jaehee__zzang', msg: `나 요즘....
                 심장이
                 이상합니다<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'jaehee__zzan', msg: 'ㅍㅠㅠ'},
+                {name: 'jaehee__zzang', msg: 'ㅍㅠㅠ'},
                 {name: '핑크스파이', msg: `그래?
                 나도 그래
                 ㅍㅠㅠ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
@@ -817,7 +812,8 @@
                 {name: 'ryo_hi_rose', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
                 {name: 'ryo_hi_rose', msg: `잠만
                     이거 사랑이라는데<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'ryo_hi_rose', msg: <span class="text-[8px]">`⠀⠀   ⠀
+                // 아스키아트 태그는 반드시 전체를 백틱 안에 넣어야 합니다.
+                {name: 'ryo_hi_rose', msg: `<span class="text-[8px]">⠀⠀   ⠀
     ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
 ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
 ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
@@ -837,10 +833,10 @@
                         ╭ ͡   ╲        ╲
                    ╭ ͡  ╲        ╲      ﾉ
               ╭ ͡  ╲       ╲       ╱
-                ╲      ╲        ╱`</span>},
+                ╲      ╲        ╱</span>`},
                 {name: 'sion__5', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
                 {name: 'sion__5', msg: '응;'},
-                {name: 'jaehee__zzan', msg: `X<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'jaehee__zzang', msg: `X<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '응;'}
             ];
             let msgIdx = 0;
