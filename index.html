@@ -288,6 +288,7 @@
         // ==========================================
         // 📁 [1] 미디어 연결 영역 
         // ==========================================
+        // 수정된 ASSETS 코드 (대소문자 및 확장자 반영)
         const ASSETS = {
             sfx: {
                 click: './assets/audio/click.mp3',       
@@ -297,46 +298,48 @@
                 alert: './assets/audio/alert.mp3'        
             },
             'sion__5': {
-                profile: './assets/profile/sion_profile.jpg', 
+                profile: './assets/profile/sion_profile.JPG', // JPG 대문자 확인
                 videoCall: './assets/video/sion_call.mp4',
                 voiceCall: './assets/audio/sion_voice.mp3',
                 feed: [
                     './assets/feed/sion_pic1.jpg',
-                    './assets/feed/sion_pic2.jpg',
+                    './assets/feed/sion_pic2.jpg'
                 ]
             },
             'ri_ku_03': {
-                profile: './assets/profile/riku_profile.png',
+                profile: './assets/profile/riku_profile.PNG', // PNG 대문자 확인
                 videoCall: './assets/video/riku_call.mp4',
                 voiceCall: './assets/audio/riku_voice.mp3',
                 feed: [ './assets/feed/riku_pic1.jpg' ]
             },
             'yushihihi_405': { 
-                profile: './assets/profile/yushi_profile.png',
+                profile: './assets/profile/yushi_profile.PNG', // PNG 대문자로 통일
                 videoCall: './assets/video/yushi_call.mp4',
                 voiceCall: './assets/audio/yushi_voice.mp3',
-                feed: [ './assets/feed/yushi_pic1.jpg' ]
+                feed: [ 
+                    './assets/feed/yushi.PNG',   // 업로드 내역에 맞게 피드 경로 수정
+                    './assets/feed/yushi_2.PNG'
+                ] 
             }, 
             'jaehee__zzang': {
-                profile: './assets/profile/jaehee_profile.png',
+                profile: './assets/profile/jaehee_profile.PNG', // PNG 대문자 확인
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall: './assets/audio/jaehee_voice.mp3',
-                feed: [ './assets/feed/jaehee_pic1.jpg' ]
+                feed: [ './assets/feed/jaehee_pic1.jpg' ] 
             },
             'ryo_hi_rose': { 
-                profile: './assets/profile/ryo_profile.png',
+                profile: './assets/profile/ryo_profile.PNG', // PNG 대문자 확인
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall: './assets/audio/ryo_voice.mp3',
-                feed: [ './assets/feed/ryo_pic1.jpg' ]
+                feed: [ './assets/feed/ryo_pic1.jpg' ] 
             },
             'sakusakusaku07': { 
-                profile: './assets/profile/sakuya_profile.png',
+                profile: './assets/profile/sakuya_profile.PNG', // PNG 대문자 확인
                 videoCall: './assets/video/sakuya_call.mp4',
                 voiceCall: './assets/audio/sakuya_voice.mp3',
-                feed: [ './assets/feed/sakuya_pic1.jpg' ]
+                feed: [ './assets/feed/sakuya_pic1.jpg' ] 
             }
         };
-
         // ==========================================
         // 🔊 [2] 사운드 재생 매니저 
         // ==========================================
