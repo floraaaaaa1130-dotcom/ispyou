@@ -57,12 +57,12 @@
             100% { opacity: 0.98; }
         }
 
+        /* 글리치 이미지 필터 완전 제거 (원본 사진 출력) */
         .glitched-image {
-            filter: sepia(100%) hue-rotate(290deg) saturate(500%) contrast(150%) blur(3px);
             transition: all 0.5s ease;
         }
         .glitched-image.revealed {
-            filter: grayscale(30%) contrast(120%);
+            /* 필터 제거됨 */
         }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -155,7 +155,7 @@
             <!-- Profile Header -->
             <div class="p-2 lg:p-4 border-b border-[#333] bg-black flex flex-wrap lg:flex-nowrap justify-between items-center shrink-0 z-20 gap-2 lg:gap-4">
                 <div class="flex items-center gap-2 lg:gap-3 w-full lg:w-auto">
-                    <img id="feed-target-pfp" src="" alt="profile" class="w-10 h-10 lg:w-16 lg:h-16 bg-[#111] border-2 border-[#FF007F] object-cover rendering-pixelated rounded-sm">
+                    <img id="feed-target-pfp" src="" alt="profile" class="w-10 h-10 lg:w-16 lg:h-16 bg-[#111] border-2 border-[#FF007F] object-cover rounded-sm">
                     <div class="flex flex-col flex-grow">
                         <h1 id="feed-target-id" class="font-pixel text-[10px] lg:text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
                         <div class="flex items-center gap-1 lg:gap-2">
@@ -185,9 +185,8 @@
             </div>
         </div>
 
-        <!-- Right Column: Public Chat (확장 가능하도록 transition 추가) -->
+        <!-- Right Column: Public Chat -->
         <div id="public-chat-wrapper" class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[30vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30 transition-all duration-500 ease-in-out">
-            <!-- 채팅방 헤더 (클릭 이벤트 적용을 위해 id 및 cursor-pointer 추가) -->
             <div id="public-chat-header" class="p-2 lg:p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center cursor-pointer select-none">
                 <h2 class="font-pixel text-[10px] text-[#00FF00]">> PUBLIC_CHAT</h2>
                 <div class="flex items-center gap-2">
@@ -266,7 +265,8 @@
                     <video id="call-video-player" class="absolute inset-0 w-full h-full object-cover hidden" playsinline loop></video>
                     <audio id="call-audio-player" class="hidden" loop></audio>
 
-                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-30 glitched-image scale-110">
+                    <!-- 여기도 글리치 필터 제거됨 -->
+                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-50 glitched-image scale-110">
                     <div id="call-center-text" class="text-[#FF007F] font-vt text-2xl lg:text-4xl animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2 text-center w-full">> CONNECTED_BUT_GLITCHING <</div>
                 </div>
                 
@@ -288,7 +288,6 @@
         // ==========================================
         // 📁 [1] 미디어 연결 영역 
         // ==========================================
-        // 수정된 ASSETS 코드 (대소문자 및 확장자 반영)
         const ASSETS = {
             sfx: {
                 click: './assets/audio/click.mp3',       
@@ -298,7 +297,7 @@
                 alert: './assets/audio/alert.mp3'        
             },
             'sion__5': {
-                profile: './assets/profile/sion_profile.JPG', // JPG 대문자 확인
+                profile: './assets/profile/sion_profile.JPG', 
                 videoCall: './assets/video/sion_call.mp4',
                 voiceCall: './assets/audio/sion_voice.mp3',
                 feed: [
@@ -307,39 +306,40 @@
                 ]
             },
             'ri_ku_03': {
-                profile: './assets/profile/riku_profile.PNG', // PNG 대문자 확인
+                profile: './assets/profile/riku_profile.PNG',
                 videoCall: './assets/video/riku_call.mp4',
                 voiceCall: './assets/audio/riku_voice.mp3',
                 feed: [ './assets/feed/riku_pic1.jpg' ]
             },
             'yushihihi_405': { 
-                profile: './assets/profile/yushi_profile.PNG', // PNG 대문자로 통일
+                profile: './assets/profile/yushi_profile.PNG',
                 videoCall: './assets/video/yushi_call.mp4',
                 voiceCall: './assets/audio/yushi_voice.mp3',
                 feed: [ 
-                    './assets/feed/yushi.PNG',   // 업로드 내역에 맞게 피드 경로 수정
+                    './assets/feed/yushi.PNG',
                     './assets/feed/yushi_2.PNG'
                 ] 
             }, 
             'jaehee__zzang': {
-                profile: './assets/profile/jaehee_profile.PNG', // PNG 대문자 확인
+                profile: './assets/profile/jaehee_profile.PNG',
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall: './assets/audio/jaehee_voice.mp3',
                 feed: [ './assets/feed/jaehee_pic1.jpg' ] 
             },
             'ryo_hi_rose': { 
-                profile: './assets/profile/ryo_profile.PNG', // PNG 대문자 확인
+                profile: './assets/profile/ryo_profile.PNG',
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall: './assets/audio/ryo_voice.mp3',
                 feed: [ './assets/feed/ryo_pic1.jpg' ] 
             },
             'sakusakusaku07': { 
-                profile: './assets/profile/sakuya_profile.PNG', // PNG 대문자 확인
+                profile: './assets/profile/sakuya_profile.PNG',
                 videoCall: './assets/video/sakuya_call.mp4',
                 voiceCall: './assets/audio/sakuya_voice.mp3',
                 feed: [ './assets/feed/sakuya_pic1.jpg' ] 
             }
         };
+
         // ==========================================
         // 🔊 [2] 사운드 재생 매니저 
         // ==========================================
@@ -739,9 +739,8 @@
         const publicChatHeader = document.getElementById('public-chat-header');
         let chatBotInterval = null;
 
-        // 모바일 공개채팅방 확장/축소 이벤트
         publicChatHeader.addEventListener('click', () => {
-            if (window.innerWidth < 1024) { // 모바일에서만 동작
+            if (window.innerWidth < 1024) {
                 if (publicChatWrapper.classList.contains('h-[30vh]')) {
                     publicChatWrapper.classList.replace('h-[30vh]', 'h-[80vh]');
                 } else {
@@ -751,8 +750,6 @@
         });
         
         function appendPublicChat(text, isUser = false) {
-            // 현재 스크롤이 맨 아래에 있는지 확인 (50px 오차 허용)
-            // 유저가 위로 스크롤해서 이전 메시지를 보고 있다면 자동 스크롤을 막기 위함
             const isScrolledToBottom = publicChatLog.scrollHeight - publicChatLog.clientHeight - publicChatLog.scrollTop <= 50;
 
             const div = document.createElement('div');
@@ -764,7 +761,6 @@
             div.innerHTML = text;
             publicChatLog.appendChild(div);
 
-            // 스크롤이 맨 아래에 있거나 유저가 직접 입력한 경우에만 스크롤을 아래로 내림
             if (isScrolledToBottom || isUser) {
                 publicChatLog.scrollTop = publicChatLog.scrollHeight;
             }
@@ -785,8 +781,8 @@
 
         function startPublicChatBot() {
             const botMsgs = [
-                                {name: 'sakusakusaku07', msg: `안녕`},
-                {name: 'sakusakusaku07', msg: `
+                {name: 'sakusakusaku07', msg: `안녕`},
+                {name: 'jaehee__zzang', msg: `
                     。o
                       ｏ
                        。
@@ -795,35 +791,36 @@
                         Ｏ
                          ｏ
                           。o`},
-                {name: 'sakusakusaku07', msg: `^_^`},
+                {name: 'yushihihi_405', msg: `^_^`},
                 {name: 'sakusakusaku07', msg: '안녕하십니까'},
-                {name: 'sakusakusaku07', msg: 'hi'},
-                {name: 'jaehee__zzang', msg: 'ᗜ_ᗜ'},
+                {name: 'sion__5', msg: 'hi'},
+                {name: 'ryo_hi_rose', msg: 'ᗜ_ᗜ'},
                 {name: 'jaehee__zzang', msg: `나 요즘....
                 심장이
                 이상합니다<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'jaehee__zzang', msg: 'ㅍㅠㅠ'},
-                {name: '핑크스파이', msg: `그래?
+                {name: 'jaehee__zzang', msg: `
+                그래?
                 나도 그래
                 ㅍㅠㅠ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'yushihihi_405', msg: '아무 일도 없는데'},
+                {name: 'sion__5', msg: '아무 일도 없는데'},
                 {name: 'yushihihi_405', msg: 'ㅋㅋㅋ'},
                 {name: 'sion__5', msg: '괜히 손에 땀이나네'},
-                {name: 'sion__5', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
+                {name: 'yushihihi_405', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
                 {name: 'ryo_hi_rose', msg: '😬😬😬'},
                 {name: 'ryo_hi_rose', msg: '왜이러는거야'},
                 {name: 'ryo_hi_rose', msg: `
     ここで一番混乱してる人
               |
               V<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'ryo_hi_rose', msg: '뭔데'},
-                {name: 'ryo_hi_rose', msg: `그냥 사진을
+                {name: 'sion__5', msg: '뭔데'},
+                {name: 'sakusakusaku07', msg: 
+                `그냥 사진을
                 올리고 싶었던 거지 리쿠는`},            
-                {name: 'ryo_hi_rose', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
-                {name: 'ryo_hi_rose', msg: `
-                잠만
+                {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
+                {name: 'ryo_hi_rose', msg: 
+                `잠만
                 이거 사랑이라는데<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'ryo_hi_rose', msg: `<span class="text-[8px]">⠀⠀   ⠀
+                {name: 'sakusakusaku07', msg: `<span class="text-[8px]">⠀⠀   ⠀
                     ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
                 ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
                 ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
@@ -845,7 +842,7 @@
                    ╭ ͡  ╲        ╲      ﾉ
               ╭ ͡  ╲       ╲       ╱
                 ╲      ╲        ╱</span>`},
-                {name: 'sion__5', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
+                {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
                 {name: 'sion__5', msg: '응;'},
                 {name: 'jaehee__zzang', msg: `X<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '응;'}
@@ -965,7 +962,7 @@
         });
 
         document.getElementById('btn-accept-call').addEventListener('click', () => {
-            stopSFX('ringtone'); // 벨소리 정지
+            stopSFX('ringtone'); 
             incomingModal.classList.add('hidden');
             incomingModal.classList.remove('flex');
             startCall(true); 
@@ -1023,7 +1020,7 @@
         }
 
         document.getElementById('btn-reject-call').addEventListener('click', () => {
-            stopSFX('ringtone'); // 벨소리 정지
+            stopSFX('ringtone'); 
             incomingModal.classList.add('hidden');
             incomingModal.classList.remove('flex');
             appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}의 통화를 무시했습니다.`);
@@ -1060,7 +1057,7 @@
                         const firstMsg = script[0];
                         state.postCallDmStep[current] = 1; 
                         
-                        playSFX('alert'); // 봇 선톡 알림음
+                        playSFX('alert'); 
                         appendDMChat(current, firstMsg.text, 'bot', current, firstMsg.url);
                         appendPublicChat(`[SYSTEM] ⚠️ @${current}로부터 새로운 다이렉트 메시지가 도착했습니다.`);
                     }
