@@ -9,22 +9,20 @@
     <style>
         /* ==========================================
            폰트(Fonts) 설정 영역
-           깃허브에 업로드한 폰트 경로(.ttf 또는 .woff2)를 url 안에 넣어주세요.
            ========================================== */
         @font-face {
             font-family: 'CustomBasic';
-            src: url('./assets/fonts/your-basic-font.woff2') format('woff2'); /* 본문용 폰트 */
+            src: url('./assets/fonts/your-basic-font.woff2') format('woff2'); 
         }
         @font-face {
             font-family: 'CustomPixel';
-            src: url('./assets/fonts/your-pixel-font.woff2') format('woff2'); /* 픽셀, 시스템 폰트 */
+            src: url('./assets/fonts/your-pixel-font.woff2') format('woff2'); 
         }
         @font-face {
             font-family: 'CustomVT';
-            src: url('./assets/fonts/your-vt-font.woff2') format('woff2');    /* 터미널, 다크웹 폰트 */
+            src: url('./assets/fonts/your-vt-font.woff2') format('woff2');    
         }
 
-        /* 폰트 파일이 없거나 로드 전일 때를 대비한 대체 폰트 설정 (수정하지 마세요) */
         @import url('https://fonts.googleapis.com/css2?family=VT323&family=Noto+Sans+KR:wght@400;700&family=Press+Start+2P&display=swap');
 
         :root {
@@ -154,16 +152,13 @@
 
         <!-- Center Column: Grid Feed -->
         <div class="flex-grow flex flex-col relative h-full overflow-hidden bg-[#080305]">
-            <!-- Profile Header (Mobile Optimized Layout) -->
+            <!-- Profile Header -->
             <div class="p-2 lg:p-4 border-b border-[#333] bg-black flex flex-wrap lg:flex-nowrap justify-between items-center shrink-0 z-20 gap-2 lg:gap-4">
                 <div class="flex items-center gap-2 lg:gap-3 w-full lg:w-auto">
-                    <!-- 프사 축소 -->
                     <img id="feed-target-pfp" src="" alt="profile" class="w-10 h-10 lg:w-16 lg:h-16 bg-[#111] border-2 border-[#FF007F] object-cover rendering-pixelated rounded-sm">
                     <div class="flex flex-col flex-grow">
-                        <!-- 아이디 폰트 축소 -->
                         <h1 id="feed-target-id" class="font-pixel text-[10px] lg:text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
                         <div class="flex items-center gap-1 lg:gap-2">
-                            <!-- 상태 메시지 축소 -->
                             <span id="feed-target-status" class="font-vt text-sm lg:text-xl text-[#FF007F] transition-all bg-[#1a000d] px-1 lg:px-2 py-0.5 lg:py-1 rounded border border-[#FF007F]">[로딩중]</span>
                             <div class="flex gap-1 lg:gap-2">
                                 <button class="btn-react text-sm lg:text-xl hover:scale-125 transition-transform" title="❤️">❤️</button>
@@ -173,7 +168,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- 버튼부 모바일 패딩/글자크기 축소 -->
                 <div class="flex gap-1 lg:gap-2 w-full lg:w-auto justify-end">
                     <button id="btn-call-member" class="flex-1 lg:flex-none border border-[#FF007F] text-[#FF007F] px-2 lg:px-4 py-1.5 lg:py-2 font-pixel text-[8px] lg:text-[10px] hover:bg-[#FF007F] hover:text-black transition-colors bg-[#1a000d]">CALL</button>
                     <button id="btn-open-dm" class="flex-1 lg:flex-none border border-[#00FF00] text-[#00FF00] px-2 lg:px-4 py-1.5 lg:py-2 font-pixel text-[8px] lg:text-[10px] hover:bg-[#00FF00] hover:text-black transition-colors bg-[#001a00]">DM 보내기</button>
@@ -191,9 +185,10 @@
             </div>
         </div>
 
-        <!-- Right Column: Public Chat -->
-        <div class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[30vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30">
-            <div class="p-2 lg:p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center">
+        <!-- Right Column: Public Chat (확장 가능하도록 transition 추가) -->
+        <div id="public-chat-wrapper" class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[30vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30 transition-all duration-500 ease-in-out">
+            <!-- 채팅방 헤더 (클릭 이벤트 적용을 위해 id 및 cursor-pointer 추가) -->
+            <div id="public-chat-header" class="p-2 lg:p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center cursor-pointer select-none">
                 <h2 class="font-pixel text-[10px] text-[#00FF00]">> PUBLIC_CHAT</h2>
                 <div class="flex items-center gap-2">
                     <div id="live-indicator" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -291,7 +286,7 @@
 
     <script>
         // ==========================================
-        // 📁 [1] 미디어(사운드/비디오/사진) 연결 영역 
+        // 📁 [1] 미디어 연결 영역 
         // ==========================================
         const ASSETS = {
             sfx: {
@@ -307,7 +302,7 @@
                 voiceCall: './assets/audio/sion_voice.mp3',
                 feed: [
                     './assets/feed/sion_pic1.jpg',
-                    './assets/feed/sion_pic2.jpg'
+                    './assets/feed/sion_pic2.jpg',
                 ]
             },
             'ri_ku_03': {
@@ -320,25 +315,25 @@
                 profile: './assets/profile/yushi_profile.png',
                 videoCall: './assets/video/yushi_call.mp4',
                 voiceCall: './assets/audio/yushi_voice.mp3',
-                feed: [ './assets/feed/yushi_pic1.jpg' ] // 오타 수정: ] 추가
+                feed: [ './assets/feed/yushi_pic1.jpg' ]
             }, 
             'jaehee__zzang': {
                 profile: './assets/profile/jaehee_profile.png',
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall: './assets/audio/jaehee_voice.mp3',
-                feed: [ './assets/feed/jaehee_pic1.jpg' ] // 오타 수정: ] 추가
+                feed: [ './assets/feed/jaehee_pic1.jpg' ]
             },
             'ryo_hi_rose': { 
                 profile: './assets/profile/ryo_profile.png',
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall: './assets/audio/ryo_voice.mp3',
-                feed: [ './assets/feed/ryo_pic1.jpg' ] // 오타 수정: ] 추가
+                feed: [ './assets/feed/ryo_pic1.jpg' ]
             },
             'sakusakusaku07': { 
                 profile: './assets/profile/sakuya_profile.png',
                 videoCall: './assets/video/sakuya_call.mp4',
                 voiceCall: './assets/audio/sakuya_voice.mp3',
-                feed: [ './assets/feed/sakuya_pic1.jpg' ] // 오타 수정: ] 추가
+                feed: [ './assets/feed/sakuya_pic1.jpg' ]
             }
         };
 
@@ -611,11 +606,6 @@
 
                 ctx.fillStyle = '#FF007F';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#000000';
-                ctx.font = '10px "Press Start 2P"';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('SCRATCH', canvas.width/2, canvas.height/2);
 
                 let isDrawing = false;
                 
@@ -742,21 +732,39 @@
         /* --- Public Chat --- */
         const publicChatLog = document.getElementById('public-chat-log');
         const publicChatInput = document.getElementById('public-chat-input');
+        const publicChatWrapper = document.getElementById('public-chat-wrapper');
+        const publicChatHeader = document.getElementById('public-chat-header');
         let chatBotInterval = null;
+
+        // 모바일 공개채팅방 확장/축소 이벤트
+        publicChatHeader.addEventListener('click', () => {
+            if (window.innerWidth < 1024) { // 모바일에서만 동작
+                if (publicChatWrapper.classList.contains('h-[30vh]')) {
+                    publicChatWrapper.classList.replace('h-[30vh]', 'h-[80vh]');
+                } else {
+                    publicChatWrapper.classList.replace('h-[80vh]', 'h-[30vh]');
+                }
+            }
+        });
         
         function appendPublicChat(text, isUser = false) {
+            // 현재 스크롤이 맨 아래에 있는지 확인 (50px 오차 허용)
+            // 유저가 위로 스크롤해서 이전 메시지를 보고 있다면 자동 스크롤을 막기 위함
+            const isScrolledToBottom = publicChatLog.scrollHeight - publicChatLog.clientHeight - publicChatLog.scrollTop <= 50;
+
             const div = document.createElement('div');
-            // whitespace-pre-wrap 추가: 연속된 공백과 줄바꿈 유지
             div.className = 'text-xs lg:text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
             
             if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
             else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
             
-            // textContent 대신 innerHTML 사용: 이미지/비디오 태그 렌더링 및 태그 구조 유지
             div.innerHTML = text;
-            
             publicChatLog.appendChild(div);
-            publicChatLog.scrollTop = publicChatLog.scrollHeight;
+
+            // 스크롤이 맨 아래에 있거나 유저가 직접 입력한 경우에만 스크롤을 아래로 내림
+            if (isScrolledToBottom || isUser) {
+                publicChatLog.scrollTop = publicChatLog.scrollHeight;
+            }
         }
 
         document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
@@ -774,17 +782,16 @@
 
         function startPublicChatBot() {
             const botMsgs = [
-                {name: 'sakusakusaku07', msg: `안녕`},
+                                {name: 'sakusakusaku07', msg: `안녕`},
                 {name: 'sakusakusaku07', msg: `
-。o
-  ｏ
-   。
-  o 고독한
-  。 남자의 등장 . . . 
-
-     Ｏ
-     ｏ
-    。o`},
+                    。o
+                      ｏ
+                       。
+                      o  고독한
+                      。 남자의 등장 . . . 
+                        Ｏ
+                         ｏ
+                          。o`},
                 {name: 'sakusakusaku07', msg: `^_^`},
                 {name: 'sakusakusaku07', msg: '안녕하십니까'},
                 {name: 'sakusakusaku07', msg: 'hi'},
@@ -810,22 +817,23 @@
                 {name: 'ryo_hi_rose', msg: `그냥 사진을
                 올리고 싶었던 거지 리쿠는`},            
                 {name: 'ryo_hi_rose', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
-                {name: 'ryo_hi_rose', msg: `잠만
-                    이거 사랑이라는데<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                // 아스키아트 태그는 반드시 전체를 백틱 안에 넣어야 합니다.
+                {name: 'ryo_hi_rose', msg: `
+                잠만
+                이거 사랑이라는데<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'ryo_hi_rose', msg: `<span class="text-[8px]">⠀⠀   ⠀
-    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
-⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
-⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
-⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
-⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
-⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀
-⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
-⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀
-⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠋⠀⠀
+                    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
+                ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
+                ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
+                ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+                ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+                ⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀
+                ⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
+                ⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀
+                ⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠋⠀⠀
+                   
                       ︵     ‌  ⠈     ︵
                     (      ╲       /      /
                       ╲       ╲/      /
