@@ -57,12 +57,8 @@
             100% { opacity: 0.98; }
         }
 
-        /* 글리치 이미지 필터 완전 제거 (원본 사진 출력) */
         .glitched-image {
             transition: all 0.5s ease;
-        }
-        .glitched-image.revealed {
-            /* 필터 제거됨 */
         }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -174,10 +170,6 @@
                 </div>
             </div>
             
-            <div class="p-1 lg:p-2 border-b border-[#333] bg-[#050002] shrink-0">
-                <h2 class="font-pixel text-[8px] lg:text-[10px] text-gray-600">> ENCRYPTED_FEED.dat</h2>
-            </div>
-            
             <div class="flex-grow bg-[#050002] overflow-y-auto p-1 scroll-smooth">
                 <div id="feed-grid" class="grid grid-cols-3 gap-1 lg:gap-2">
                     <!-- Dynamically populated via JS -->
@@ -236,12 +228,25 @@
         </div>
     </div>
 
+    <!-- 통화 방식 선택 팝업 (수동 CALL 시) -->
+    <div id="call-choice-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
+        <div class="w-full max-w-sm bg-black border border-[#FF007F] p-6 text-center shadow-[0_0_40px_rgba(255,0,127,0.5)]">
+            <h3 class="font-pixel text-[12px] text-[#00FF00] mb-4">> CALL_METHOD</h3>
+            <p class="font-vt text-xl text-gray-300 mb-8">연결 방식을 선택하세요.</p>
+            <div class="flex flex-col gap-4">
+                <button id="btn-choose-voice" class="bg-[#00FF00] text-black font-pixel text-[10px] px-4 py-3 hover:bg-white transition-colors">음성 통화 (VOICE)</button>
+                <button id="btn-choose-video" class="bg-[#FF007F] text-black font-pixel text-[10px] px-4 py-3 hover:bg-white transition-colors">영상 통화 (VIDEO)</button>
+                <button id="btn-close-choice" class="mt-4 text-gray-500 font-vt text-lg hover:text-white transition-colors">취소</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 5. Incoming Call Modal -->
     <div id="incoming-call-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
         <div class="w-full max-w-sm bg-black border-2 border-[#FF007F] p-6 text-center ringing-animation shadow-[0_0_40px_rgba(255,0,127,0.5)]">
             <div class="text-[#FF007F] text-5xl mb-4">⚠️</div>
             <h3 class="font-pixel text-[12px] text-[#00FF00] mb-2">> INCOMING_CALL</h3>
-            <p class="font-vt text-2xl text-white mb-8">[SYSTEM] <span id="incoming-caller-name" class="text-[#FF007F]"></span>님이 영상통화를 요청합니다.</p>
+            <p class="font-vt text-2xl text-white mb-8">[SYSTEM] <span id="incoming-caller-name" class="text-[#FF007F]"></span>님이 <span id="incoming-call-text" class="text-[#FF007F]">음성통화를 요청합니다.</span></p>
             <div class="flex gap-4 justify-center">
                 <button id="btn-accept-call" class="bg-[#00FF00] text-black font-pixel text-[10px] px-6 py-3 hover:bg-white transition-colors flex-1">수락 (ACCEPT)</button>
                 <button id="btn-reject-call" class="bg-red-600 text-white font-pixel text-[10px] px-6 py-3 hover:bg-red-400 transition-colors flex-1">거절 (REJECT)</button>
@@ -255,7 +260,7 @@
             <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d] shrink-0 z-30">
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <div class="font-pixel text-[10px] text-[#00FF00]" id="call-title-text">ENCRYPTED_VIDEO_CALL...</div>
+                    <div class="font-pixel text-[10px] text-[#00FF00]" id="call-title-text">ENCRYPTED_CALL...</div>
                 </div>
                 <div class="font-vt text-lg text-gray-400" id="call-target-name-modal">@target</div>
             </div>
@@ -265,12 +270,11 @@
                     <video id="call-video-player" class="absolute inset-0 w-full h-full object-cover hidden" playsinline loop></video>
                     <audio id="call-audio-player" class="hidden" loop></audio>
 
-                    <!-- 여기도 글리치 필터 제거됨 -->
-                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-50 glitched-image scale-110">
-                    <div id="call-center-text" class="text-[#FF007F] font-vt text-2xl lg:text-4xl animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2 text-center w-full">> CONNECTED_BUT_GLITCHING <</div>
+                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-50 scale-110">
+                    <div id="call-center-text" class="text-[#FF007F] font-vt text-2xl lg:text-4xl animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2 text-center w-full">> CONNECTED <</div>
                 </div>
                 
-                <div id="pip-container" class="absolute bottom-6 right-4 w-28 sm:w-36 aspect-[9/16] bg-black border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.5)] z-20 overflow-hidden">
+                <div id="pip-container" class="absolute bottom-6 right-4 w-28 sm:w-36 aspect-[9/16] bg-black border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.5)] z-20 overflow-hidden hidden">
                     <video id="user-cam" autoplay playsinline muted class="pip-cam w-full h-full object-cover"></video>
                     <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 font-pixel text-[8px] text-red-500">NO CAM ACCESS</div>
                 </div>
@@ -288,6 +292,8 @@
         // ==========================================
         // 📁 [1] 미디어 연결 영역 
         // ==========================================
+        // voiceCall1: 수동으로 전화를 걸었을 때 나오는 음성
+        // voiceCall2: 고백 상태에서 자동으로 걸려올 때 나오는 음성
         const ASSETS = {
             sfx: {
                 click: './assets/audio/click.mp3',       
@@ -299,7 +305,8 @@
             'sion__5': {
                 profile: './assets/profile/sion_profile.JPG', 
                 videoCall: './assets/video/sion_call.mp4',
-                voiceCall: './assets/audio/sion_voice.mp3',
+                voiceCall1: './assets/audio/sion_voice1.mp3', 
+                voiceCall2: './assets/audio/sion_voice2.mp3',
                 feed: [
                     './assets/feed/sion_pic1.jpg',
                     './assets/feed/sion_pic2.jpg'
@@ -308,13 +315,15 @@
             'ri_ku_03': {
                 profile: './assets/profile/riku_profile.PNG',
                 videoCall: './assets/video/riku_call.mp4',
-                voiceCall: './assets/audio/riku_voice.mp3',
+                voiceCall1: './assets/audio/riku_voice1.mp3',
+                voiceCall2: './assets/audio/riku_voice2.mp3',
                 feed: [ './assets/feed/riku_pic1.jpg' ]
             },
             'yushihihi_405': { 
                 profile: './assets/profile/yushi_profile.PNG',
                 videoCall: './assets/video/yushi_call.mp4',
-                voiceCall: './assets/audio/yushi_voice.mp3',
+                voiceCall1: './assets/audio/yushi_voice1.mp3',
+                voiceCall2: './assets/audio/yushi_voice2.mp3',
                 feed: [ 
                     './assets/feed/yushi.PNG',
                     './assets/feed/yushi_2.PNG'
@@ -323,32 +332,30 @@
             'jaehee__zzang': {
                 profile: './assets/profile/jaehee_profile.PNG',
                 videoCall: './assets/video/jaehee_call.mp4',
-                voiceCall: './assets/audio/jaehee_voice.mp3',
+                voiceCall1: './assets/audio/jaehee_voice1.mp3',
+                voiceCall2: './assets/audio/jaehee_voice2.mp3',
                 feed: [ './assets/feed/jaehee_pic1.jpg' ] 
             },
             'ryo_hi_rose': { 
                 profile: './assets/profile/ryo_profile.PNG',
                 videoCall: './assets/video/ryo_call.mp4',
-                voiceCall: './assets/audio/ryo_voice.mp3',
+                voiceCall1: './assets/audio/ryo_voice1.mp3',
+                voiceCall2: './assets/audio/ryo_voice2.mp3',
                 feed: [ './assets/feed/ryo_pic1.jpg' ] 
             },
             'sakusakusaku07': { 
                 profile: './assets/profile/sakuya_profile.PNG',
                 videoCall: './assets/video/sakuya_call.mp4',
-                voiceCall: './assets/audio/sakuya_voice.mp3',
+                voiceCall1: './assets/audio/sakuya_voice1.mp3',
+                voiceCall2: './assets/audio/sakuya_voice2.mp3',
                 feed: [ './assets/feed/sakuya_pic1.jpg' ] 
             }
         };
 
-        // ==========================================
-        // 🔊 [2] 사운드 재생 매니저 
-        // ==========================================
         const audioNodes = {};
-        let scratchAudioLoop = null;
 
         function playSFX(type) {
             if(!ASSETS.sfx[type]) return; 
-            
             if(type === 'ringtone' || type === 'scratch') {
                 if(!audioNodes[type]) {
                     audioNodes[type] = new Audio(ASSETS.sfx[type]);
@@ -357,7 +364,6 @@
                 audioNodes[type].play().catch(e => console.log('Audio blocked'));
                 return;
             }
-
             const audio = new Audio(ASSETS.sfx[type]);
             audio.play().catch(e => console.log('Audio blocked'));
         }
@@ -370,20 +376,99 @@
         }
 
         // ==========================================
-        // 📝 [3] DM 시나리오 스크립트
+        // 🔗 링크 자동 변환 함수 (인스타 링크 등)
+        // ==========================================
+        function linkify(text) {
+            const urlPattern = /(^|[^"'])(https?:\/\/[^\s<]+)/g;
+            return text.replace(urlPattern, '$1<a href="$2" target="_blank" class="text-[#00FF00] underline break-all hover:text-white transition-colors">$2</a>');
+        }
+
+        // ==========================================
+        // 📝 [3] DM 시나리오 스크립트 
+        // type: 'video' 로 작성하면 동영상이 출력됩니다.
         // ==========================================
         const dmScripts = {
             'sion__5': [
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '방금 통화... 너 맞지?' },
-                { type: 'text', text: '대답해봐.' },
-                { type: 'text', text: '계속 지켜보고 있었던 거 다 알아.' }
+                { type: 'video', url: './assets/dm/sion_dm_video1.mp4', text: `
+                hello?
+                ~♡`},
+                { type: 'text', text: `
+                있잖아
+                사진 찍는 거 좋아해?
+                ㅎㅎ`},
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg' },
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: 'ㅎㅎ' },
+                { type: 'text', text: `
+                아 잠만 보지말고
+                오늘 뭐해?
+                이따 잠깐 볼래?` }
+            ],
+            'ri_ku_03': [
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `안녕~`},
+                { type: 'text', text: `뭐해？`},
+                { type: 'text', text: `
+                ㅋㅋㅋ
+                https://www.instagram.com/reels/Dd_GG7KpszX/
+                너도 나와ㅎㅎ`},
+                { type: 'text', text: `앗 링크 눌러보지마`},
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '지금 몇시〜' },
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '좋아해～' }
+            ],
+            'yushihihi_405': [
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `테마를 love로 변경했습니다`},
+                { type: 'text', text: `
+                허허
+                웃긴 거 보여줄까ㅋㅋㅋ` },
+                { type: 'text', text: `
+                아ㅏㅏㅏ
+                좀 이따가 나와줄 수 있어?
+                기다릴게` }, 
+                { type: 'text', text: `으악 받아줘` }
+            ],
+            'jaehee__zzang': [
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `ㅎㅇ ㅋ`},
+                { type: 'text', text: `
+                나 안경 삼 어때
+                이거 내가 만든 건데 너만 특별히 보여줄게`},
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg' },
+                { type: 'text', text: `
+                잠깐만!
+                이제 집중해야돼😬`},
+                { type: 'text', text: `고백받게해주세요\n고백받게해주세요`},
+                { type: 'text', text: `
+                나도 진짜 딱 한번만 말할거야
+                https://www.instagram.com/reels/Dd_NSlnp1jG/`}
+            ],
+            'ryo_hi_rose': [
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `안녕 레이디 사귑시다`},
+                { type: 'text', text: `好き`},
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `널 좋아하는 건 누워서 떡먹기 입니다` },
+                { type: 'text', text: '왜 자꾸 웃는거임'},
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '진짜 좋아한다고' },
+                { type: 'text', text: `
+                https://www.instagram.com/reels/Dd_Oohup5pL/
+                ㅈㅇㅎ`},
+                { type: 'text', text: `
+                https://www.instagram.com/reels/Dd_O8N7pSOW/
+                진짜 좋아하나???`}
+            ],
+            'sakusakusaku07': [
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `안뇽 뭐해뭐해뭐해`},
+                { type: 'text', text: `
+                오늘의 운세 볼래?
+                오ㅎㅎㅎ 나 6위ㅎ`},
+                { type: 'text', text: `
+                10월의 행운아이템은 하트래
+                ~두근두근위시운세~
+                행운의 아이템: ❤️`},
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `매력없어?ㅠ` },
+                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '나랑 만나자' }
             ],
             'default': [
                 { type: 'text', text: '시스템이 이상해... 너 때문이야?' },
                 { type: 'text', text: '대답해줘.' }
             ]
         };
-        // ==========================================
 
         const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaehee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
         
@@ -391,6 +476,7 @@
             userId: "",
             currentMember: members[0],
             videoStream: null,
+            activeCallType: null, 
             scratchedState: {}, 
             statusIndex: {}, 
             statusFlow: [
@@ -438,7 +524,8 @@
             }
         }
 
-        /* --- 1. Terminal Intro --- */
+        window.onload = () => setTimeout(typeWriter, 500);
+
         const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까? Y/N]";
         const termElement = document.getElementById('term-text');
         let charIndex = 0;
@@ -455,8 +542,6 @@
             }
         }
 
-        window.onload = () => setTimeout(typeWriter, 500);
-
         document.getElementById('btn-y').addEventListener('click', () => {
             document.getElementById('term-choices').classList.add('hidden');
             termElement.innerHTML += "<br><br><span class='text-gray-500 font-vt text-xl'>[SYSTEM] 우회 경로 확보 중...</span>";
@@ -469,7 +554,6 @@
             setTimeout(() => switchScreen('screen-id-gen'), 1500);
         });
 
-        /* --- 2. ID Generator --- */
         document.getElementById('btn-enter-main').addEventListener('click', () => {
             const inputVal = document.getElementById('custom-nickname-input').value.trim();
             state.userId = inputVal !== '' ? inputVal : '익명_User';
@@ -482,7 +566,6 @@
             if(e.key === 'Enter') document.getElementById('btn-enter-main').click();
         });
 
-        /* --- Mobile Sidebar --- */
         const leftSidebar = document.getElementById('left-sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
 
@@ -499,7 +582,6 @@
         document.getElementById('btn-close-nav').addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
 
-        /* --- 3. Main Dashboard --- */
         function initMainDashboard() {
             switchScreen('screen-main');
             renderMemberList();
@@ -524,7 +606,6 @@
             });
         }
 
-        // === 📸 Grid Feed Rendering ===
         function loadFeed(memberId) {
             state.currentMember = memberId;
             const assetData = ASSETS[memberId] || {};
@@ -560,7 +641,7 @@
                 
                 grid.innerHTML += `
                     <div class="relative w-full aspect-square bg-[#111] overflow-hidden feed-item group cursor-crosshair" data-idx="${i}" data-src="${imgSrc}">
-                        <img src="${imgSrc}" class="w-full h-full object-cover glitched-image absolute inset-0 z-0 ${isRevealed ? 'revealed' : ''}">
+                        <img src="${imgSrc}" class="w-full h-full object-cover absolute inset-0 z-0 ${isRevealed ? 'revealed' : ''}">
                         <canvas class="scratch-canvas absolute inset-0 z-10 w-full h-full" style="display: ${isRevealed ? 'none' : 'block'}"></canvas>
                         <div class="caption-layer ${isRevealed ? '' : 'hidden'} absolute bottom-0 inset-x-0 bg-black/80 border-t border-[#FF007F] p-1 md:p-2 pointer-events-none z-20">
                             <p class="font-vt text-[#FF007F] text-[10px] md:text-sm leading-tight line-clamp-1">${state.captions[memberId]}</p>
@@ -568,11 +649,9 @@
                     </div>
                 `;
             }
-            
             setTimeout(() => initGridScratchLogic(memberId), 150);
         }
 
-        // --- Photo Popup Logic ---
         const photoModal = document.getElementById('photo-popup-modal');
         const popupImg = document.getElementById('popup-photo-img');
 
@@ -656,7 +735,7 @@
                         state.scratchedState[memberId][idx] = true;
                         canvas.style.transition = 'opacity 0.5s ease';
                         canvas.style.opacity = '0';
-                        item.querySelector('.glitched-image').classList.add('revealed');
+                        item.querySelector('img').classList.add('revealed');
                         item.querySelector('.caption-layer').classList.remove('hidden');
                         
                         setTimeout(() => {
@@ -692,7 +771,7 @@
             });
         }
 
-        /* --- Status System & Auto Call Logic --- */
+        /* --- Status System --- */
         let callTimeout = null;
 
         document.querySelectorAll('.btn-react').forEach(btn => {
@@ -723,15 +802,6 @@
             });
         });
 
-        function showIncomingCall(memberId) {
-            document.getElementById('incoming-caller-name').textContent = `@${memberId}`;
-            document.getElementById('incoming-call-modal').classList.remove('hidden');
-            document.getElementById('incoming-call-modal').classList.add('flex');
-            
-            playSFX('ringtone'); 
-            appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 영상통화를 시도 중입니다...`);
-        }
-
         /* --- Public Chat --- */
         const publicChatLog = document.getElementById('public-chat-log');
         const publicChatInput = document.getElementById('public-chat-input');
@@ -758,7 +828,7 @@
             if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
             else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
             
-            div.innerHTML = text;
+            div.innerHTML = linkify(text);
             publicChatLog.appendChild(div);
 
             if (isScrolledToBottom || isUser) {
@@ -788,16 +858,17 @@
                        。
                       o  고독한
                       。 남자의 등장 . . . 
-                        Ｏ
+                       Ｏ
                          ｏ
-                          。o`},
+                         。o`},
                 {name: 'yushihihi_405', msg: `^_^`},
                 {name: 'sakusakusaku07', msg: '안녕하십니까'},
                 {name: 'sion__5', msg: 'hi'},
                 {name: 'ryo_hi_rose', msg: 'ᗜ_ᗜ'},
+                // 비디오 태그 추가 예시
                 {name: 'jaehee__zzang', msg: `나 요즘....
                 심장이
-                이상합니다<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                이상합니다<br><video src="./assets/video/jaehee_call.mp4" autoplay loop muted playsinline class="w-full mt-2 border border-[#FF007F]"></video>`},
                 {name: 'jaehee__zzang', msg: `
                 그래?
                 나도 그래
@@ -845,7 +916,60 @@
                 {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
                 {name: 'sion__5', msg: '응;'},
                 {name: 'jaehee__zzang', msg: `X<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
-                {name: 'sion__5', msg: '응;'}
+                {name: 'sion__5', msg: '그럴리가요'},
+                {name: 'sion__5', msg: `그게 뭐지요<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: '눈이 송아지 같아'},
+                {name: 'sion__5', msg: `
+                나 재밌는거 발견했어
+                https://confusedlove.com
+                이거해봥`},
+                {name: 'sion__5', msg: `
+                ??
+                리쿠 많이 해`},
+                {name: 'sion__5', msg: '🤷‍♂️🤷‍♂️🤷‍♂️'},
+                {name: 'sion__5', msg: 'ㄱㄷ 디기'},
+                {name: 'sion__5', msg: '사쿠 진짜 하러감?'},
+                {name: 'sion__5', msg: `ㅠㅠ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: '너는'},
+                {name: 'sion__5', msg: `ㅎㅎㅎ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `
+                오늘따라
+                많이
+                c o n f u s e d 하네..`},
+                {name: 'sion__5', msg: `
+                https://www.instagram.com/reels/DdtHCXYJUoe/
+                릴스 봐줄 사람
+                내 릴스`},
+                {name: 'sion__5', msg: '너나 봐'},
+                {name: 'sion__5', msg: '오우'},
+                {name: 'sion__5', msg: `
+                크왕
+                크왕 크왕 크왕 크왕`},
+                {name: 'sion__5', msg: '???'},
+                {name: 'sion__5', msg: '진정해'},
+                {name: 'sion__5', msg: `
+                많이 혼.란스러우시구나
+                근데 전말이죠
+                혼란스러울 ㅋ대
+                기타를 쳐...`},
+                {name: 'sion__5', msg: '그럼 기타를 쳐'},
+                {name: 'sion__5', msg: `<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: '울지말고 얘기를 해요'},
+                {name: 'sion__5', msg: `
+                눈물이
+                검
+                정색`},
+                {name: 'sion__5', msg: `
+                https://www.instagram.com/reels/DdtJVdRJUtc/
+                그래서 기타를 쳤어`},
+                {name: 'sion__5', msg: '잘했어용'},
+                {name: 'sion__5', msg: `
+                아 왤케 안 보내져
+                ㅂㅂ`},
+                {name: 'sion__5', msg: `
+                https://www.instagram.com/reels/DdtKaqGphta/
+                나도 릴스~`},
+                {name: 'sion__5', msg: '아무도 안보네'}
             ];
             let msgIdx = 0;
             
@@ -906,15 +1030,15 @@
                     state.postCallDmStep[memberId] = step + 1;
                     
                     setTimeout(() => {
-                        playSFX('alert'); // 봇 답장 알림음
-                        appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url);
+                        playSFX('alert'); 
+                        appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url, nextMsg.type);
                     }, 1000);
                 }
             }
         }
 
-        function appendDMChat(name, text, type, memberId, photoUrl = null) {
-            const msgObj = { name, text, type, photoUrl };
+        function appendDMChat(name, text, type, memberId, url = null, msgType = 'text') {
+            const msgObj = { name, text, type, url, msgType };
             state.dmHistory[memberId].push(msgObj);
             if (!dmModal.classList.contains('hidden') && state.currentMember === memberId) {
                 renderDMSingle(msgObj);
@@ -927,10 +1051,15 @@
                 div.className = 'flex flex-col mb-4';
                 let contentHTML = '';
                 
-                if (msg.photoUrl) {
-                    contentHTML += `<img src="${msg.photoUrl}" class="max-w-[200px] border-2 border-[#FF007F] rounded mb-2">`;
+                if (msg.msgType === 'photo' && msg.url) {
+                    contentHTML += `<img src="${msg.url}" class="max-w-[200px] border-2 border-[#FF007F] rounded mb-2">`;
+                } else if (msg.msgType === 'video' && msg.url) {
+                    contentHTML += `<video src="${msg.url}" autoplay loop muted playsinline class="max-w-[200px] border-2 border-[#FF007F] rounded mb-2"></video>`;
                 }
-                contentHTML += `<div class="bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] font-vt text-lg lg:text-xl rounded-br-xl rounded-tr-xl break-words shadow-[2px_2px_0_rgba(255,0,127,0.5)]">${msg.text}</div>`;
+                
+                if (msg.text) {
+                    contentHTML += `<div class="bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] font-vt text-lg lg:text-xl rounded-br-xl rounded-tr-xl break-words whitespace-pre-wrap shadow-[2px_2px_0_rgba(255,0,127,0.5)]">${linkify(msg.text)}</div>`;
+                }
                 
                 div.innerHTML = `
                     <span class="text-[10px] text-[#FF007F] font-pixel mb-1">${msg.name}</span>
@@ -940,7 +1069,7 @@
                 div.className = 'flex flex-col items-end mb-4';
                 div.innerHTML = `
                     <span class="text-[10px] text-gray-500 font-pixel mb-1">ME</span>
-                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] font-vt text-lg lg:text-xl rounded-bl-xl rounded-tl-xl break-words shadow-[-2px_2px_0_rgba(0,255,0,0.5)]">${msg.text}</div>
+                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] font-vt text-lg lg:text-xl rounded-bl-xl rounded-tl-xl break-words whitespace-pre-wrap shadow-[-2px_2px_0_rgba(0,255,0,0.5)]">${linkify(msg.text)}</div>
                 `;
             }
             dmMessages.appendChild(div);
@@ -950,27 +1079,69 @@
         /* --- Video/Voice Call Logic --- */
         const callModal = document.getElementById('call-modal');
         const incomingModal = document.getElementById('incoming-call-modal');
+        const callChoiceModal = document.getElementById('call-choice-modal');
         const userCam = document.getElementById('user-cam');
         const camErrorMsg = document.getElementById('cam-error-msg');
         const videoPlayer = document.getElementById('call-video-player');
         const audioPlayer = document.getElementById('call-audio-player');
         const placeholderImg = document.getElementById('call-member-img');
         
+        // 1. 수동 발신 (Call 버튼 클릭)
         document.getElementById('btn-call-member').addEventListener('click', () => {
-            const isVideo = state.statusIndex[state.currentMember] >= 3;
-            startCall(isVideo);
+            if (state.statusIndex[state.currentMember] < 3) {
+                // 3단계 미만: 영상/음성 선택 팝업 오픈
+                callChoiceModal.classList.remove('hidden');
+                callChoiceModal.classList.add('flex');
+            } else {
+                // 3단계 이상인 경우 기본적으로 보이스1으로 걸리도록 처리
+                startCall('voice1');
+            }
         });
+
+        // 팝업 닫기 버튼
+        document.getElementById('btn-close-choice').addEventListener('click', () => {
+            callChoiceModal.classList.add('hidden');
+            callChoiceModal.classList.remove('flex');
+        });
+
+        // 음성 통화 선택
+        document.getElementById('btn-choose-voice').addEventListener('click', () => {
+            callChoiceModal.classList.add('hidden');
+            callChoiceModal.classList.remove('flex');
+            startCall('voice1');
+        });
+
+        // 영상 통화 선택
+        document.getElementById('btn-choose-video').addEventListener('click', () => {
+            callChoiceModal.classList.add('hidden');
+            callChoiceModal.classList.remove('flex');
+            startCall('video');
+        });
+
+        // 자동 수신 (고백 상태)
+        function showIncomingCall(memberId) {
+            document.getElementById('incoming-caller-name').textContent = `@${memberId}`;
+            // 텍스트를 음성통화로 수정
+            document.getElementById('incoming-call-text').textContent = "음성통화를 요청합니다.";
+            incomingModal.classList.remove('hidden');
+            incomingModal.classList.add('flex');
+            
+            playSFX('ringtone'); 
+            appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 음성통화를 시도 중입니다...`);
+        }
 
         document.getElementById('btn-accept-call').addEventListener('click', () => {
             stopSFX('ringtone'); 
             incomingModal.classList.add('hidden');
             incomingModal.classList.remove('flex');
-            startCall(true); 
+            // 자동 수신은 무조건 voiceCall2 (고백 음성)
+            startCall('voice2'); 
         });
 
-        async function startCall(isVideo) {
+        async function startCall(type) {
             const current = state.currentMember;
             const assetData = ASSETS[current] || {};
+            state.activeCallType = type; // 현재 통화 타입 저장
             
             document.getElementById('call-target-name-modal').textContent = `@${current}`;
             const bgColors = ['111111', '1a000d', '001a00'];
@@ -985,10 +1156,10 @@
             const centerText = document.getElementById('call-center-text');
             camErrorMsg.classList.add('hidden');
 
-            if (isVideo) {
+            if (type === 'video') {
                 pipContainer.classList.remove('hidden');
                 titleText.textContent = "ENCRYPTED_VIDEO_CALL...";
-                centerText.textContent = "> CONNECTED_BUT_GLITCHING <";
+                centerText.textContent = "> CONNECTED <";
                 
                 if(assetData.videoCall) {
                     videoPlayer.src = assetData.videoCall;
@@ -1011,11 +1182,13 @@
                 titleText.textContent = "ENCRYPTED_VOICE_CALL...";
                 centerText.textContent = "> AUDIO_ONLY_CONNECTION 🔉 <";
                 
-                if(assetData.voiceCall) {
-                    audioPlayer.src = assetData.voiceCall;
+                let targetAudio = type === 'voice2' ? assetData.voiceCall2 : assetData.voiceCall1;
+                
+                if(targetAudio) {
+                    audioPlayer.src = targetAudio;
                     audioPlayer.play().catch(e => console.log("Audio autoplay prevented"));
                 }
-                appendPublicChat(`[SYSTEM] ${state.userId}님이 @${current}에게 음성 통화를 연결했습니다.`);
+                appendPublicChat(`[SYSTEM] ${state.userId}님이 @${current}와 음성 통화를 연결했습니다.`);
             }
         }
 
@@ -1048,7 +1221,8 @@
 
             const current = state.currentMember;
             
-            if (state.statusIndex[current] >= 3 && !state.hasFinishedVideoCall[current]) {
+            // 상태 3 이상 && 아직 DM 시퀀스가 시작 안 됨 && 방금 한 통화가 자동수신(voice2)인 경우에만 DM 시작
+            if (state.statusIndex[current] >= 3 && !state.hasFinishedVideoCall[current] && state.activeCallType === 'voice2') {
                 state.hasFinishedVideoCall[current] = true;
                 
                 setTimeout(() => {
@@ -1058,7 +1232,7 @@
                         state.postCallDmStep[current] = 1; 
                         
                         playSFX('alert'); 
-                        appendDMChat(current, firstMsg.text, 'bot', current, firstMsg.url);
+                        appendDMChat(current, firstMsg.text, 'bot', current, firstMsg.url, firstMsg.type);
                         appendPublicChat(`[SYSTEM] ⚠️ @${current}로부터 새로운 다이렉트 메시지가 도착했습니다.`);
                     }
                 }, 2000);
