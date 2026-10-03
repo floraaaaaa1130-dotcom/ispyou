@@ -8,22 +8,16 @@
     
     <style>
         /* ==========================================
-           폰트(Fonts) 설정 영역
+           폰트(Fonts) 단일 통일 영역
+           여기에 원하시는 폰트 경로 딱 1개만 넣으시면 모든 텍스트가 통일됩니다.
            ========================================== */
         @font-face {
-            font-family: 'CustomBasic';
-            src: url('./assets/fonts/your-basic-font.woff2') format('woff2'); 
-        }
-        @font-face {
-            font-family: 'CustomPixel';
-            src: url('./assets/fonts/your-pixel-font.woff2') format('woff2'); 
-        }
-        @font-face {
-            font-family: 'CustomVT';
-            src: url('./assets/fonts/your-vt-font.woff2') format('woff2');    
+            font-family: 'MyCustomFont';
+            src: url('./assets/fonts/Mona10x12.woff2') format('woff2'); 
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Noto+Sans+KR:wght@400;700&family=Press+Start+2P&display=swap');
+        /* 만약 폰트 파일이 없을 경우 기본 고딕체로 깔끔하게 떨어지도록 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
 
         :root {
             --neon-pink: #FF007F;
@@ -31,17 +25,33 @@
             --bg-black: #000000;
         }
 
-        body {
+        /* !important를 사용해 기존 픽셀/터미널 폰트 클래스를 모두 덮어씌워 단일 폰트로 강제 통일 */
+        body, input, button, textarea, .font-pixel, .font-vt {
+            font-family: 'MyCustomFont', 'Noto Sans KR', sans-serif !important;
             background-color: var(--bg-black);
             color: var(--neon-pink);
-            font-family: 'CustomBasic', 'Noto Sans KR', sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
         }
 
-        .font-pixel { font-family: 'CustomPixel', 'Press Start 2P', cursive; }
-        .font-vt { font-family: 'CustomVT', 'VT323', monospace; }
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 9999;
+            animation: crt-flicker 0.15s infinite;
+        }
+
+        @keyframes crt-flicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .glitched-image {
+            transition: all 0.5s ease;
+        }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #111; }
@@ -58,6 +68,11 @@
         canvas.scratch-canvas {
             touch-action: none;
             cursor: crosshair;
+        }
+
+        .pip-cam {
+            filter: grayscale(1) contrast(1.5) sepia(1) hue-rotate(270deg);
+            transform: scaleX(-1);
         }
         
         .ringing-animation {
@@ -79,42 +94,44 @@
     </style>
 </head>
 <body class="text-sm">
+    <div class="scanlines"></div>
+
     <!-- DM Toast Notification -->
-    <div id="dm-toast" class="fixed top-4 left-0 right-0 z-[999] flex justify-center hidden pointer-events-none">
-        <div class="bg-[#1a000d] border-2 border-[#FF007F] text-white p-4 shadow-[0_0_20px_rgba(255,0,127,0.5)] cursor-pointer pointer-events-auto toast-slide-down" onclick="openDMFromToast()">
+    <div id="dm-toast" class="fixed top-4 left-4 right-4 z-[999] flex justify-center hidden pointer-events-none">
+        <div class="bg-[#1a000d] border border-[#FF007F] text-white p-3 rounded shadow-[0_0_15px_rgba(255,0,127,0.5)] cursor-pointer pointer-events-auto toast-slide-down w-full max-w-sm" onclick="openDMFromToast()">
             <div class="flex items-center gap-3">
-                <span class="text-2xl">💌</span>
+                <span class="text-xl">💌</span>
                 <div>
-                    <p class="font-pixel text-[10px] text-[#00FF00]">NEW MESSAGE</p>
-                    <p class="font-vt text-lg" id="toast-sender">@sender</p>
+                    <p class="text-xs text-[#00FF00] font-bold">새로운 메시지</p>
+                    <p class="text-sm" id="toast-sender">@sender</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 1. Intro Terminal Screen -->
-    <div id="screen-intro" class="screen flex flex-col items-center justify-center min-h-screen bg-black p-4 z-50 fixed inset-0">
-        <div class="w-full max-w-2xl text-left font-vt text-2xl lg:text-3xl text-[#00FF00] drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
+    <div id="screen-intro" class="screen flex flex-col items-center justify-center min-h-screen bg-black p-6 z-50 fixed inset-0">
+        <div class="w-full max-w-xl text-left text-base lg:text-lg text-[#00FF00] leading-relaxed drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
             <p id="term-text" class="mb-6 typewriter-cursor"></p>
-            <div id="term-choices" class="hidden flex gap-8 mt-8">
-                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-2 transition-all">> [Y]es (훔쳐보기)</button>
-                <button id="btn-n" class="hover:text-[#FF007F] px-2 transition-all">> [N]o</button>
+            <div id="term-choices" class="hidden flex gap-8 mt-6">
+                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-3 py-1 transition-all">> [Y]es (훔쳐보기)</button>
+                <button id="btn-n" class="hover:text-[#FF007F] px-3 py-1 transition-all">> [N]o</button>
             </div>
         </div>
     </div>
 
     <!-- 2. ID Generation Screen -->
     <div id="screen-id-gen" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-40 fixed inset-0">
-        <div class="border border-[#FF007F] p-8 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center relative overflow-hidden">
-            <h2 class="font-pixel text-[10px] text-[#00FF00] mb-6">> USER_REGISTRATION.exe</h2>
-            <p class="text-gray-400 mb-4 font-vt text-xl">사용할 닉네임을 입력하세요.</p>
+        <div class="border border-[#FF007F] p-6 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center relative overflow-hidden rounded-sm">
+            <h2 class="text-xs font-bold text-[#00FF00] mb-4">> USER_REGISTRATION.exe</h2>
+            <p class="text-gray-400 mb-4 text-sm">사용할 닉네임을 입력하세요.</p>
             
             <div class="bg-black border border-dashed border-[#FF007F] p-3 mb-6 relative z-10 flex items-center">
-                <span class="text-[#FF007F] font-vt text-2xl mr-2">></span>
-                <input type="text" id="custom-nickname-input" class="bg-transparent text-[#FF007F] font-vt text-2xl focus:outline-none w-full animate-pulse placeholder-[#FF007F]/40" placeholder="익명_486" autocomplete="off" maxlength="12">
+                <span class="text-[#FF007F] text-base mr-2">></span>
+                <input type="text" id="custom-nickname-input" class="bg-transparent text-[#FF007F] text-base focus:outline-none w-full animate-pulse placeholder-[#FF007F]/40" placeholder="익명_486" autocomplete="off" maxlength="12">
             </div>
             
-            <button id="btn-enter-main" class="bg-[#FF007F] text-black font-pixel text-[10px] px-6 py-3 hover:bg-white transition-colors w-full">접속하기</button>
+            <button id="btn-enter-main" class="bg-[#FF007F] text-black text-xs font-bold px-6 py-2 hover:bg-white transition-colors w-full rounded-sm">접속하기</button>
         </div>
     </div>
 
@@ -122,10 +139,10 @@
     <div id="screen-main" class="screen hidden h-[100dvh] bg-black flex-col lg:flex-row w-full text-white overflow-hidden relative">
         
         <!-- Mobile Header -->
-        <div class="lg:hidden p-2 border-b border-[#FF007F] flex justify-between items-center bg-black shrink-0 z-40 relative">
-            <button id="btn-toggle-nav" class="text-[#FF007F] font-pixel text-lg p-1 hover:text-white transition-colors">☰</button>
-            <span class="font-pixel text-[10px] text-[#FF007F]">i_SPY_u</span>
-            <span class="my-user-id font-vt text-lg text-[#00FF00]"></span>
+        <div class="lg:hidden p-3 border-b border-[#FF007F] flex justify-between items-center bg-black shrink-0 z-40 relative">
+            <button id="btn-toggle-nav" class="text-[#FF007F] text-lg p-1 hover:text-white transition-colors">☰</button>
+            <span class="text-xs font-bold text-[#FF007F] tracking-widest">i_SPY_u</span>
+            <span class="my-user-id text-sm text-[#00FF00]"></span>
         </div>
 
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-[45] hidden lg:hidden backdrop-blur-sm"></div>
@@ -133,8 +150,8 @@
         <!-- Left Column: Following List -->
         <div id="left-sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 z-[50] w-64 border-r border-[#333] bg-[#030001] transition-transform duration-300 flex flex-col shrink-0 h-full">
             <div class="p-4 border-b border-[#333] bg-black flex justify-between items-center shrink-0">
-                <h2 class="font-pixel text-[10px] text-[#FF007F]">> FOLLOWING</h2>
-                <button id="btn-close-nav" class="lg:hidden text-white hover:text-[#FF007F] font-vt text-2xl">X</button>
+                <h2 class="text-xs font-bold text-[#FF007F] tracking-wider">> FOLLOWING</h2>
+                <button id="btn-close-nav" class="lg:hidden text-white hover:text-[#FF007F] text-lg">X</button>
             </div>
             <div id="member-list" class="flex flex-col overflow-y-auto flex-grow">
                 <!-- Dynamically populated -->
@@ -144,80 +161,78 @@
         <!-- Center Column: Grid Feed -->
         <div class="flex-grow flex flex-col relative h-full overflow-hidden bg-[#080305]">
             <!-- Profile Header -->
-            <div class="p-2 lg:p-4 border-b border-[#333] bg-black flex flex-wrap lg:flex-nowrap justify-between items-center shrink-0 z-20 gap-2 lg:gap-4">
-                <div class="flex items-center gap-2 lg:gap-3 w-full lg:w-auto">
-                    <img id="feed-target-pfp" src="" alt="profile" class="w-12 h-12 lg:w-16 lg:h-16 aspect-square bg-[#111] border-2 border-[#FF007F] object-cover rounded-sm">
+            <div class="p-3 lg:p-4 border-b border-[#333] bg-black flex flex-col sm:flex-row justify-between shrink-0 z-20 gap-3">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <img id="feed-target-pfp" src="" alt="profile" class="w-14 h-14 lg:w-16 lg:h-16 aspect-square bg-[#111] border border-[#FF007F] object-cover rounded-full">
                     <div class="flex flex-col flex-grow">
-                        <h1 id="feed-target-id" class="font-pixel text-[10px] lg:text-sm text-white drop-shadow-[2px_2px_0_#FF007F] mb-1">TARGET</h1>
-                        <div class="flex items-center gap-1 lg:gap-2">
-                            <span id="feed-target-status" class="font-vt text-sm lg:text-xl text-[#FF007F] transition-all bg-[#1a000d] px-1 lg:px-2 py-0.5 lg:py-1 rounded border border-[#FF007F]">[로딩중]</span>
-                            <div class="flex gap-1 lg:gap-2">
-                                <button class="btn-react text-sm lg:text-xl hover:scale-125 transition-transform" title="❤️">❤️</button>
-                                <button class="btn-react text-sm lg:text-xl hover:scale-125 transition-transform" title="🩹">🩹</button>
-                                <button class="btn-react text-sm lg:text-xl hover:scale-125 transition-transform" title="❓">❓</button>
+                        <h1 id="feed-target-id" class="text-sm font-bold text-white mb-1">TARGET</h1>
+                        <div class="flex items-center gap-2">
+                            <span id="feed-target-status" class="text-xs text-[#FF007F] transition-all bg-[#1a000d] px-2 py-0.5 rounded border border-[#FF007F]">[로딩중]</span>
+                            <div class="flex gap-2">
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤️️">❤️</button>
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="🩹">🩹</button>
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❓">❓</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex gap-1 lg:gap-2 w-full lg:w-auto justify-end">
-                    <button id="btn-call-member" class="flex-1 lg:flex-none border border-[#FF007F] text-[#FF007F] px-2 lg:px-4 py-1.5 lg:py-2 font-pixel text-[8px] lg:text-[10px] hover:bg-[#FF007F] hover:text-black transition-colors bg-[#1a000d]">CALL</button>
-                    <button id="btn-open-dm" class="flex-1 lg:flex-none border border-[#00FF00] text-[#00FF00] px-2 lg:px-4 py-1.5 lg:py-2 font-pixel text-[8px] lg:text-[10px] hover:bg-[#00FF00] hover:text-black transition-colors bg-[#001a00]">DM 보내기</button>
+                <div class="flex gap-2 w-full sm:w-auto sm:justify-end items-center">
+                    <button id="btn-call-member" class="flex-1 sm:flex-none border border-[#FF007F] text-[#FF007F] px-3 py-1.5 text-xs font-bold hover:bg-[#FF007F] hover:text-black transition-colors bg-[#1a000d] rounded-sm">CALL</button>
+                    <button id="btn-open-dm" class="flex-1 sm:flex-none border border-[#00FF00] text-[#00FF00] px-3 py-1.5 text-xs font-bold hover:bg-[#00FF00] hover:text-black transition-colors bg-[#001a00] rounded-sm">MESSAGE</button>
                 </div>
             </div>
             
-            <div class="p-1 lg:p-2 border-b border-[#333] bg-[#050002] shrink-0">
-                <h2 class="font-pixel text-[8px] lg:text-[10px] text-gray-600">> ENCRYPTED_FEED.dat</h2>
-            </div>
-            
             <div class="flex-grow bg-[#050002] overflow-y-auto p-1 scroll-smooth">
-                <div id="feed-grid" class="grid grid-cols-3 gap-1 lg:gap-2">
+                <div id="feed-grid" class="grid grid-cols-3 gap-1">
                     <!-- Dynamically populated via JS -->
                 </div>
             </div>
         </div>
 
         <!-- Right Column: Public Chat -->
-        <div id="public-chat-wrapper" class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[30vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30 transition-all duration-500 ease-in-out">
-            <div id="public-chat-header" class="p-2 lg:p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center cursor-pointer select-none">
-                <h2 class="font-pixel text-[10px] text-[#00FF00]">> PUBLIC_CHAT</h2>
+        <div id="public-chat-wrapper" class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[35vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30 transition-all duration-500 ease-in-out">
+            <div id="public-chat-header" class="p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center cursor-pointer select-none">
+                <h2 class="text-xs font-bold text-[#00FF00] tracking-wider">> PUBLIC_CHAT</h2>
                 <div class="flex items-center gap-2">
                     <div id="live-indicator" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="font-vt text-sm text-green-500">LIVE</span>
+                    <span class="text-xs text-green-500">LIVE</span>
                 </div>
             </div>
 
-            <div class="p-2 lg:p-3 flex-grow flex flex-col overflow-hidden bg-black">
-                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-2 lg:space-y-3 pr-2 scroll-smooth">
-                    <div class="text-xs lg:text-sm font-vt text-gray-500 border-b border-[#222] pb-1">[SYSTEM] 글로벌 감청 채널 접속 완료.</div>
+            <div class="p-3 flex-grow flex flex-col overflow-hidden bg-black">
+                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-3 pr-2 scroll-smooth">
+                    <div class="text-xs text-gray-500 border-b border-[#222] pb-1">[SYSTEM] 글로벌 감청 채널 접속 완료.</div>
                 </div>
             </div>
             
             <div class="p-2 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
-                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white font-vt text-lg px-2 py-1 focus:outline-none focus:border-[#FF007F]" placeholder="터미널 입력..." autocomplete="off">
-                <button id="public-chat-submit" class="text-black bg-[#FF007F] font-pixel text-[8px] px-3 py-1 hover:bg-white transition-colors">SEND</button>
+                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-1.5 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="메시지 입력..." autocomplete="off">
+                <button id="public-chat-submit" class="text-black bg-[#FF007F] text-xs font-bold px-4 py-1.5 hover:bg-white transition-colors rounded-sm">SEND</button>
             </div>
         </div>
     </div>
 
     <!-- Photo Enlarge Popup (Includes Like & Comment) -->
     <div id="photo-popup-modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center z-[120] p-4 backdrop-blur-md">
-        <div class="w-full max-w-lg flex flex-col items-center bg-black border border-[#333] rounded-lg overflow-hidden pb-4">
+        <div class="w-full max-w-md flex flex-col items-center bg-black border border-[#333] rounded-lg overflow-hidden pb-4">
             <div class="w-full flex justify-end p-2 bg-[#111]">
-                <button id="btn-close-photo" class="text-white hover:text-[#FF007F] font-vt text-3xl px-2">X</button>
+                <button id="btn-close-photo" class="text-gray-400 hover:text-[#FF007F] text-xl px-3 py-1 font-bold">✕</button>
             </div>
-            <img id="popup-photo-img" src="" class="w-full max-h-[60vh] object-contain bg-black">
+            <img id="popup-photo-img" src="" class="w-full max-h-[50vh] object-contain bg-black">
             
-            <div class="w-full px-4 pt-3 flex flex-col gap-3">
-                <div class="flex gap-4">
-                    <button id="btn-feed-like" class="text-3xl hover:scale-110 transition-transform">🤍</button>
-                    <span class="text-white font-vt text-xl self-center">Likes <span id="feed-like-count">486</span></span>
+            <div class="w-full px-4 pt-4 flex flex-col gap-3">
+                <div class="flex gap-3 items-center border-b border-[#333] pb-3">
+                    <button id="btn-feed-like" class="text-2xl hover:scale-110 transition-transform">🤍</button>
+                    <span class="text-white text-sm font-bold">좋아요 <span id="feed-like-count">486</span>개</span>
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" id="feed-comment-input" class="flex-grow bg-[#111] border border-[#333] text-white font-vt text-lg px-2 py-1 focus:outline-none focus:border-[#FF007F]" placeholder="댓글 추가..." autocomplete="off">
-                    <button id="btn-feed-comment" class="text-black bg-[#FF007F] font-pixel text-[8px] px-3 py-1 hover:bg-white transition-colors">POST</button>
-                </div>
-                <div id="feed-comment-list" class="max-h-[100px] overflow-y-auto space-y-1 font-vt text-gray-300">
+                
+                <div id="feed-comment-list" class="max-h-[120px] overflow-y-auto space-y-2 text-sm text-gray-300">
                     <!-- 댓글이 쌓이는 영역 -->
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <input type="text" id="feed-comment-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="댓글 달기..." autocomplete="off">
+                    <button id="btn-feed-comment" class="text-black bg-[#FF007F] text-xs font-bold px-4 py-2 hover:bg-white transition-colors rounded-sm">게시</button>
                 </div>
             </div>
         </div>
@@ -225,80 +240,78 @@
 
     <!-- 4. DM Modal -->
     <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
-        <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[70vh] lg:h-[60vh] shadow-[0_0_30px_rgba(255,0,127,0.2)]">
+        <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[75vh] lg:h-[65vh] shadow-[0_0_30px_rgba(255,0,127,0.2)] rounded-sm overflow-hidden">
             <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#0a0005]">
-                <div class="font-pixel text-[10px] text-[#FF007F]">DM :: <span id="dm-target-name"></span></div>
-                <button id="btn-close-dm" class="text-white hover:text-[#FF007F] font-vt text-2xl">X</button>
+                <div class="text-xs font-bold text-[#FF007F] tracking-wider">DIRECT MESSAGE :: <span id="dm-target-name" class="text-white"></span></div>
+                <button id="btn-close-dm" class="text-gray-400 hover:text-[#FF007F] text-lg font-bold px-2">✕</button>
             </div>
-            <div id="dm-messages" class="flex-grow p-4 overflow-y-auto flex flex-col">
+            <div id="dm-messages" class="flex-grow p-4 overflow-y-auto flex flex-col bg-[#050002]">
                 <!-- Messages -->
             </div>
-            <div class="p-3 border-t border-[#333] bg-[#050505] flex gap-2 shrink-0">
-                <input type="text" id="dm-input" class="flex-grow bg-transparent text-[#00FF00] font-vt text-xl px-2 focus:outline-none border-b border-[#333] focus:border-[#00FF00]" placeholder="메세지 전송..." autocomplete="off">
-                <button id="btn-send-dm" class="text-black bg-[#00FF00] font-pixel text-[8px] px-3 py-2 hover:bg-white transition-colors">SEND</button>
+            <div class="p-3 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
+                <input type="text" id="dm-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#00FF00] rounded-sm" placeholder="메시지 보내기..." autocomplete="off">
+                <button id="btn-send-dm" class="text-black bg-[#00FF00] text-xs font-bold px-4 py-2 hover:bg-white transition-colors rounded-sm">SEND</button>
             </div>
         </div>
     </div>
 
     <!-- 통화 방식 선택 팝업 (수동 CALL 시) -->
     <div id="call-choice-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
-        <div class="w-full max-w-sm bg-black border border-[#FF007F] p-6 text-center shadow-[0_0_40px_rgba(255,0,127,0.5)]">
-            <h3 class="font-pixel text-[12px] text-[#00FF00] mb-4">> CALL_METHOD</h3>
-            <p class="font-vt text-xl text-gray-300 mb-8">연결 방식을 선택하세요.</p>
-            <div class="flex flex-col gap-4">
-                <button id="btn-choose-voice" class="bg-[#00FF00] text-black font-pixel text-[10px] px-4 py-3 hover:bg-white transition-colors">음성 통화 (VOICE)</button>
-                <button id="btn-choose-video" class="bg-[#FF007F] text-black font-pixel text-[10px] px-4 py-3 hover:bg-white transition-colors">영상 통화 (VIDEO)</button>
-                <button id="btn-close-choice" class="mt-4 text-gray-500 font-vt text-lg hover:text-white transition-colors">취소</button>
+        <div class="w-full max-w-xs bg-black border border-[#FF007F] p-6 text-center shadow-[0_0_40px_rgba(255,0,127,0.5)] rounded-sm">
+            <h3 class="text-xs font-bold text-[#00FF00] mb-3">> CALL_METHOD</h3>
+            <p class="text-sm text-gray-300 mb-6">연결 방식을 선택하세요.</p>
+            <div class="flex flex-col gap-3">
+                <button id="btn-choose-voice" class="bg-[#00FF00] text-black text-xs font-bold px-4 py-3 hover:bg-white transition-colors rounded-sm">음성 통화 (VOICE)</button>
+                <button id="btn-choose-video" class="bg-[#FF007F] text-black text-xs font-bold px-4 py-3 hover:bg-white transition-colors rounded-sm">영상 통화 (VIDEO)</button>
+                <button id="btn-close-choice" class="mt-2 text-gray-500 text-sm hover:text-white transition-colors">취소</button>
             </div>
         </div>
     </div>
 
     <!-- 5. Incoming Call Modal -->
     <div id="incoming-call-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
-        <div class="w-full max-w-sm bg-black border-2 border-[#FF007F] p-6 text-center ringing-animation shadow-[0_0_40px_rgba(255,0,127,0.5)]">
-            <div class="text-[#FF007F] text-5xl mb-4">⚠️</div>
-            <h3 class="font-pixel text-[12px] text-[#00FF00] mb-2">> INCOMING_CALL</h3>
-            <p class="font-vt text-2xl text-white mb-8">[SYSTEM] <span id="incoming-caller-name" class="text-[#FF007F]"></span>님이 <span id="incoming-call-text" class="text-[#FF007F]">음성통화를 요청합니다.</span></p>
-            <div class="flex gap-4 justify-center">
-                <button id="btn-accept-call" class="bg-[#00FF00] text-black font-pixel text-[10px] px-6 py-3 hover:bg-white transition-colors flex-1">수락 (ACCEPT)</button>
-                <button id="btn-reject-call" class="bg-red-600 text-white font-pixel text-[10px] px-6 py-3 hover:bg-red-400 transition-colors flex-1">거절 (REJECT)</button>
+        <div class="w-full max-w-xs bg-black border-2 border-[#FF007F] p-6 text-center ringing-animation shadow-[0_0_40px_rgba(255,0,127,0.5)] rounded-sm">
+            <div class="text-[#FF007F] text-4xl mb-4">📞</div>
+            <h3 class="text-xs font-bold text-[#00FF00] mb-2">> INCOMING_CALL</h3>
+            <p class="text-base text-white mb-6 leading-relaxed">[SYSTEM] <br><span id="incoming-caller-name" class="text-[#FF007F] font-bold"></span>님이<br><span id="incoming-call-text" class="text-[#FF007F]">음성통화를 요청합니다.</span></p>
+            <div class="flex gap-3 justify-center">
+                <button id="btn-accept-call" class="bg-[#00FF00] text-black text-xs font-bold px-4 py-2 hover:bg-white transition-colors flex-1 rounded-sm">수락</button>
+                <button id="btn-reject-call" class="bg-red-600 text-white text-xs font-bold px-4 py-2 hover:bg-red-400 transition-colors flex-1 rounded-sm">거절</button>
             </div>
         </div>
     </div>
 
     <!-- 6. Video/Voice Call Modal -->
     <div id="call-modal" class="fixed inset-0 bg-black/95 hidden flex-col justify-center z-[110] p-0 md:p-4 backdrop-blur-md overflow-hidden">
-        <div class="w-full max-w-[450px] mx-auto bg-black border-0 md:border border-[#FF007F] flex flex-col h-full md:h-[85vh] shadow-[0_0_50px_rgba(255,0,127,0.4)] relative">
+        <div class="w-full max-w-[400px] mx-auto bg-black border-0 md:border border-[#FF007F] flex flex-col h-full md:h-[80vh] shadow-[0_0_50px_rgba(255,0,127,0.4)] relative rounded-sm">
             <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d] shrink-0 z-30">
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <div class="font-pixel text-[10px] text-[#00FF00]" id="call-title-text">ENCRYPTED_CALL...</div>
+                    <div class="text-xs font-bold text-[#00FF00]" id="call-title-text">ENCRYPTED_CALL...</div>
                 </div>
-                <div class="font-vt text-lg text-gray-400" id="call-target-name-modal">@target</div>
+                <div class="text-sm text-gray-400" id="call-target-name-modal">@target</div>
             </div>
 
             <div class="relative w-full flex-grow bg-[#050505] overflow-hidden flex items-center justify-center border-b border-[#333]">
                 <div id="member-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black">
                     <!-- 연결음 대기 텍스트 -->
-                    <div id="call-connecting-text" class="font-vt text-2xl lg:text-3xl text-gray-400 animate-pulse text-center mb-4 z-20">연결 중...</div>
+                    <div id="call-connecting-text" class="text-lg lg:text-xl text-gray-400 animate-pulse text-center mb-4 z-20">연결 중...</div>
                     
-                    <!-- 원본 출력을 위해 모든 필터(opacity 등) 제거됨 -->
                     <video id="call-video-player" class="absolute inset-0 w-full h-full object-cover hidden" playsinline></video>
                     <audio id="call-audio-player" class="hidden"></audio>
 
                     <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                    <div id="call-center-text" class="text-[#FF007F] font-vt text-2xl lg:text-4xl animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2 text-center w-full hidden">> CONNECTED <</div>
+                    <div id="call-center-text" class="text-[#FF007F] text-lg lg:text-xl font-bold animate-pulse tracking-widest relative z-10 bg-black/50 px-4 py-2 text-center w-full hidden">> CONNECTED <</div>
                 </div>
                 
-                <div id="pip-container" class="absolute bottom-6 right-4 w-28 sm:w-36 aspect-[9/16] bg-black border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.5)] z-20 overflow-hidden hidden">
-                    <!-- PIP 캠 필터 클래스도 제거됨 (원본 웹캠) -->
+                <div id="pip-container" class="absolute bottom-6 right-4 w-24 sm:w-32 aspect-[3/4] bg-black border-2 border-[#00FF00] shadow-[0_0_15px_rgba(0,255,0,0.3)] z-20 overflow-hidden hidden rounded-sm">
                     <video id="user-cam" autoplay playsinline muted class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
-                    <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 font-pixel text-[8px] text-red-500">NO CAM ACCESS</div>
+                    <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 text-[10px] text-red-500">NO CAM</div>
                 </div>
             </div>
 
             <div class="p-4 bg-[#0a0005] flex justify-center items-center shrink-0 z-30">
-                <button id="btn-end-call" class="bg-red-600 text-white font-pixel text-[12px] px-10 py-4 hover:bg-red-500 transition-colors shadow-[0_0_20px_rgba(255,0,0,0.6)]">END CALL</button>
+                <button id="btn-end-call" class="bg-red-600 text-white text-xs font-bold px-8 py-3 hover:bg-red-500 transition-colors shadow-[0_0_15px_rgba(255,0,0,0.4)] rounded-sm">통화 종료</button>
             </div>
         </div>
     </div>
@@ -363,7 +376,7 @@
                 feed: [
                     './assets/feed/jaeheefeed.jpg',
                     './assets/feed/jaeheefeed2.jpg',
-                    './assets/feed/jaeheefeed3.jpg',
+                    './assets/feedjaeheefeed3.jpg',
                     './assets/feed/jaeheefeed4.jpg',
                     './assets/feed/jaeheefeed5.jpg'
                 ] 
@@ -427,8 +440,6 @@
 
         // ==========================================
         // 📝 [3] DM 시나리오 스크립트 
-        // type: 'photo' 인데 확장자가 gif인 것은 자동으로 <img> 태그 처리됨
-        // type: 'video' 인데 mp4인 것은 <video> 태그 처리됨
         // ==========================================
         const dmScripts = {
             'sion__5': [
@@ -455,15 +466,15 @@
                 { type: 'text', text: `
                 https://www.instagram.com/reels/Dd_GG7KpszX/
                 노래 듣고 있는데
-                https://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw?si=V1jpF7gOQguG-U1LTy27pg&utm_source=copy-link&pi=XP-yHwWPSsuOq&nd=1&dlsi=c0406ef100bb4dc6
+                https://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw
                 제목은 연관없다~` },
                 { type: 'photo', url: './assets/dm/sion_10.jpg'},
-                { type: 'photo', url: './assets/dm/sion_11.gif', text: '잘자'},
+                { type: 'video', url: './assets/dm/sion_11.gif', text: '잘자'},
             ],
             
             'yushihihi_405': [
                 { type: 'photo', url: './assets/dm/yushi_5.PNG', text: `안녕~`},
-                { type: 'photo', url: './assets/dm/yushi_6.gif', text: `뭐해？`},
+                { type: 'video', url: './assets/dm/yushi_6.gif', text: `뭐해？`},
                 { type: 'text', text: `
                 ㅋㅋㅋ
                 https://www.instagram.com/reels/Dd_GG7KpszX/
@@ -495,7 +506,7 @@
                 https://www.instagram.com/reels/Dd_Q02fJNV0/
                 으악
                 받아줘` },
-                { type: 'photo', url: './assets/dm/jaehee_14.gif'},
+                { type: 'video', url: './assets/dm/jaehee_14.gif'},
             ],
             
             'ryo_hi_rose': [
@@ -519,14 +530,14 @@
                 { type: 'text', text: `
                 나도 진짜 딱 한번만 말할거야
                 https://www.instagram.com/reels/Dd_NSlnp1jG/`},
-                { type: 'photo', url: './assets/dm/ryo_5.gif', text: `굿밤`},
+                { type: 'video', url: './assets/dm/ryo_5.gif', text: `굿밤`},
             ],
             
             'sakusakusaku07': [
                 { type: 'photo', url: './assets/dm/sakuya_12.PNG', text: `안녕 레이디`},
                 { type: 'photo', url: './assets/dm/sakuya_11.PNG', text: `사귑시다`},
                 { type: 'photo', url: './assets/dm/sakuya_10.PNG', text: `好き`},
-                { type: 'photo', url: './assets/dm/sakuya_10.gif', text: `
+                { type: 'video', url: './assets/dm/sakuya_10.gif', text: `
                 널 좋아하는 건
                 누워서 떡먹기 입니다` },
                 { type: 'text', text: '왜 자꾸 웃는거임'},
@@ -534,8 +545,8 @@
                 { type: 'text', text: `
                 https://www.instagram.com/reels/Dd_Oohup5pL/
                 ㅈㅇㅎ`},
-                { type: 'photo', url: './assets/dm/sakuya_6.gif'},
-                { type: 'photo', url: './assets/dm/sakuya_7.gif', text: '너 볼'},
+                { type: 'video', url: './assets/dm/sakuya_6.gif'},
+                { type: 'video', url: './assets/dm/sakuya_7.gif', text: '너 볼'},
                 { type: 'text', text: `
                 https://www.instagram.com/reels/Dd_O8N7pSOW/
                 진짜 좋아하나???`}
@@ -545,7 +556,7 @@
                 { type: 'photo', url: './assets/dm/riku.jpg', text: `
                 안뇽
                 뭐해뭐해뭐해`},
-                { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?`},
+                { type: 'video', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?`},
                 { type: 'text', text: `
                 오ㅎㅎㅎ
                 나 6위ㅎ`},
@@ -554,8 +565,8 @@
                 ~두근두근위시운세~
                 행운의 아이템: ❤️`},
                 { type: 'photo', url: './assets/dm/riku_12.PNG', text: `이거 받아` },
-                { type: 'photo', url: './assets/dm/riku_10.gif', text: `엑` },
-                { type: 'photo', url: './assets/dm/riku_15.gif', text: '나랑 만나자' }
+                { type: 'video', url: './assets/dm/riku_10.gif', text: `엑` },
+                { type: 'video', url: './assets/dm/riku_15.gif', text: '나랑 만나자' }
             ],
             'default': [
                 { type: 'text', text: '시스템이 이상해... 너 때문이야?' },
@@ -637,12 +648,12 @@
 
         document.getElementById('btn-y').addEventListener('click', () => {
             document.getElementById('term-choices').classList.add('hidden');
-            termElement.innerHTML += "<br><br><span class='text-gray-500 font-vt text-xl'>[SYSTEM] 우회 경로 확보 중...</span>";
+            termElement.innerHTML += "<br><br><span class='text-gray-500 text-sm'>[SYSTEM] 우회 경로 확보 중...</span>";
             setTimeout(() => switchScreen('screen-id-gen'), 1000);
         });
 
         document.getElementById('btn-n').addEventListener('click', () => {
-            termElement.innerHTML += "<br><br><span class='text-red-500 font-vt text-xl'>[ERROR] 거부할 수 없습니다. 당신은 이미 훔쳐보고 있습니다.</span>";
+            termElement.innerHTML += "<br><br><span class='text-red-500 text-sm'>[ERROR] 거부할 수 없습니다. 당신은 이미 훔쳐보고 있습니다.</span>";
             document.getElementById('term-choices').classList.add('hidden');
             setTimeout(() => switchScreen('screen-id-gen'), 1500);
         });
@@ -685,7 +696,7 @@
         function renderMemberList() {
             const list = document.getElementById('member-list');
             list.innerHTML = members.map(id => `
-                <button class="member-btn w-full text-left p-4 border-b border-[#333] hover:bg-[#111] transition-all font-pixel text-[10px] text-gray-500 flex-shrink-0" data-id="${id}">
+                <button class="member-btn w-full text-left p-4 border-b border-[#333] hover:bg-[#111] transition-all text-xs text-gray-500 flex-shrink-0" data-id="${id}">
                     > @${id}
                 </button>
             `).join('');
@@ -950,9 +961,9 @@
             const isScrolledToBottom = publicChatLog.scrollHeight - publicChatLog.clientHeight - publicChatLog.scrollTop <= 50;
 
             const div = document.createElement('div');
-            div.className = 'text-xs lg:text-sm font-vt text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
+            div.className = 'text-xs lg:text-sm text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
             
-            if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-[10px]');
+            if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-xs');
             else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
             
             div.innerHTML = linkify(text);
@@ -1010,15 +1021,11 @@
               |
               V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '뭔데'},
-                {name: 'sakusakusaku07', msg: 
-                `그냥 사진을
-                올리고 싶었던 거지 리쿠는`},            
+                {name: 'sakusakusaku07', msg: `그냥 사진을\n올리고 싶었던 거지 리쿠는`},            
                 {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
-                {name: 'ryo_hi_rose', msg: 
-                `잠만
-                이거 사랑이라는데<br><img src="./assets/feed/ryo_2.PNG" class="w-1/2 mt-2 border border-[#FF007F]">`},
-                {name: 'sakusakusaku07', msg: `<span class="text-[8px]">⠀⠀   ⠀
-                    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
+                {name: 'ryo_hi_rose', msg: `잠만\n이거 사랑이라는데<br><img src="./assets/feed/ryo_2.PNG" class="w-1/2 mt-2 border border-[#FF007F]">`},
+                {name: 'sakusakusaku07', msg: `<span class="text-xs">⠀⠀   ⠀
+                    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌‌⣀⠀⠀⠀⠀
                 ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
                 ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
                 ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
@@ -1090,10 +1097,7 @@
                 {name: 'sion__5', msg: '그럼 기타를 쳐'},
                 {name: 'sion__5', msg: `<img src="./assets/feed/jaehee_3.PNG" class="w-1/2 mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '울지말고 얘기를 해요'},
-                {name: 'sion__5', msg: `
-                눈물이
-                검
-                정색`},
+                {name: 'sion__5', msg: `눈물이\n검\n정색`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/riku_5.PNG" class="w-1/2 mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/riku_6.PNG" class="w-1/2 mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '사쿠 왜 리쿠한테는 뭐라 안해'},
@@ -1121,7 +1125,6 @@
                 const data = botMsgs[msgIdx++];
                 appendPublicChat(`[${data.name}] ${data.msg}`);
                 
-                // 1.5 ~ 4초 랜덤 딜레이
                 const randomDelay = Math.floor(Math.random() * 2500) + 1500;
                 setTimeout(scheduleNextMessage, randomDelay);
             }
@@ -1208,24 +1211,24 @@
                 let contentHTML = '';
                 
                 if (msg.msgType === 'photo' && msg.url) {
-                    contentHTML += `<img src="${msg.url}" class="max-w-[200px] border-2 border-[#FF007F] rounded mb-2">`;
+                    contentHTML += `<img src="${msg.url}" class="max-w-[200px] border border-[#FF007F] rounded mb-2">`;
                 } else if (msg.msgType === 'video' && msg.url) {
-                    contentHTML += `<video src="${msg.url}" autoplay loop muted playsinline class="max-w-[200px] border-2 border-[#FF007F] rounded mb-2"></video>`;
+                    contentHTML += `<video src="${msg.url}" autoplay loop muted playsinline class="max-w-[200px] border border-[#FF007F] rounded mb-2"></video>`;
                 }
                 
                 if (msg.text) {
-                    contentHTML += `<div class="bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] font-vt text-lg lg:text-xl rounded-br-xl rounded-tr-xl break-words whitespace-pre-wrap shadow-[2px_2px_0_rgba(255,0,127,0.5)]">${linkify(msg.text)}</div>`;
+                    contentHTML += `<div class="bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] text-sm rounded-br-xl rounded-tr-xl break-words whitespace-pre-wrap">${linkify(msg.text)}</div>`;
                 }
                 
                 div.innerHTML = `
-                    <span class="text-[10px] text-[#FF007F] font-pixel mb-1">${msg.name}</span>
+                    <span class="text-xs text-[#FF007F] mb-1 font-bold">${msg.name}</span>
                     ${contentHTML}
                 `;
             } else {
                 div.className = 'flex flex-col items-end mb-4';
                 div.innerHTML = `
-                    <span class="text-[10px] text-gray-500 font-pixel mb-1">ME</span>
-                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] font-vt text-lg lg:text-xl rounded-bl-xl rounded-tl-xl break-words whitespace-pre-wrap shadow-[-2px_2px_0_rgba(0,255,0,0.5)]">${linkify(msg.text)}</div>
+                    <span class="text-xs text-gray-500 mb-1 font-bold">ME</span>
+                    <div class="bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] text-sm rounded-bl-xl rounded-tl-xl break-words whitespace-pre-wrap">${linkify(msg.text)}</div>
                 `;
             }
             dmMessages.appendChild(div);
