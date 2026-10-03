@@ -162,7 +162,7 @@
             <!-- ✨ 랜덤 테스트 메뉴 추가 -->
             <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0">
                 <button id="btn-open-test" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
-                    <span class="text-lg animate-pulse">👁️</span> 
+                    <span class="text-lg animate-pulse">👀</span> 
                     <span>나를 몰래 좋아하는 사람?</span>
                 </button>
             </div>
@@ -179,7 +179,7 @@
                         <div class="flex items-center gap-2">
                             <span id="feed-target-status" class="text-xs text-[#FF007F] transition-all bg-[#1a000d] px-2 py-0.5 rounded border border-[#FF007F]">[로딩중]</span>
                             <div class="flex gap-2">
-                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤">♥</button>
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤️">❤️</button>
                                 <button class="btn-react text-sm hover:scale-125 transition-transform" title="🩹">🩹</button>
                                 <button class="btn-react text-sm hover:scale-125 transition-transform" title="❓">❓</button>
                             </div>
@@ -1308,7 +1308,7 @@
 
         document.getElementById('btn-share-test').addEventListener('click', () => {
             playSFX('click');
-            const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다... 👁️\n\n나를 몰래 좋아하고 있는 사람 찾기 🔽\n#i_SPY_u`;
+            const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다... 👀❤️\n\n나를 몰래 좋아하고 있는 사람 찾기 🔽\nhttps://ispyou.vercel.app/\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
             window.open(url, '_blank');
         });
