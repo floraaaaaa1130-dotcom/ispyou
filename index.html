@@ -94,6 +94,42 @@
             font-family: monospace !important;
             letter-spacing: 2px;
         }
+
+    /* ===== MOBILE DM FIX ===== */
+@media (max-width: 1023px) {
+    body.dm-open {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+    }
+
+    #dm-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
+
+    #dm-modal > div {
+        width: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        margin: 0 !important;
+    }
+
+    #dm-messages {
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #dm-input {
+        font-size: 16px !important;
+    }
+}    
     </style>
 </head>
 <body class="text-sm">
@@ -1125,22 +1161,25 @@
         }
 
         document.getElementById('btn-open-dm').addEventListener('click', () => {
-            const memberId = state.currentMember;
-            document.getElementById('dm-target-name').textContent = `@${memberId}`;
-            
-            dmMessages.innerHTML = '';
-            
-            state.dmHistory[memberId].forEach(msg => renderDMSingle(msg, true));
-            
-            dmModal.classList.remove('hidden');
-            dmModal.classList.add('flex');
-            dmInput.focus();
-        });
+    const memberId = state.currentMember;
+    document.getElementById('dm-target-name').textContent = `@${memberId}`;
+    
+    dmMessages.innerHTML = '';
+    
+    state.dmHistory[memberId].forEach(msg => renderDMSingle(msg, true));
+    
+    dmModal.classList.remove('hidden');
+    dmModal.classList.add('flex');
+
+    document.body.classList.add('dm-open');
+});
 
         document.getElementById('btn-close-dm').addEventListener('click', () => {
-            dmModal.classList.add('hidden');
-            dmModal.classList.remove('flex');
-        });
+    dmModal.classList.add('hidden');
+    dmModal.classList.remove('flex');
+
+    document.body.classList.remove('dm-open');
+});
 
         function triggerBotReply(memberId) {
             let step = state.postCallDmStep[memberId];
