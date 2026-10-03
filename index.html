@@ -200,19 +200,13 @@
             </div>
             
             <!-- ✨ 랜덤 테스트 메뉴 추가 -->
-            <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0 flex flex-col gap-3">
-    
-    <button id="btn-open-test" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
-        <span class="text-lg animate-pulse">👀</span> 
-        <span>나를 몰래 좋아하는 사람?</span>
-    </button>
-
-    <button id="btn-open-credits" class="w-full text-left text-gray-600 hover:text-[#00FF00] transition-colors text-[10px] flex items-center gap-2">
-        <span>✦</span>
-        <span>CREDITS</span>
-    </button>
-
-</div>
+            <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0">
+                <button id="btn-open-test" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
+                    <span class="text-lg animate-pulse">👀</span> 
+                    <span>나를 몰래 좋아하는 사람?</span>
+                </button>
+            </div>
+        </div>
 
         <!-- Center Column: Grid Feed -->
         <div class="flex-grow flex flex-col relative h-full overflow-hidden bg-[#080305]">
@@ -338,7 +332,7 @@
             </div>
         </div>
     </div>
-        
+
     <!-- 4. DM Modal -->
     <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
         <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[75vh] lg:h-[65vh] shadow-[0_0_30px_rgba(255,0,127,0.2)] rounded-sm overflow-hidden">
@@ -415,43 +409,7 @@
             </div>
         </div>
     </div>
-<!-- Video/Voice Call Modal -->
-<div id="call-modal">
-    ...
-</div>
 
-<!-- CREDITS MODAL -->
-<div id="credits-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[210] p-4 backdrop-blur-md">
-    <div class="border border-[#00FF00] bg-black p-6 w-full max-w-sm text-center shadow-[0_0_30px_rgba(0,255,0,0.25)] rounded-sm relative">
-        
-        <button id="btn-close-credits" class="absolute top-2 right-3 text-gray-500 hover:text-[#FF007F] text-lg">
-            ✕
-        </button>
-
-        <h3 class="text-[#00FF00] font-bold text-sm mb-6">
-            > CREDITS.exe
-        </h3>
-
-        <div class="text-left text-xs leading-7 text-gray-300 space-y-2">
-            <div>
-                <span class="text-[#FF007F]">제작/기획 :</span>
-                <span class="text-white"> @tteo.dittor </span>
-            </div>
-
-            <div>
-                <span class="text-[#FF007F]">사진/영상 :</span>
-                <span class="text-white"> @nctwish_offical </span>
-            </div>
-
-            <div class="pt-4 mt-4 border-t border-[#333] text-[10px] text-gray-600 leading-5">
-                This website is a fan-made fictional project.<br>
-                All content is created for entertainment purposes.
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
     <script>
         // ==========================================
         // 📁 [1] 미디어 연결 영역 
@@ -1074,21 +1032,6 @@
             publicChatInput.value = '';
         }
 
-        // --- Credits Modal ---
-const creditsModal = document.getElementById('credits-modal');
-
-document.getElementById('btn-open-credits').addEventListener('click', () => {
-    playSFX('click');
-
-    creditsModal.classList.remove('hidden');
-    creditsModal.classList.add('flex');
-});
-
-document.getElementById('btn-close-credits').addEventListener('click', () => {
-    creditsModal.classList.add('hidden');
-    creditsModal.classList.remove('flex');
-});
-
         function startPublicChatBot() {
             const botMsgs = [
                 {name: 'ri_ku_03', msg: `안녕<br><img src="./assets/feed/riku.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
@@ -1640,4 +1583,5 @@ document.getElementById('btn-close-credits').addEventListener('click', () => {
             }
         });
     </script>
-        
+</body>
+</html>
