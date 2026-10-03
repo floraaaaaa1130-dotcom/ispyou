@@ -1323,18 +1323,12 @@
                 }
             }, 50);
         });
-
+        // ✨ 추가: 랜덤으로 띄울 멘트 리스트 (원하는 대로 추가/수정 가능)
         function showSecretResult() {
             sStep2.classList.add('hidden');
             sStep3.classList.remove('hidden');
             playSFX('alert');
-            
-            // ✨ 추가: 랜덤으로 띄울 멘트 리스트 (원하는 대로 추가/수정 가능)
-            function showSecretResult() {
-            sStep2.classList.add('hidden');
-            sStep3.classList.remove('hidden');
-            playSFX('alert');
-            
+
             // 1~1000 사이의 랜덤 숫자 3개 생성
             const rand1 = Math.floor(Math.random() * 1000) + 1;
             const rand2 = Math.floor(Math.random() * 1000) + 1;
