@@ -716,24 +716,6 @@
         }
 
        window.onload = () => {
-            // 브라우저 오디오 락을 '무음'으로 몰래 해제하여 인트로에서 소리가 나지 않게 방지합니다.
-            document.body.addEventListener('click', function unlockAudio() {
-                const ringAudio = document.getElementById('audio-ring');
-                const ringtoneAudio = document.getElementById('audio-ringtone');
-                
-                [ringAudio, ringtoneAudio].forEach(audio => {
-                    if(audio) {
-                        audio.volume = 0; // 볼륨을 0으로 둔 상태로 재생
-                        audio.play().then(() => {
-                            audio.pause();
-                            audio.currentTime = 0;
-                            audio.volume = 1; // 락 해제 후 다시 볼륨 복구
-                        }).catch(e => {}); 
-                    }
-                });
-                document.body.removeEventListener('click', unlockAudio);
-            }, { once: true });
-
             setTimeout(typeWriter, 500);
         };
 
@@ -1433,7 +1415,6 @@
             camErrorMsg.classList.add('hidden');
             
             connectingText.classList.remove('hidden');
-            centerText.classList.add('hidden');
             videoPlayer.classList.add('hidden');
             placeholderImg.classList.add('hidden');
             pipContainer.classList.add('hidden'); 
@@ -1453,8 +1434,6 @@
                 if (type === 'video') {
                     pipContainer.classList.remove('hidden');
                     titleText.textContent = "ENCRYPTED_VIDEO_CALL...";
-                    centerText.textContent = "";
-                    centerText.classList.remove('hidden');
                     
                     if(assetData.videoCall) {
                         videoPlayer.src = assetData.videoCall;
@@ -1476,8 +1455,6 @@
                     }
                 } else {
                     titleText.textContent = "ENCRYPTED_VOICE_CALL...";
-                    centerText.textContent = "🔉";
-                    centerText.classList.remove('hidden');
                     placeholderImg.classList.remove('hidden');
                     
                     let targetAudio = type === 'voice2' ? assetData.voiceCall2 : assetData.voiceCall1;
