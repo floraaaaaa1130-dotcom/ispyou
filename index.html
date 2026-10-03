@@ -97,7 +97,10 @@
     </style>
 </head>
 <body class="text-sm">
-
+<!-- 모바일 오디오 차단 방지 및 인트로 BGM용 태그 -->
+    <audio id="audio-ringtone" src="./assets/audio/ringtone.mp3" loop preload="auto"></audio>
+    <audio id="bgm-intro" src="./assets/audio/intro_bgm.mp3" preload="auto"></audio>
+    
     <!-- DM Toast Notification -->
     <div id="dm-toast" class="fixed top-4 left-4 right-4 z-[999] flex justify-center hidden pointer-events-none">
         <div class="bg-[#1a000d] border border-[#FF007F] text-white p-3 rounded shadow-[0_0_15px_rgba(255,0,127,0.5)] cursor-pointer pointer-events-auto toast-slide-down w-full max-w-sm" onclick="openDMFromToast()">
@@ -252,7 +255,7 @@
 
                 <div class="flex gap-2 pt-2">
                     <input type="text" id="feed-comment-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="댓글 달기..." autocomplete="off">
-                    <button id="btn-feed-comment" class="text-black bg-[#FF007F] text-xs font-bold px-4 py-2 hover:bg-white transition-colors rounded-sm">게시</button>
+                    <button id="btn-feed-comment" class="text-black bg-[#FF007F] text-xs font-bold px-3 py-2 hover:bg-white transition-colors rounded-sm">게시</button>
                 </div>
             </div>
         </div>
@@ -477,7 +480,7 @@
                 ] 
             },
             'ryo_hi_rose': { 
-                profile: './assets/profile/ryo_profile.PNG',
+                profile: './assets/profile/ryo_profile.jpg',
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall1: './assets/audio/ryo_voice1.mp3',
                 voiceCall2: './assets/audio/ryo_voice2.mp3',
@@ -521,8 +524,18 @@
         const audioNodes = {};
 
         function playSFX(type) {
+            // 연결음(ringtone)은 HTML에 심어둔 오디오를 직접 컨트롤하여 모바일 락을 우회합니다.
+            if (type === 'ringtone') {
+                const ringAudio = document.getElementById('audio-ringtone');
+                if (ringAudio) {
+                    ringAudio.currentTime = 0;
+                    ringAudio.play().catch(e => console.log('Ringtone blocked'));
+                }
+                return;
+            }
+
             if(!ASSETS.sfx[type]) return; 
-            if(type === 'ringtone' || type === 'scratch') {
+            if(type === 'scratch') {
                 if(!audioNodes[type]) {
                     audioNodes[type] = new Audio(ASSETS.sfx[type]);
                     audioNodes[type].loop = true;
@@ -535,6 +548,14 @@
         }
 
         function stopSFX(type) {
+            if (type === 'ringtone') {
+                const ringAudio = document.getElementById('audio-ringtone');
+                if (ringAudio) {
+                    ringAudio.pause();
+                    ringAudio.currentTime = 0;
+                }
+                return;
+            }
             if(audioNodes[type]) {
                 audioNodes[type].pause();
                 audioNodes[type].currentTime = 0;
@@ -691,7 +712,50 @@
             }
         }
 
-        window.onload = () => setTimeout(typeWriter, 500);
+        // 10초 인트로 BGM (페이드인 & 페이드아웃)
+        function playIntroBGM() {
+            const bgm = document.getElementById('bgm-intro');
+            if(!bgm) return;
+            
+            bgm.volume = 0; // 볼륨 0에서 시작
+            bgm.play().catch(e => console.log("BGM autoplay blocked."));
+            
+            // 2초 동안 서서히 볼륨 증가 (Fade In)
+            let fadeIn = setInterval(() => {
+                if(bgm.volume < 0.9) bgm.volume += 0.1;
+                else {
+                    bgm.volume = 1;
+                    clearInterval(fadeIn);
+                }
+            }, 200);
+
+            // 8초 뒤 서서히 볼륨 감소 시작 (Fade Out - 총 10초)
+            setTimeout(() => {
+                let fadeOut = setInterval(() => {
+                    if(bgm.volume > 0.1) bgm.volume -= 0.1;
+                    else {
+                        bgm.volume = 0;
+                        bgm.pause();
+                        clearInterval(fadeOut);
+                    }
+                }, 200);
+            }, 8000);
+        }
+
+        window.onload = () => {
+            // 브라우저 정책 상 사용자가 화면을 한 번 터치해야만 소리가 날 수 있습니다.
+            // 첫 화면 터치 시 BGM 재생 및 연결음 락(Lock) 해제
+            document.body.addEventListener('click', function unlockAudio() {
+                playIntroBGM();
+                const ringAudio = document.getElementById('audio-ringtone');
+                if(ringAudio) {
+                    ringAudio.play().then(() => ringAudio.pause()).catch(e => {}); 
+                }
+                document.body.removeEventListener('click', unlockAudio);
+            }, { once: true });
+
+            setTimeout(typeWriter, 500);
+        };
 
         const introText = "[SYSTEM: 당신을 향한 낯선 감정을 감지했습니다.\n훔쳐보시겠습니까?]";
         const termElement = document.getElementById('term-text');
@@ -994,8 +1058,7 @@
                 {name: 'yushihihi_405', msg: '<img src="./assets/feed/yushi_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
                 {name: 'ryo_hi_rose', msg: '😬😬😬'},
                 {name: 'ryo_hi_rose', msg: '왜이러는거야'},
-                {name: 'ri_ku_03', msg: `
-                ここで一番混乱してる人\n        |\n       V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ri_ku_03', msg: `ここで一番混乱してる人\n        |\n       V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '뭔데'},
                 {name: 'sakusakusaku07', msg: `그냥 사진을\n올리고 싶었던 거지 리쿠는`},            
                 {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
