@@ -101,7 +101,7 @@
         <div class="w-full max-w-xl text-left text-base lg:text-lg text-[#00FF00] leading-relaxed drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
             <p id="term-text" class="mb-6 typewriter-cursor"></p>
             <div id="term-choices" class="hidden flex gap-8 mt-6">
-                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-3 py-1 transition-all">> [Y]es (훔쳐보기)</button>
+                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-3 py-1 transition-all">> [Y]es</button>
                 <button id="btn-n" class="hover:text-[#FF007F] px-3 py-1 transition-all">> [N]o</button>
             </div>
         </div>
@@ -115,7 +115,7 @@
             
             <div class="bg-black border border-dashed border-[#FF007F] p-3 mb-6 relative z-10 flex items-center">
                 <span class="text-[#FF007F] text-base mr-2">></span>
-                <input type="text" id="custom-nickname-input" class="bg-transparent text-[#FF007F] text-base focus:outline-none w-full animate-pulse placeholder-[#FF007F]/40" placeholder="익명_486" autocomplete="off" maxlength="12">
+                <input type="text" id="custom-nickname-input" class="bg-transparent text-[#FF007F] text-base focus:outline-none w-full animate-pulse placeholder-[#FF007F]/40" placeholder="cizni" autocomplete="off" maxlength="12">
             </div>
             
             <button id="btn-enter-main" class="bg-[#FF007F] text-black text-xs font-bold px-6 py-2 hover:bg-white transition-colors w-full rounded-sm">접속하기</button>
@@ -353,7 +353,21 @@
                     './assets/feed/yushifeed2.jpg',
                     './assets/feed/yushifeed3.jpg',
                     './assets/feed/yushifeed4.jpg',
-                    './assets/feed/yushifeed5.jpg'
+                    './assets/feed/yushifeed5.jpg',
+                    './assets/feed/yushifeed6.jpg',
+                    './assets/feed/yushifeed7.jpg',
+                    './assets/feed/yushifeed8.jpg',
+                    './assets/feed/yushifeed9.jpg',
+                    './assets/feed/yushifeed10.jpg',
+                    './assets/feed/yushifeed11.jpg',
+                    './assets/feed/yushifeed12.jpg',
+                    './assets/feed/yushifeed13.jpg',
+                    './assets/feed/yushifeed14.jpg',
+                    './assets/feed/yushifeed15.jpg',
+                    './assets/feed/yushifeed16.jpg',
+                    './assets/feed/yushifeed17.jpg',
+                    './assets/feed/yushifeed18.jpg',
+                    './assets/feed/yushifeed19.jpg'
                 ] 
             }, 
             'jaehee__zzang': {
@@ -364,7 +378,7 @@
                 feed: [
                     './assets/feed/jaeheefeed.jpg',
                     './assets/feed/jaeheefeed2.jpg',
-                    './assets/feedjaeheefeed3.jpg',
+                    './assets/feed/jaeheefeed3.jpg',
                     './assets/feed/jaeheefeed4.jpg',
                     './assets/feed/jaeheefeed5.jpg'
                 ] 
@@ -579,7 +593,7 @@
 
         window.onload = () => setTimeout(typeWriter, 500);
 
-        const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까? Y/N]";
+        const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까?]";
         const termElement = document.getElementById('term-text');
         let charIndex = 0;
 
