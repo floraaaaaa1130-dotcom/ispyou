@@ -1377,12 +1377,9 @@
         const connectingText = document.getElementById('call-connecting-text');
         
         document.getElementById('btn-call-member').addEventListener('click', () => {
-            if (state.statusIndex[state.currentMember] < 3) {
-                callChoiceModal.classList.remove('hidden');
-                callChoiceModal.classList.add('flex');
-            } else {
-                startCall('voice1');
-            }
+            // 상태 인덱스(statusIndex)와 무관하게 무조건 선택 모달 띄우기
+            callChoiceModal.classList.remove('hidden');
+            callChoiceModal.classList.add('flex');
         });
 
         document.getElementById('btn-close-choice').addEventListener('click', () => {
@@ -1436,19 +1433,28 @@
             camErrorMsg.classList.add('hidden');
             
             connectingText.classList.remove('hidden');
+            centerText.classList.add('hidden');
             videoPlayer.classList.add('hidden');
             placeholderImg.classList.add('hidden');
             pipContainer.classList.add('hidden'); 
             
-            playSFX('ring'); 
+            // ✨ 추가된 핵심 로직: 수신(voice2)일 때는 연결음(ring) 생략하고 즉시 연결(딜레이 0초)
+            const isIncoming = (type === 'voice2');
+            const delay = isIncoming ? 0 : 3000;
+
+            if (!isIncoming) {
+                playSFX('ring'); // 수동 발신 시에만 뚜-뚜- 연결음 재생
+            }
             
             setTimeout(async () => {
-                stopSFX('ring');
+                if (!isIncoming) stopSFX('ring');
                 connectingText.classList.add('hidden');
 
                 if (type === 'video') {
                     pipContainer.classList.remove('hidden');
                     titleText.textContent = "ENCRYPTED_VIDEO_CALL...";
+                    centerText.textContent = "";
+                    centerText.classList.remove('hidden');
                     
                     if(assetData.videoCall) {
                         videoPlayer.src = assetData.videoCall;
@@ -1470,6 +1476,8 @@
                     }
                 } else {
                     titleText.textContent = "ENCRYPTED_VOICE_CALL...";
+                    centerText.textContent = "🔉";
+                    centerText.classList.remove('hidden');
                     placeholderImg.classList.remove('hidden');
                     
                     let targetAudio = type === 'voice2' ? assetData.voiceCall2 : assetData.voiceCall1;
@@ -1482,7 +1490,7 @@
                     }
                     appendPublicChat(`[SYSTEM] ${state.userId}님이 @${current}와 음성 통화를 연결했습니다.`);
                 }
-            }, 3000); 
+            }, delay); 
         }
 
         document.getElementById('btn-reject-call').addEventListener('click', () => {
