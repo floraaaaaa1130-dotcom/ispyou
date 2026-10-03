@@ -86,6 +86,13 @@
         }
         .like-gif-pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .like-gif-pop-out { animation: popOut 0.3s ease-in forwards; }
+        
+        /* 텍스트 글리치 전용 (사진에는 영향 안 감) */
+        .text-glitch-active {
+            display: inline-block;
+            font-family: monospace !important;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body class="text-sm">
@@ -147,8 +154,17 @@
                 <h2 class="text-xs font-bold text-[#FF007F] tracking-wider">> FOLLOWING</h2>
                 <button id="btn-close-nav" class="lg:hidden text-white hover:text-[#FF007F] text-lg">X</button>
             </div>
+            
             <div id="member-list" class="flex flex-col overflow-y-auto flex-grow">
                 <!-- Dynamically populated -->
+            </div>
+            
+            <!-- ✨ 랜덤 테스트 메뉴 추가 -->
+            <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0">
+                <button id="btn-open-test" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
+                    <span class="text-lg animate-pulse">👁️</span> 
+                    <span>나를 몰래 좋아하는 사람?</span>
+                </button>
             </div>
         </div>
 
@@ -163,7 +179,7 @@
                         <div class="flex items-center gap-2">
                             <span id="feed-target-status" class="text-xs text-[#FF007F] transition-all bg-[#1a000d] px-2 py-0.5 rounded border border-[#FF007F]">[로딩중]</span>
                             <div class="flex gap-2">
-                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤">❤️</button>
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤">♥</button>
                                 <button class="btn-react text-sm hover:scale-125 transition-transform" title="🩹">🩹</button>
                                 <button class="btn-react text-sm hover:scale-125 transition-transform" title="❓">❓</button>
                             </div>
@@ -241,6 +257,42 @@
         </div>
     </div>
 
+    <!-- ✨ 랜덤 테스트 모달 -->
+    <div id="secret-test-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[200] p-4 backdrop-blur-md">
+        <div class="border border-[#FF007F] bg-black p-6 w-full max-w-sm text-center shadow-[0_0_30px_rgba(255,0,127,0.3)] rounded-sm relative overflow-hidden">
+            <div class="flex justify-end w-full mb-2">
+                <button id="btn-close-test" class="text-gray-500 hover:text-[#FF007F] text-lg font-bold">✕</button>
+            </div>
+            
+            <!-- Step 1: 인트로 -->
+            <div id="test-step-1">
+                <h3 class="text-[#00FF00] font-bold text-sm mb-6">> RANDOM_TEST.exe</h3>
+                <p class="text-white text-base mb-8 leading-relaxed">나를 몰래<br>좋아하고 있는 사람이 있을까?</p>
+                <button id="btn-start-test" class="bg-[#FF007F] text-black font-bold text-xs px-6 py-3 hover:bg-white transition-colors w-full rounded-sm">START</button>
+            </div>
+
+            <!-- Step 2: 슬롯머신 돌아감 -->
+            <div id="test-step-2" class="hidden py-4">
+                <p class="text-gray-400 text-xs mb-6">대상을 탐색 중입니다...</p>
+                <div class="bg-[#111] border border-[#333] py-6 mb-6 text-xl text-[#00FF00] font-bold tracking-widest rounded-sm" id="test-slot-machine">
+                    ???
+                </div>
+            </div>
+
+            <!-- Step 3: 결과 출력 -->
+            <div id="test-step-3" class="hidden">
+                <p class="text-xs text-[#FF007F] mb-4 font-bold">> RESULT_FOUND</p>
+                <div class="text-sm text-white mb-8 leading-relaxed bg-[#1a000d] border border-[#FF007F] p-5 rounded-sm">
+                    [ <span id="test-result-id" class="text-[#FF007F] font-bold text-glitch-active min-w-[100px]"></span> ] 님이<br>당신을 오랫동안<br>지켜봐왔던 것 같습니다...
+                </div>
+                <button id="btn-share-test" class="bg-white text-black font-bold text-xs px-4 py-3 hover:bg-gray-300 transition-colors w-full flex items-center justify-center gap-2 rounded-sm">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    X에 공유하고 정체 확인하기
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 4. DM Modal -->
     <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
         <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[75vh] lg:h-[65vh] shadow-[0_0_30px_rgba(255,0,127,0.2)] rounded-sm overflow-hidden">
@@ -294,7 +346,6 @@
                 <div class="text-sm text-gray-400" id="call-target-name-modal">@target</div>
             </div>
 
-            <!-- 불순물 제거된 순수한 미디어 영역 -->
             <div class="relative w-full flex-grow bg-black overflow-hidden flex items-center justify-center border-b border-[#333]">
                 <div id="member-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black">
                     <!-- 연결음 대기 텍스트 -->
@@ -343,11 +394,7 @@
                     './assets/feed/sionfeed2.jpg',
                     './assets/feed/sionfeed3.jpg',
                     './assets/feed/sionfeed4.jpg',
-                    './assets/feed/sionfeed5.jpg',
-                    './assets/feed/sionfeed6.jpg',
-                    './assets/feed/sionfeed7.jpg',
-                    './assets/feed/sionfeed8.jpg',
-                    './assets/feed/sionfeed9.jpg'
+                    './assets/feed/sionfeed5.jpg'
                 ]
             },
             'ri_ku_03': {
@@ -364,7 +411,7 @@
                     './assets/feed/rikufeed5.jpg',
                     './assets/feed/rikufeed6.PNG',
                     './assets/feed/rikufeed7.PNG',
-                    './assets/feed/rikufeed8.gif',
+                    './assets/feed/rikufeed8.PNG',
                     './assets/feed/rikufeed9.PNG',
                     './assets/feed/rikufeed10.jpg',
                     './assets/feed/rikufeed11.jpg',
@@ -405,7 +452,7 @@
                 ] 
             }, 
             'jaehee__zzang': {
-                profile: './assets/profile/jaehee_profile.jpg',
+                profile: './assets/profile/jaehee_profile.PNG',
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall1: './assets/audio/jaehee_voice1.mp3',
                 voiceCall2: './assets/audio/jaehee_voice2.mp3',
@@ -413,7 +460,7 @@
                 feed: [
                     './assets/feed/jaeheefeed.jpg',
                     './assets/feed/jaeheefeed2.jpg',
-                    './assets/feed/jaeheefeed3.jpg',
+                    './assets/feedjaeheefeed3.jpg',
                     './assets/feed/jaeheefeed4.jpg',
                     './assets/feed/jaeheefeed5.jpg',
                     './assets/feed/jaeheefeed6.PNG',
@@ -425,7 +472,7 @@
                 ] 
             },
             'ryo_hi_rose': { 
-                profile: './assets/profile/ryo_profile.jpg',
+                profile: './assets/profile/ryo_profile.PNG',
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall1: './assets/audio/ryo_voice1.mp3',
                 voiceCall2: './assets/audio/ryo_voice2.mp3',
@@ -500,9 +547,9 @@
         // ==========================================
         const dmScripts = {
             'sion__5': [
-                { type: 'photo', url: './assets/dm/sion_5.gif', text: `hello?\n~♡` },
+                { type: 'photo', url: './assets/dm/sion_5.gif', text: `hello?\n~♡`, next: true},
                 { type: 'text', text: `있잖아\n사진 찍는 거 좋아해?\nㅎㅎ`},
-                { type: 'photo', url: './assets/dm/sion_6.jpg', text: 'ㅎㅎ'},
+                { type: 'photo', url: './assets/dm/sion_6.jpg', text: 'ㅎㅎ', next: true },
                 { type: 'photo', urls: [
                     './assets/dm/sion_7.jpg',
                     './assets/dm/sion_8.jpg',
@@ -519,9 +566,9 @@
                     './assets/dm/프사후보3.jpg',
                     './assets/dm/프사후보4.JPG'
                 ]},
-                { type: 'text', text: `아\n아 잠만\n보지말고\n오늘 뭐해?\n이따 잠깐 볼래?`},
-                { type: 'text', text: `https://www.instagram.com/reels/Dd_GG7KpszX/\n노래 듣고 있는데\nhttps://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw\n제목은 연관없다~` },
-                { type: 'photo', url: './assets/dm/sion_10.jpg'},
+                { type: 'text', text: `아\n아 잠만\n보지말고\n오늘 뭐해?\n이따 잠깐 볼래?`, next: true},
+                { type: 'text', text: `https://www.instagram.com/reels/Dd_GG7KpszX/\n노래 듣고 있는데\nhttps://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw\n제목은 연관없다~`, next: true },
+                { type: 'photo', url: './assets/dm/sion_10.jpg', next: true},
                 { type: 'photo', url: './assets/dm/sion_11.gif', text: '잘자'},
             ],
             
@@ -537,9 +584,9 @@
             
             'jaehee__zzang': [
                 { type: 'photo', url: './assets/dm/jaehee.jpg', text: `테마를 love로 변경했습니다`},
-                { type: 'text', text: `허허\n웃긴 거 보여줄까ㅋㅋㅋ` },
+                { type: 'text', text: `허허\n웃긴 거 보여줄까ㅋㅋㅋ`, next: true },
                 { type: 'photo', url: './assets/dm/jaehee_6.PNG', text: `4&☀️`},
-                { type: 'text', text: `아ㅏㅏㅏ\n좀 이따가\n나와줄 수 있어?\n별 건 아니고ㅋㅋ\n기다릴게` },
+                { type: 'text', text: `아ㅏㅏㅏ\n좀 이따가\n나와줄 수 있어?\n별 건 아니고ㅋㅋ\n기다릴게`, next: true },
                 { type: 'photo', url: './assets/dm/jaehee_7.PNG'},
                 { type: 'photo', urls: [
                     './assets/dm/jaehee_8.PNG',
@@ -561,7 +608,7 @@
                 { type: 'video', url: './assets/video/ryo2.mp4', text: `잠깐만!\n이제 집중해야돼😬`},
                 { type: 'photo', url: './assets/dm/ryo_7.PNG', text: `고백받게해주세요\n고백받게해주세요\n고백받게해주세요`},
                 { type: 'photo', url: './assets/dm/ryo_6.PNG', text: `~♫`},
-                { type: 'video', url: './assets/video/ryo.mp4', text: `와 대박`},
+                { type: 'video', url: './assets/video/ryo.mp4', text: `와 대박`, next: true},
                 { type: 'text', text: `나도 진짜 딱 한번만 말할거야\nhttps://www.instagram.com/reels/Dd_NSlnp1jG/`},
                 { type: 'photo', url: './assets/dm/ryo_5.gif', text: `굿밤`},
             ],
@@ -572,18 +619,18 @@
                 { type: 'photo', url: './assets/dm/sakuya_10.PNG', text: `好き`},
                 { type: 'photo', url: './assets/dm/sakuya_10.gif', text: `널 좋아하는 건\n누워서 떡먹기 입니다` },
                 { type: 'video', url: './assets/video/sakuya.mp4', text: `난 너 좋아합니다`},
-                { type: 'text', text: '왜 자꾸 웃는거임'},
+                { type: 'text', text: '왜 자꾸 웃는거임', next: true},
                 { type: 'photo', url: './assets/dm/sakuya_8.PNG', text: '진짜 좋아한다고' },
                 { type: 'text', text: `https://www.instagram.com/reels/Dd_Oohup5pL/\nㅈㅇㅎ`, next: true},
-                { type: 'photo', url: './assets/dm/sakuya_6.gif'},
+                { type: 'photo', url: './assets/dm/sakuya_6.gif', next: true},
                 { type: 'photo', url: './assets/dm/sakuya_7.gif', text: '너 볼'},
                 { type: 'text', text: `https://www.instagram.com/reels/Dd_O8N7pSOW/\n진짜 좋아하나???`}
             ],
                     
             'ri_ku_03': [
                 { type: 'photo', url: './assets/dm/riku.jpg', text: `안뇽\n뭐해뭐해뭐해`},
-                { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?`},
-                { type: 'text', text: `오ㅎㅎㅎ\n나 6위ㅎ`},
+                { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?`, next: true},
+                { type: 'text', text: `오ㅎㅎㅎ\n나 6위ㅎ`, next: true},
                 { type: 'photo', url: './assets/dm/riku_2.jpg', text: `10월의 행운아이템은 하트래\n~두근두근위시운세~\n10월은 애정운이 상승하는 달!\n행운의 아이템: ❤️\n라고 하넹`},
                 { type: 'video', url: './assets/video/riku.mp4', text: `이거진짜???\n매력없어?ㅠ\n음`},
                 { type: 'photo', url: './assets/dm/riku_12.PNG', text: `이거 받아`},
@@ -603,7 +650,6 @@
             currentMember: members[0],
             videoStream: null,
             activeCallType: null, 
-            scratchedState: {}, 
             statusIndex: {}, 
             statusFlow: [
                 "[현재 상태: 🤯심박수 비정상🤯]", 
@@ -618,7 +664,6 @@
         };
 
         members.forEach(m => {
-            state.scratchedState[m] = {}; 
             state.statusIndex[m] = 0;
             state.dmHistory[m] = [];
             state.hasFinishedVideoCall[m] = false;
@@ -772,14 +817,14 @@
             photoModal.classList.add('hidden');
             photoModal.classList.remove('flex');
             popupImg.src = '';
-            likeBtn.textContent = '🤍'; 
+            likeBtn.textContent = '♡'; 
             likeReactionContainer.classList.add('hidden');
         });
 
         let currentLikes = 486;
         likeBtn.addEventListener('click', () => {
-            if (likeBtn.textContent === '🤍') {
-                likeBtn.textContent = '❤️';
+            if (likeBtn.textContent === '♡') {
+                likeBtn.textContent = '♥';
                 currentLikes++;
                 
                 const memberAsset = ASSETS[state.currentMember];
@@ -801,7 +846,7 @@
                     }, 2000);
                 }
             } else {
-                likeBtn.textContent = '🤍';
+                likeBtn.textContent = '♡';
                 currentLikes--;
             }
             likeCount.textContent = currentLikes;
@@ -831,7 +876,7 @@
             
             currentLikes = Math.floor(Math.random() * 500) + 100;
             likeCount.textContent = currentLikes;
-            likeBtn.textContent = '🤍';
+            likeBtn.textContent = '♡';
             document.getElementById('feed-comment-list').innerHTML = ''; 
             likeReactionContainer.classList.add('hidden');
             
@@ -1153,7 +1198,7 @@
                 if (msg.msgType === 'video' && msg.url) {
                     const vidNode = document.createElement('video');
                     vidNode.src = msg.url;
-                    vidNode.controls = true; // 유저 클릭 재생을 위해 컨트롤스 추가
+                    vidNode.controls = true;
                     vidNode.playsInline = true;
                     vidNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
                     wrapper.appendChild(vidNode);
@@ -1197,6 +1242,76 @@
                 }
             }
         }
+
+        /* --- ✨ Secret Test Logic --- */
+        const secretModal = document.getElementById('secret-test-modal');
+        const sStep1 = document.getElementById('test-step-1');
+        const sStep2 = document.getElementById('test-step-2');
+        const sStep3 = document.getElementById('test-step-3');
+        const sSlotMachine = document.getElementById('test-slot-machine');
+        const sResultId = document.getElementById('test-result-id');
+        let secretSlotTimer = null;
+        let secretGlitchTimer = null;
+        let selectedSecretMember = '';
+
+        document.getElementById('btn-open-test').addEventListener('click', () => {
+            playSFX('click');
+            sStep1.classList.remove('hidden');
+            sStep2.classList.add('hidden');
+            sStep3.classList.add('hidden');
+            secretModal.classList.remove('hidden');
+            secretModal.classList.add('flex');
+            if(secretGlitchTimer) clearInterval(secretGlitchTimer);
+        });
+
+        document.getElementById('btn-close-test').addEventListener('click', () => {
+            secretModal.classList.add('hidden');
+            secretModal.classList.remove('flex');
+            if(secretSlotTimer) clearInterval(secretSlotTimer);
+            if(secretGlitchTimer) clearInterval(secretGlitchTimer);
+        });
+
+        document.getElementById('btn-start-test').addEventListener('click', () => {
+            playSFX('click');
+            sStep1.classList.add('hidden');
+            sStep2.classList.remove('hidden');
+            
+            let ticks = 0;
+            secretSlotTimer = setInterval(() => {
+                sSlotMachine.textContent = members[Math.floor(Math.random() * members.length)];
+                ticks++;
+                if(ticks % 3 === 0) playSFX('type');
+                
+                if (ticks > 40) {
+                    clearInterval(secretSlotTimer);
+                    selectedSecretMember = members[Math.floor(Math.random() * members.length)];
+                    showSecretResult();
+                }
+            }, 50);
+        });
+
+        function showSecretResult() {
+            sStep2.classList.add('hidden');
+            sStep3.classList.remove('hidden');
+            playSFX('alert');
+            
+            const chars = '!@#$%^&*()_+-=[]{}|;:.,<>?¥§©µ¶';
+            secretGlitchTimer = setInterval(() => {
+                let glitched = '';
+                const length = selectedSecretMember.length;
+                for(let i=0; i<length; i++) {
+                    glitched += chars[Math.floor(Math.random() * chars.length)];
+                }
+                sResultId.textContent = glitched;
+            }, 50);
+        }
+
+        document.getElementById('btn-share-test').addEventListener('click', () => {
+            playSFX('click');
+            const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다... 👁️\n\n나를 몰래 좋아하고 있는 사람 찾기 🔽\n#i_SPY_u`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+            window.open(url, '_blank');
+        });
 
         /* --- Video/Voice Call Logic --- */
         const callModal = document.getElementById('call-modal');
