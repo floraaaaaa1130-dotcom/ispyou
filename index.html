@@ -287,7 +287,7 @@
             <div id="test-step-3" class="hidden">
                 <p class="text-xs text-[#FF007F] mb-4 font-bold">> RESULT_FOUND</p>
                 <div class="text-sm text-white mb-8 leading-relaxed bg-[#1a000d] border border-[#FF007F] p-5 rounded-sm">
-                    [ <span id="test-result-id" class="text-[#FF007F] font-bold text-glitch-active min-w-[100px]"></span> ] 님이<br>당신을 오랫동안<br>지켜봐왔던 것 같습니다...
+                    [ <span id="test-result-id" class="text-[#FF007F] font-bold text-glitch-active min-w-[100px]"></span> ] <span id="test-result-desc">님이<br>당신을 오랫동안<br>지켜봐왔던 것 같습니다...</span>
                 </div>
                 <button id="btn-share-test" class="bg-white text-black font-bold text-xs px-4 py-3 hover:bg-gray-300 transition-colors w-full flex items-center justify-center gap-2 rounded-sm">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -1329,6 +1329,34 @@
             sStep3.classList.remove('hidden');
             playSFX('alert');
             
+            // ✨ 추가: 랜덤으로 띄울 멘트 리스트 (원하는 대로 추가/수정 가능)
+            function showSecretResult() {
+            sStep2.classList.add('hidden');
+            sStep3.classList.remove('hidden');
+            playSFX('alert');
+            
+            // 1~1000 사이의 랜덤 숫자 3개 생성
+            const rand1 = Math.floor(Math.random() * 1000) + 1;
+            const rand2 = Math.floor(Math.random() * 1000) + 1;
+            const rand3 = Math.floor(Math.random() * 1000) + 1;
+
+            // ✨ 백틱( ` )과 ${}를 사용해 랜덤 숫자를 문장 안에 동적으로 삽입
+            const secretMessages = [
+                "님이 당신을 오랫동안 지켜봐왔던 것 같습니다...",
+                `님의 메모장에서 당신의 이름이 ${rand1}번 발견되었습니다.`,
+                `님이 당신과 우연히 마주치려고 오늘 동선을 ${rand2}번이나 수정했습니다.`,
+                "님이 당신의 꿈에 출연하려고 현재 대기표를 뽑고 대기 중입니다.",
+                `님의 뇌구조 ${rand3}%를 당신이 점유하고 있습니다.`,
+                "님이 남몰래 당신과의 MBTI 궁합을 쳐보고 있는 것으로 확인됩니다.",
+                "님이 남몰래 당신과의 이름 궁합을 확인해보고 있는 것으로 확인됩니다.",
+                "님이 당신을 생각하다가 방금 마시던 물을 뿜은 것으로 확인됩니다."
+            ];
+            
+            // 랜덤으로 하나 뽑아서 화면에 적용
+            const randomMsg = secretMessages[Math.floor(Math.random() * secretMessages.length)];
+            document.getElementById('test-result-desc').innerHTML = randomMsg;
+
+            // 글리치 효과 시작
             const chars = '!@#$%^&*()_+-=[]{}|;:.,<>?¥§©µ¶';
             secretGlitchTimer = setInterval(() => {
                 let glitched = '';
@@ -1339,7 +1367,7 @@
                 sResultId.textContent = glitched;
             }, 50);
         }
-
+            
         document.getElementById('btn-share-test').addEventListener('click', () => {
             playSFX('click');
             const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다...👀\n\n🔽나를 몰래 좋아하고 있는 사람 찾기🔽\nhttps://ispyou.vercel.app/\n\n❤️NCT WISH【I SPY - The 4th Mini Album\n➫ 2026.10.12 6PM (KST)❤️\nhttps://nctwish.lnk.to/ISPY\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
