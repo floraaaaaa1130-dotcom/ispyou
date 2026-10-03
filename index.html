@@ -1363,11 +1363,13 @@
         }
             
         document.getElementById('btn-share-test').addEventListener('click', () => {
-            playSFX('click');
-            const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다...👀\n\n🔽나를 몰래 좋아하고 있는 사람 찾기🔽\nhttps://ispyou.vercel.app/\n\n❤️NCT WISH【I SPY - The 4th Mini Album\n➫ 2026.10.12 6PM (KST)❤️\nhttps://nctwish.lnk.to/ISPY\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
-            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-            window.open(url, '_blank');
-        });
+    playSFX('click');
+
+    const shareText = `[ ${selectedSecretMember} ] ${randomMsg}👀\n\n🔽나를 몰래 좋아하고 있는 사람 찾기🔽\nhttps://ispyou.vercel.app/\n\n❤️NCT WISH【I SPY - The 4th Mini Album\n➫ 2026.10.12 6PM (KST)❤️\nhttps://nctwish.lnk.to/ISPY\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
+
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+    window.open(url, '_blank');
+});
 
         /* --- Video/Voice Call Logic --- */
         const callModal = document.getElementById('call-modal');
