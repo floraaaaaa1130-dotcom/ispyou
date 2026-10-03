@@ -79,6 +79,18 @@
             to { transform: translateY(0); opacity: 1; }
         }
         .toast-slide-down { animation: slideDown 0.5s ease forwards; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes popOut {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.5); opacity: 0; }
+        }
+        .like-gif-pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .like-gif-pop-out { animation: popOut 0.3s ease-in forwards; }
     </style>
 </head>
 <body class="text-sm">
@@ -204,16 +216,24 @@
 
     <!-- Photo Enlarge Popup -->
     <div id="photo-popup-modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center z-[120] p-4 backdrop-blur-md">
-        <div class="w-full max-w-md flex flex-col items-center bg-black border border-[#333] rounded-lg overflow-hidden pb-4">
-            <div class="w-full flex justify-end p-2 bg-[#111]">
+        <div class="w-full max-w-md flex flex-col items-center bg-black border border-[#333] rounded-lg overflow-hidden pb-4 relative">
+            <div class="w-full flex justify-end p-2 bg-[#111] relative z-20">
                 <button id="btn-close-photo" class="text-gray-400 hover:text-[#FF007F] text-xl px-3 py-1 font-bold">✕</button>
             </div>
-            <img id="popup-photo-img" src="" class="w-full max-h-[50vh] object-contain bg-black">
             
-            <div class="w-full px-4 pt-4 flex flex-col gap-3">
+            <div class="relative w-full">
+                <img id="popup-photo-img" src="" class="w-full max-h-[50vh] object-contain bg-black relative z-10">
+                
+                <!-- 좋아요 누를 때 뜨는 멤버별 움짤 컨테이너 -->
+                <div id="like-reaction-container" class="absolute inset-0 z-30 hidden items-center justify-center pointer-events-none">
+                    <img id="like-reaction-gif" src="" class="w-1/2 max-w-[200px] border-4 border-[#FF007F] shadow-[0_0_30px_rgba(255,0,127,0.8)] rounded-xl opacity-0 transform scale-50">
+                </div>
+            </div>
+            
+            <div class="w-full px-4 pt-4 flex flex-col gap-3 relative z-20">
                 <div class="flex gap-3 items-center border-b border-[#333] pb-3">
                     <button id="btn-feed-like" class="text-2xl hover:scale-110 transition-transform">♡</button>
-                    <span class="text-white text-sm font-bold">좋아요<span id="feed-like-count">486</span>개</span>
+                    <span class="text-white text-sm font-bold">좋아요<span id="feed-like-count" class="mx-1">486</span>개</span>
                 </div>
                 
                 <div id="feed-comment-list" class="max-h-[120px] overflow-y-auto space-y-2 text-sm text-gray-300">
@@ -322,6 +342,7 @@
                 videoCall: './assets/video/sion_call.mp4',
                 voiceCall1: './assets/audio/sion_voice1.mp3', 
                 voiceCall2: './assets/audio/sion_voice2.mp3',
+                likeReaction: './assets/like/sionlovesyou.gif', // 좋아요 눌렀을 때 뜨는 움짤
                 feed: [
                     './assets/feed/sionfeed.jpg',
                     './assets/feed/sionfeed2.jpg',
@@ -335,12 +356,17 @@
                 videoCall: './assets/video/riku_call.mp4',
                 voiceCall1: './assets/audio/riku_voice1.mp3',
                 voiceCall2: './assets/audio/riku_voice2.mp3',
+                likeReaction: './assets/like/rikulovesyou.gif',
                 feed: [ 
                     './assets/feed/rikufeed.jpg',
                     './assets/feed/rikufeed2.jpg',
                     './assets/feed/rikufeed3.jpg',
                     './assets/feed/rikufeed4.jpg',
-                    './assets/feed/rikufeed5.jpg'
+                    './assets/feed/rikufeed5.jpg',
+                    './assets/feed/rikufeed6.PNG',
+                    './assets/feed/rikufeed7.PNG',
+                    './assets/feed/rikufeed8.PNG',
+                    './assets/feed/rikufeed9.PNG'
                 ]
             },
             'yushihihi_405': { 
@@ -348,6 +374,7 @@
                 videoCall: './assets/video/yushi_call.mp4',
                 voiceCall1: './assets/audio/yushi_voice1.mp3',
                 voiceCall2: './assets/audio/yushi_voice2.mp3',
+                likeReaction: './assets/like/yushilovesyou.gif',
                 feed: [ 
                     './assets/feed/yushifeed.jpg',
                     './assets/feed/yushifeed2.jpg',
@@ -375,12 +402,14 @@
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall1: './assets/audio/jaehee_voice1.mp3',
                 voiceCall2: './assets/audio/jaehee_voice2.mp3',
+                likeReaction: './assets/like/jaeheelovesyou.gif',
                 feed: [
                     './assets/feed/jaeheefeed.jpg',
                     './assets/feed/jaeheefeed2.jpg',
                     './assets/feed/jaeheefeed3.jpg',
                     './assets/feed/jaeheefeed4.jpg',
-                    './assets/feed/jaeheefeed5.jpg'
+                    './assets/feed/jaeheefeed6.jpg',
+                    './assets/feed/jaeheefeed7.jpg'
                 ] 
             },
             'ryo_hi_rose': { 
@@ -388,12 +417,16 @@
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall1: './assets/audio/ryo_voice1.mp3',
                 voiceCall2: './assets/audio/ryo_voice2.mp3',
+                likeReaction: './assets/like/ryolovesyou.gif',
                 feed: [ 
                     './assets/feed/ryofeed.jpg',
                     './assets/feed/ryofeed2.jpg',
                     './assets/feed/ryofeed3.jpg',
                     './assets/feed/ryofeed4.jpg',
-                    './assets/feed/ryofeed5.jpg'
+                    './assets/feed/ryofeed5.jpg',
+                    './assets/feed/ryofeed6.jpg',
+                    './assets/feed/ryofeed7.PNG',
+                    './assets/feed/ryofeed8.PNG'
                 ] 
             },
             'sakusakusaku07': { 
@@ -401,12 +434,16 @@
                 videoCall: './assets/video/sakuya_call.mp4',
                 voiceCall1: './assets/audio/sakuya_voice1.mp3',
                 voiceCall2: './assets/audio/sakuya_voice2.mp3',
+                likeReaction: './assets/like/sakuyalovesyou.gif',
                 feed: [
                     './assets/feed/sakuyafeed.jpg',
                     './assets/feed/sakuyafeed2.jpg',
                     './assets/feed/sakuyafeed3.jpg',
                     './assets/feed/sakuyafeed4.jpg',
-                    './assets/feed/sakuyafeed5.jpg'
+                    './assets/feed/sakuyafeed5.jpg',
+                    './assets/feed/sakuyafeed6.PNG',
+                    './assets/feed/sakuyafeed7.PNG',
+                    './assets/feed/sakuyafeed8.gif'
                 ] 
             }
         };
@@ -466,7 +503,7 @@
                 { type: 'text', text: `아\n아 잠만\n보지말고\n오늘 뭐해?\n이따 잠깐 볼래?`},
                 { type: 'text', text: `https://www.instagram.com/reels/Dd_GG7KpszX/\n노래 듣고 있는데\nhttps://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw\n제목은 연관없다~`},
                 { type: 'photo', url: './assets/dm/sion_10.jpg', next: true},
-                { type: 'photo', url: './assets/dm/sion_11.gif', text: '잘자'},
+                { type: 'video', url: './assets/dm/sion_11.gif', text: '잘자'},
             ],
             
             'yushihihi_405': [
@@ -526,10 +563,7 @@
                 { type: 'photo', url: './assets/dm/riku.jpg', text: `안뇽\n뭐해뭐해뭐해`},
                 { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?`},
                 { type: 'text', text: `오ㅎㅎㅎ\n나 6위ㅎ`},
-                { type: 'photo', url: './assets/dm/riku_2.jpg', text: `
-                10월의 행운아이템은 하트래
-                ~두근두근위시운세~
-                행운의 아이템: ❤️`},
+                { type: 'photo', url: './assets/dm/riku_2.jpg', text: `10월의 행운아이템은 하트래\n~두근두근위시운세~\n행운의 아이템: ❤️`},
                 { type: 'photo', url: './assets/dm/riku_12.PNG', text: `이거 받아`},
                 { type: 'photo', url: './assets/dm/riku_10.gif', text: `엑` },
                 { type: 'photo', url: './assets/dm/riku_15.gif', text: '나랑 만나자' }
@@ -555,14 +589,6 @@
                 "[현재 상태: ‼️무언가를 깨달음‼️]", 
                 "[현재 상태: 😍고백하고 싶음😍]"
             ],
-            captions: {
-                'sion__5': "오늘 자꾸 열이 난다. 고장 난 것 같아.",
-                'ri_ku_03': "이게 무슨 감정인지 모르겠어.",
-                'yushihihi_405': "화면 너머로 자꾸 네가 보여.",
-                'jaehee__zzang': "심장이 너무 빨리 뛰어. 해킹당했나?",
-                'ryo_hi_rose': "알 수 없는 에러 발생. 원인은 너야.",
-                'sakusakusaku07': "도망치고 싶은데, 눈을 뗄 수가 없어."
-            },
             dmHistory: {},
             hasFinishedVideoCall: {},
             postCallDmStep: {},
@@ -596,7 +622,7 @@
 
         window.onload = () => setTimeout(typeWriter, 500);
 
-        const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까?]";
+        const introText = "[SYSTEM: 낯선 감정을 감지했습니다. 훔쳐보시겠습니까? Y/N]";
         const termElement = document.getElementById('term-text');
         let charIndex = 0;
 
@@ -723,21 +749,44 @@
         const popupImg = document.getElementById('popup-photo-img');
         const likeBtn = document.getElementById('btn-feed-like');
         const likeCount = document.getElementById('feed-like-count');
+        const likeReactionContainer = document.getElementById('like-reaction-container');
+        const likeReactionGif = document.getElementById('like-reaction-gif');
 
         document.getElementById('btn-close-photo').addEventListener('click', () => {
             photoModal.classList.add('hidden');
             photoModal.classList.remove('flex');
             popupImg.src = '';
-            likeBtn.textContent = '🤍'; 
+            likeBtn.textContent = '♡'; 
+            likeReactionContainer.classList.add('hidden');
         });
 
         let currentLikes = 486;
         likeBtn.addEventListener('click', () => {
-            if (likeBtn.textContent === '🤍') {
-                likeBtn.textContent = '❤️';
+            if (likeBtn.textContent === '♡') {
+                likeBtn.textContent = '♥';
                 currentLikes++;
+                
+                // 멤버별 좋아요 리액션 움짤 띄우기
+                const memberAsset = ASSETS[state.currentMember];
+                if (memberAsset && memberAsset.likeReaction) {
+                    likeReactionGif.src = memberAsset.likeReaction;
+                    likeReactionContainer.classList.remove('hidden');
+                    likeReactionContainer.classList.add('flex');
+                    
+                    likeReactionGif.classList.remove('like-gif-pop-out');
+                    likeReactionGif.classList.add('like-gif-pop-in');
+                    
+                    setTimeout(() => {
+                        likeReactionGif.classList.remove('like-gif-pop-in');
+                        likeReactionGif.classList.add('like-gif-pop-out');
+                        setTimeout(() => {
+                            likeReactionContainer.classList.add('hidden');
+                            likeReactionContainer.classList.remove('flex');
+                        }, 300);
+                    }, 6000);
+                }
             } else {
-                likeBtn.textContent = '🤍';
+                likeBtn.textContent = '♡';
                 currentLikes--;
             }
             likeCount.textContent = currentLikes;
@@ -767,8 +816,9 @@
             
             currentLikes = Math.floor(Math.random() * 500) + 100;
             likeCount.textContent = currentLikes;
-            likeBtn.textContent = '🤍';
+            likeBtn.textContent = '♡';
             document.getElementById('feed-comment-list').innerHTML = ''; 
+            likeReactionContainer.classList.add('hidden');
             
             photoModal.classList.remove('hidden');
             photoModal.classList.add('flex');
@@ -960,9 +1010,10 @@
 
         function startPublicChatBot() {
             const botMsgs = [
-                {name: 'sakusakusaku07', msg: `
-                안녕<br><img src="./assets/feed/riku.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: `
+                {name: 'sakusakusaku07', msg: 
+                `안녕<br><img src="./assets/feed/riku.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg:
+                    `
                     。o
                       ｏ
                        。
@@ -971,33 +1022,34 @@
                        Ｏ
                          ｏ
                          。o<br><img src="./assets/feed/jaehee.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'yushihihi_405', msg: `
-                ^_^<br><img src="./assets/feed/yushi.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `
-                안녕하십니까<br><img src="./assets/feed/sakuya.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                hi<br><img src="./assets/feed/sion.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ryo_hi_rose', msg: `
-                ᗜ_ᗜ<br><img src="./assets/feed/ryo.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: `
-                나 요즘....\n심장이\n이상합니다<br><img src="./assets/feed/sakuya_myheart.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: `
-                그래?\n나도 그래\nㅍㅠㅠ<br><img src="./assets/feed/jaehee.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'yushihihi_405', msg: 
+                `^_^<br><img src="./assets/feed/yushi.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: 
+                `안녕하십니까<br><img src="./assets/feed/sakuya.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `hi<br><img src="./assets/feed/sion.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg:
+                `ᗜ_ᗜ<br><img src="./assets/feed/ryo.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg:
+                `나 요즘....\n심장이\n이상합니다<br><img src="./assets/feed/sakuya_myheart.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg:
+                `그래?\n나도 그래\nㅍㅠㅠ<br><img src="./assets/feed/jaehee.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '아무 일도 없는데'},
                 {name: 'yushihihi_405', msg: 'ㅋㅋㅋ'},
                 {name: 'sion__5', msg: '괜히 손에 땀이나네'},
                 {name: 'yushihihi_405', msg: '<img src="./assets/feed/yushi_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
                 {name: 'ryo_hi_rose', msg: '😬😬😬'},
                 {name: 'ryo_hi_rose', msg: '왜이러는거야'},
-                {name: 'ryo_hi_rose', msg: `
-                ここで一番混乱してる人\n          |\n         V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg: 
+                `ここで一番混乱してる人\n          |\n         V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '뭔데'},
-                {name: 'sakusakusaku07', msg: `
-                그냥 사진을\n올리고 싶었던 거지 리쿠는`},            
+                {name: 'sakusakusaku07', msg:
+                `그냥 사진을\n올리고 싶었던 거지 리쿠는`},            
                 {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
-                {name: 'ryo_hi_rose', msg: `
-                잠만\n이거 사랑이라는데<br><img src="./assets/feed/ryo_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `<span class="text-xs">⠀⠀   ⠀
+                {name: 'ryo_hi_rose', msg:
+                `잠만\n이거 사랑이라는데<br><img src="./assets/feed/ryo_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: 
+                ` <span class="text-xs">⠀⠀   ⠀
                      ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌‌⣀⠀⠀⠀⠀
                 ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
                 ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
@@ -1021,65 +1073,66 @@
                 ╲      ╲        ╱</span>`},
                 {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sakuya_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
                 {name: 'sion__5', msg: '응;'},
-                {name: 'jaehee__zzang', msg: `
-                X<br><img src="./assets/feed/sion_@.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg:
+                `X<br><img src="./assets/feed/sion_@.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '그럴리가요'},
-                {name: 'sion__5', msg: `
-                그게 뭐지요<br><img src="./assets/feed/yushi_3.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `그게 뭐지요<br><img src="./assets/feed/yushi_3.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '눈이 송아지 같아'},
-                {name: 'sion__5', msg: `
-                나 재밌는거 발견했어\nhttps://confusedlove.com\n이거해봥`},
-                {name: 'sion__5', msg: `
-                ??\n리쿠 많이 해<br><img src="./assets/feed/sion_2.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                🤷‍♂️🤷‍♂️🤷‍♂️<br><img src="./assets/feed/jaehee_2.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `나 재밌는거 발견했어\nhttps://confusedlove.com\n이거해봥`},
+                {name: 'sion__5', msg:
+                `??\n리쿠 많이 해<br><img src="./assets/feed/sion_2.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `🤷‍♂️🤷‍♂️🤷‍♂️<br><img src="./assets/feed/jaehee_2.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: 'ㄱㄷ 디기'},
                 {name: 'sion__5', msg: '사쿠 진짜 하러감?'},
-                {name: 'sion__5', msg: `
-                ㅠㅠ<br><img src="./assets/feed/sakuya_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                ㅋㅋㅋㅋ<br><img src="./assets/feed/ryo_3.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `ㅠㅠ<br><img src="./assets/feed/sakuya_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `ㅋㅋㅋㅋ<br><img src="./assets/feed/ryo_3.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '너는'},
-                {name: 'sion__5', msg: `
-                ㅎㅎㅎ<br><img src="./assets/feed/riku_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                오늘따라\n많이\nc o n f u s e d 하네..`},
+                {name: 'sion__5', msg:
+                `ㅎㅎㅎ<br><img src="./assets/feed/riku_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `오늘따라\n많이\nc o n f u s e d 하네..`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/ryo_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/ryo_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                https://www.instagram.com/reels/DdtHCXYJUoe/\n릴스 봐줄 사람\n내 릴스`},
+                {name: 'sion__5', msg:
+                `https://www.instagram.com/reels/DdtHCXYJUoe/\n릴스 봐줄 사람\n내 릴스`},
                 {name: 'sion__5', msg: '너나 봐'},
                 {name: 'sion__5', msg: '오우'},
                 {name: 'sion__5', msg: `<img src="./assets/feed/sion_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/sion_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '🤩🤩🤩ㅋ'},
-                {name: 'sion__5', msg: `그냥 사진을\n올리고 싶은거야 시온이형도`},
-                {name: 'sion__5', msg: `
-                크왕\n크왕 크왕 크왕 크왕<br><img src="./assets/feed/yushi_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `그냥 사진을\n올리고 싶은거야 시온이형도`},
+                {name: 'sion__5', msg:
+                `크왕\n크왕 크왕 크왕 크왕<br><img src="./assets/feed/yushi_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '???'},
                 {name: 'sion__5', msg: '진정해'},
-                {name: 'sion__5', msg: `
-                많이 혼.란스러우시구나\n근데 전말이죠\n혼란스러울 ㅋ대\n기타를 쳐...`},
+                {name: 'sion__5', msg:
+                `많이 혼.란스러우시구나\n근데 전말이죠\n혼란스러울 ㅋ대\n기타를 쳐...`},
                 {name: 'sion__5', msg: '그럼 기타를 쳐'},
                 {name: 'sion__5', msg: `<img src="./assets/feed/jaehee_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '울지말고 얘기를 해요'},
-                {name: 'sion__5', msg: `
-                눈물이\n검\n정색`},
+                {name: 'sion__5', msg:
+                `눈물이\n검\n정색`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/riku_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: `<img src="./assets/feed/riku_6.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
                 {name: 'sion__5', msg: '사쿠 왜 리쿠한테는 뭐라 안해'},
                 {name: 'sion__5', msg: '이제야 봤어요'},
-                {name: 'sion__5', msg: `
-                https://www.instagram.com/reels/DdtJVdRJUtc/\n그래서 기타를 쳤어`},
+                {name: 'sion__5', msg:
+                `https://www.instagram.com/reels/DdtJVdRJUtc/\n그래서 기타를 쳤어`},
                 {name: 'sion__5', msg: '잘했어용'},
-                {name: 'sion__5', msg: `
-                아 왤케 안 보내져<br><img src="./assets/feed/sakuya_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                ㅂㅂ<br><img src="./assets/feed/sakuya_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `
-                나도 릴스~\nhttps://www.instagram.com/reels/DdtKaqGphta/`},
-                {name: 'sion__5', msg: `
-                아무도 안보네<br><img src="./assets/feed/yushi_0.jpg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`}
+                {name: 'sion__5', msg:
+                `아 왤케 안 보내져<br><img src="./assets/feed/sakuya_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `ㅂㅂ<br><img src="./assets/feed/sakuya_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg:
+                `나도 릴스~\nhttps://www.instagram.com/reels/DdtKaqGphta/`},
+                {name: 'sion__5', msg:
+                `아무도 안보네<br><img src="./assets/feed/yushi_0.jpg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`}
             ];
             let msgIdx = 0;
             
@@ -1116,7 +1169,6 @@
             
             dmMessages.innerHTML = '';
             
-            // 기존 히스토리 한 번에 렌더링
             state.dmHistory[memberId].forEach(msg => renderDMSingle(msg, true));
             
             dmModal.classList.remove('hidden');
@@ -1129,7 +1181,6 @@
             dmModal.classList.remove('flex');
         });
 
-        // 봇 메세지 자동 진행 (타이핑 딜레이 1초)
         function triggerBotReply(memberId) {
             let step = state.postCallDmStep[memberId];
             let script = state.postCallScripts[memberId];
@@ -1139,16 +1190,16 @@
                 state.postCallDmStep[memberId] = step + 1;
                 
                 setTimeout(() => {
-                    playSFX('alert'); 
-                    appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url, nextMsg.type, nextMsg.urls);
-                    
+                    // DM 모달이 닫혀있을 때만 알림음 재생
                     if(dmModal.classList.contains('hidden')) {
+                        playSFX('alert'); 
                         document.getElementById('toast-sender').textContent = `@${memberId}`;
                         dmToast.classList.remove('hidden');
                         setTimeout(() => { dmToast.classList.add('hidden'); }, 5000); 
                     }
                     
-                    // next: true 가 있으면 1초 뒤에 혼자서 다음 메세지도 연달아 전송
+                    appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url, nextMsg.type, nextMsg.urls);
+                    
                     if (nextMsg.next) {
                         triggerBotReply(memberId);
                     }
@@ -1175,7 +1226,6 @@
             }
         }
 
-        // urls 파라미터 추가
         function appendDMChat(name, text, type, memberId, url = null, msgType = 'text', urls = null) {
             const msgObj = { name, text, type, url, msgType, urls };
             state.dmHistory[memberId].push(msgObj);
@@ -1184,8 +1234,6 @@
             }
         }
 
-        // 시간차 분할 렌더링 로직 (0.8초 간격)
-        // isHistoryRender가 true면 딜레이 없이 한 번에 그림
         async function renderDMSingle(msg, isHistoryRender = false) {
             const div = document.createElement('div');
             
@@ -1201,7 +1249,6 @@
                 div.appendChild(wrapper);
                 dmMessages.appendChild(div);
                 
-                // 단일 사진
                 if (msg.msgType === 'photo' && msg.url) {
                     const imgNode = document.createElement('img');
                     imgNode.src = msg.url;
@@ -1211,7 +1258,6 @@
                     if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
                 }
                 
-                // 다중 사진
                 if (msg.msgType === 'photo' && msg.urls && Array.isArray(msg.urls)) {
                     for(let u of msg.urls) {
                         const imgNode = document.createElement('img');
@@ -1223,7 +1269,6 @@
                     }
                 }
                 
-                // 동영상
                 if (msg.msgType === 'video' && msg.url) {
                     const vidNode = document.createElement('video');
                     vidNode.src = msg.url;
@@ -1237,7 +1282,6 @@
                     if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
                 }
                 
-                // 텍스트 (줄바꿈 단위 시간차 렌더링)
                 if (msg.text) {
                     const lines = msg.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
                     for (let line of lines) {
@@ -1250,7 +1294,6 @@
                     }
                 }
             } else {
-                // 유저 메시지 렌더링
                 div.className = 'flex flex-col mb-4 items-end w-full';
                 const wrapper = document.createElement('div');
                 wrapper.className = 'flex flex-col gap-1 items-end w-full';
