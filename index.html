@@ -1,1642 +1,1587 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>i_SPY_u.net</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <style>
-        @font-face {
-            font-family: 'MyCustomFont';
-            src: url('./assets/fonts/Mona12.woff2') format('woff2'); 
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>i_SPY_u.net</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @font-face {
+            font-family: 'MyCustomFont';
+            src: url('./assets/fonts/Mona12.woff2') format('woff2'); 
+        }
 
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
 
-        :root {
-            --neon-pink: #FF007F;
-            --neon-green: #00FF00;
-            --bg-black: #000000;
-        }
+        :root {
+            --neon-pink: #FF007F;
+            --neon-green: #00FF00;
+            --bg-black: #000000;
+        }
 
-        body, input, button, textarea, .font-pixel, .font-vt {
-            font-family: 'MyCustomFont', 'Noto Sans KR', sans-serif !important;
-            font-variant-emoji: text; /* ✨ 핵심: OS 기본 컬러 이모지를 억제하고 폰트 내장 픽셀 이모지로 강제 출력 */
-            background-color: var(--bg-black);
-            color: var(--neon-pink);
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none;
-        }
+        body, input, button, textarea, .font-pixel, .font-vt {
+            font-family: 'MyCustomFont', 'Noto Sans KR', sans-serif !important;
+            font-variant-emoji: text; /* ✨ 핵심: OS 기본 컬러 이모지를 억제하고 폰트 내장 픽셀 이모지로 강제 출력 */
+            background-color: var(--bg-black);
+            color: var(--neon-pink);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
 
-        .scanlines {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
-            background-size: 100% 4px;
-            pointer-events: none; z-index: 9999;
-            animation: crt-flicker 0.15s infinite;
-        }
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 9999;
+            animation: crt-flicker 0.15s infinite;
+        }
 
-        @keyframes crt-flicker {
-            0% { opacity: 0.95; }
-            50% { opacity: 1; }
-            100% { opacity: 0.98; }
-        }
+        @keyframes crt-flicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
 
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-pink); }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-pink); }
 
-        .typewriter-cursor::after {
-            content: '█';
-            animation: blink 1s step-end infinite;
-            color: var(--neon-green);
-            margin-left: 5px;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
+        .typewriter-cursor::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+            color: var(--neon-green);
+            margin-left: 5px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        .pip-cam {
-            transform: scaleX(-1);
-        }
-        
-        .ringing-animation {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
-        }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
+        .pip-cam {
+            transform: scaleX(-1);
+        }
+        
+        .ringing-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
 
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .toast-slide-down { animation: slideDown 0.5s ease forwards; }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-slide-down { animation: slideDown 0.5s ease forwards; }
 
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes popOut {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.5); opacity: 0; }
-        }
-        .like-gif-pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .like-gif-pop-out { animation: popOut 0.3s ease-in forwards; }
-        
-        /* 텍스트 글리치 전용 (사진에는 영향 안 감) */
-        .text-glitch-active {
-            display: inline-block;
-            font-family: monospace !important;
-            letter-spacing: 2px;
-        }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes popOut {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.5); opacity: 0; }
+        }
+        .like-gif-pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .like-gif-pop-out { animation: popOut 0.3s ease-in forwards; }
+        
+        /* 텍스트 글리치 전용 (사진에는 영향 안 감) */
+        .text-glitch-active {
+            display: inline-block;
+            font-family: monospace !important;
+            letter-spacing: 2px;
+        }
 
-    /* ===== MOBILE DM FIX ===== */
+    /* ===== MOBILE DM FIX ===== */
 @media (max-width: 1023px) {
-    body.dm-open {
-        overflow: hidden !important;
-        overscroll-behavior: none !important;
-    }
+    body.dm-open {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+    }
 
-    #dm-modal {
-        position: fixed !important;
-        inset: 0 !important;
-        width: 100vw !important;
-        height: 100dvh !important;
-        max-height: 100dvh !important;
-        overflow: hidden !important;
-        padding: 0 !important;
-    }
+    #dm-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
 
-    #dm-modal > div {
-        width: 100% !important;
-        height: 100dvh !important;
-        max-height: 100dvh !important;
-        margin: 0 !important;
-    }
+    #dm-modal > div {
+        width: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        margin: 0 !important;
+    }
 
-    #dm-messages {
-        min-height: 0 !important;
-        overflow-y: auto !important;
-        overscroll-behavior: contain !important;
-        -webkit-overflow-scrolling: touch;
-    }
+    #dm-messages {
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+        -webkit-overflow-scrolling: touch;
+    }
 
-    #dm-input {
-        font-size: 16px !important;
-    }
-}    
-    </style>
+    #dm-input {
+        font-size: 16px !important;
+    }
+}    
+    </style>
 </head>
 <body class="text-sm">
 <!-- 발신 연결음(ring)과 수신 벨소리(ringtone) 태그 -->
-    <audio id="audio-ring" src="./assets/audio/ring.mp3" loop preload="auto"></audio>
-    <audio id="audio-ringtone" src="./assets/audio/ringtone.mp3" loop preload="auto"></audio>
-    
-    <!-- DM Toast Notification -->
-    <div id="dm-toast" class="fixed top-4 left-4 right-4 z-[999] flex justify-center hidden pointer-events-none">
-        <div class="bg-[#1a000d] border border-[#FF007F] text-white p-3 rounded shadow-[0_0_15px_rgba(255,0,127,0.5)] cursor-pointer pointer-events-auto toast-slide-down w-full max-w-sm" onclick="openDMFromToast()">
-            <div class="flex items-center gap-3">
-                <span class="text-xl">💌</span>
-                <div>
-                    <p class="text-xs text-[#00FF00] font-bold">새로운 메시지</p>
-                    <p class="text-sm" id="toast-sender">@sender</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 1. Intro Terminal Screen -->
-    <div id="screen-intro" class="screen flex flex-col items-center justify-center min-h-screen bg-black p-6 z-50 fixed inset-0">
-        <div class="w-full max-w-xl text-left text-base lg:text-lg text-[#00FF00] leading-relaxed drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
-            <p id="term-text" class="mb-6 typewriter-cursor"></p>
-            <div id="term-choices" class="hidden flex gap-8 mt-6">
-                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-3 py-1 transition-all">> [Y]es</button>
-                <button id="btn-n" class="hover:text-[#FF007F] px-3 py-1 transition-all">> [N]o</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. ID Generation Screen -->
-    <div id="screen-id-gen" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-40 fixed inset-0">
-        <div class="border border-[#FF007F] p-6 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center relative overflow-hidden rounded-sm">
-            <h2 class="text-xs font-bold text-[#00FF00] mb-4">> USER_REGISTRATION.exe</h2>
-            <p class="text-gray-400 mb-4 text-sm">사용할 닉네임을 입력하세요.</p>
-            
-            <div class="bg-black border border-dashed border-[#FF007F] p-3 mb-6 relative z-10 flex items-center">
-                <span class="text-[#FF007F] text-base mr-2">></span>
-                <input type="text" id="custom-nickname-input" class="bg-transparent text-[#FF007F] text-base focus:outline-none w-full animate-pulse placeholder-[#FF007F]/40" placeholder="cizni" autocomplete="off" maxlength="12">
-            </div>
-            
-            <button id="btn-enter-main" class="bg-[#FF007F] text-black text-xs font-bold px-6 py-2 hover:bg-white transition-colors w-full rounded-sm">접속하기</button>
-        </div>
-    </div>
-
-    <!-- 3. Main Application Layout -->
-    <div id="screen-main" class="screen hidden h-[100dvh] bg-black flex-col lg:flex-row w-full text-white overflow-hidden relative">
-        
-        <!-- Mobile Header -->
-        <div class="lg:hidden p-3 border-b border-[#FF007F] flex justify-between items-center bg-black shrink-0 z-40 relative">
-            <button id="btn-toggle-nav" class="text-[#FF007F] text-lg p-1 hover:text-white transition-colors">☰</button>
-            <img src="./assets/logo.png" alt="i_SPY_u logo" class="h-6 object-contain">
-            <span class="my-user-id text-sm text-[#00FF00]"></span>
-        </div>
-
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-[45] hidden lg:hidden backdrop-blur-sm"></div>
-
-        <!-- Left Column: Following List -->
-        <div id="left-sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 z-[50] w-64 border-r border-[#333] bg-[#030001] transition-transform duration-300 flex flex-col shrink-0 h-full">
-            <div class="p-4 border-b border-[#333] bg-black flex justify-between items-center shrink-0">
-                <h2 class="text-xs font-bold text-[#FF007F] tracking-wider">> FOLLOWING</h2>
-                <button id="btn-close-nav" class="lg:hidden text-white hover:text-[#FF007F] text-lg">X</button>
-            </div>
-            
-            <div id="member-list" class="flex flex-col overflow-y-auto flex-grow">
-                <!-- Dynamically populated -->
-            </div>
-            
-            <!-- ✨ 랜덤 테스트 메뉴 추가 -->
-            <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0">
-                <button id="btn-open-test" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
-                    <span class="text-lg animate-pulse">👀</span> 
-                    <span>나를 몰래 좋아하는 사람?</span>
-                </button>
-            </div>
-
-            <!-- ✨ 크레딧 버튼 추가 -->
-            <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0">
-                <button id="btn-open-credit" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
-                    <span class="text-lg">ℹ️</span> 
-                    <span>크레딧</span>
-                </button>
-            </div>
-            <!-- 👆 여기까지 추가 👆 -->
-
-        </div>
-
-        <!-- Center Column: Grid Feed -->
-        <div class="flex-grow flex flex-col relative h-full overflow-hidden bg-[#080305]">
-            <!-- Profile Header -->
-            <div class="p-3 lg:p-4 border-b border-[#333] bg-black flex flex-col sm:flex-row justify-between shrink-0 z-20 gap-3">
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <img id="feed-target-pfp" src="" alt="profile" class="w-14 h-14 lg:w-16 lg:h-16 aspect-square bg-[#111] border border-[#FF007F] object-cover rounded-full">
-                    <div class="flex flex-col flex-grow">
-                        <h1 id="feed-target-id" class="text-sm font-bold text-white mb-1">TARGET</h1>
-                        <div class="flex items-center gap-2">
-                            <span id="feed-target-status" class="text-xs text-[#FF007F] transition-all bg-[#1a000d] px-2 py-0.5 rounded border border-[#FF007F]">[로딩중]</span>
-                            <div class="flex gap-2">
-                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤️">❤️</button>
-                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="🩹">🩹</button>
-                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❓">❓</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-2 w-full sm:w-auto sm:justify-end items-center">
-                    <button id="btn-call-member" class="flex-1 sm:flex-none border border-[#FF007F] text-[#FF007F] px-3 py-1.5 text-xs font-bold hover:bg-[#FF007F] hover:text-black transition-colors bg-[#1a000d] rounded-sm">CALL</button>
-                    <button id="btn-open-dm" class="flex-1 sm:flex-none border border-[#00FF00] text-[#00FF00] px-3 py-1.5 text-xs font-bold hover:bg-[#00FF00] hover:text-black transition-colors bg-[#001a00] rounded-sm">MESSAGE</button>
-                </div>
-            </div>
-            
-            <div class="flex-grow bg-[#050002] overflow-y-auto p-1 scroll-smooth">
-                <div id="feed-grid" class="grid grid-cols-3 gap-1">
-                    <!-- Dynamically populated via JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Public Chat -->
-        <div id="public-chat-wrapper" class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[35vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30 transition-[height] duration-500 ease-in-out">
-            <div id="public-chat-header" class="p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center cursor-pointer select-none">
-                <div class="flex items-center gap-2">
-                    <h2 class="text-xs font-bold text-[#00FF00] tracking-wider">> PUBLIC_CHAT</h2>
-                    <span id="chat-toggle-icon" class="text-xs text-gray-500 lg:hidden">▲</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div id="live-indicator" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="text-xs text-green-500">LIVE</span>
-                </div>
-            </div>
-
-            <div class="p-3 flex-grow flex flex-col overflow-hidden bg-black">
-                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-3 pr-2 scroll-smooth">
-                    <div class="text-xs text-gray-500 border-b border-[#222] pb-1">[SYSTEM] 글로벌 감청 채널 접속 완료.</div>
-                </div>
-            </div>
-            
-            <div class="p-2 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
-                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-1.5 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="메시지 입력..." autocomplete="off">
-                <button id="public-chat-submit" class="text-black bg-[#FF007F] text-xs font-bold px-4 py-1.5 hover:bg-white transition-colors rounded-sm">SEND</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Photo Enlarge Popup -->
-    <div id="photo-popup-modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center z-[120] p-4 backdrop-blur-md">
-        <div class="w-full max-w-md flex flex-col items-center bg-black border border-[#333] rounded-lg overflow-hidden pb-4 relative">
-            <div class="w-full flex justify-end p-2 bg-[#111] relative z-20">
-                <button id="btn-close-photo" class="text-gray-400 hover:text-[#FF007F] text-xl px-3 py-1 font-bold">✕</button>
-            </div>
-            
-            <div class="relative w-full flex justify-center">
-                <img id="popup-photo-img" src="" class="w-full max-h-[50vh] object-contain bg-black relative z-10">
-                
-                <div id="like-reaction-container" class="absolute inset-0 z-30 hidden items-center justify-center pointer-events-none">
-                    <img id="like-reaction-gif" src="" class="w-1/2 max-w-[200px] border-4 border-[#FF007F] shadow-[0_0_30px_rgba(255,0,127,0.8)] rounded-xl opacity-0 transform scale-50">
-                </div>
-            </div>
-            
-            <div class="w-full px-4 pt-4 flex flex-col gap-3 relative z-20">
-                <div class="flex gap-3 items-center border-b border-[#333] pb-3">
-                    <button id="btn-feed-like" class="text-2xl hover:scale-110 transition-transform">♡</button>
-                    <span class="text-white text-sm font-bold">좋아요<span id="feed-like-count" class="mx-1">486</span>개</span>
-                </div>
-                
-                <div id="feed-comment-list" class="max-h-[120px] overflow-y-auto space-y-2 text-sm text-gray-300">
-                </div>
-
-                <div class="flex gap-2 pt-2">
-                    <input type="text" id="feed-comment-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="댓글 달기..." autocomplete="off">
-                    <button id="btn-feed-comment" class="text-black bg-[#FF007F] text-xs font-bold px-3 py-2 hover:bg-white transition-colors rounded-sm">게시</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ✨ 랜덤 테스트 모달 -->
-    <div id="secret-test-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[200] p-4 backdrop-blur-md">
-        <div class="border border-[#FF007F] bg-black p-6 w-full max-w-sm text-center shadow-[0_0_30px_rgba(255,0,127,0.3)] rounded-sm relative overflow-hidden">
-            <div class="flex justify-end w-full mb-2">
-                <button id="btn-close-test" class="text-gray-500 hover:text-[#FF007F] text-lg font-bold">✕</button>
-            </div>
-            
-            <!-- Step 1: 인트로 -->
-            <div id="test-step-1">
-                <h3 class="text-[#00FF00] font-bold text-sm mb-6">> RANDOM_TEST.exe</h3>
-                <p class="text-white text-base mb-8 leading-relaxed">나를 몰래<br>좋아하고 있는 사람이 있을까?</p>
-                <button id="btn-start-test" class="bg-[#FF007F] text-black font-bold text-xs px-6 py-3 hover:bg-white transition-colors w-full rounded-sm">START</button>
-            </div>
-
-            <!-- Step 2: 슬롯머신 돌아감 -->
-            <div id="test-step-2" class="hidden py-4">
-                <p class="text-gray-400 text-xs mb-6">대상을 탐색 중입니다...</p>
-                <div class="bg-[#111] border border-[#333] py-6 mb-6 text-xl text-[#00FF00] font-bold tracking-widest rounded-sm" id="test-slot-machine">
-                    ???
-                </div>
-            </div>
-
-            <!-- Step 3: 결과 출력 -->
-            <div id="test-step-3" class="hidden">
-                <p class="text-xs text-[#FF007F] mb-4 font-bold">> RESULT_FOUND</p>
-                <div class="text-sm text-white mb-8 leading-relaxed bg-[#1a000d] border border-[#FF007F] p-5 rounded-sm">
-                    [ <span id="test-result-id" class="text-[#FF007F] font-bold text-glitch-active min-w-[100px]"></span> ] <span id="test-result-desc">님이<br>당신을 오랫동안<br>지켜봐왔던 것 같습니다...</span>
-                </div>
-                <button id="btn-share-test" class="bg-white text-black font-bold text-xs px-4 py-3 hover:bg-gray-300 transition-colors w-full flex items-center justify-center gap-2 rounded-sm">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    공유하고 정체 확인하기
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ✨ 랜덤 테스트 모달 -->
-    <div id="secret-test-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[200] p-4 backdrop-blur-md">
-        <!-- (랜덤 테스트 모달 내부 코드 생략...) -->
-    </div>
-
-    <!-- 👇 여기서부터 추가 👇 -->
-    <!-- ✨ 크레딧 모달 추가 -->
-    <div id="credit-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[200] p-4 backdrop-blur-md">
-        <div class="border border-[#FF007F] bg-black p-6 w-full max-w-sm text-center shadow-[0_0_30px_rgba(255,0,127,0.3)] rounded-sm relative overflow-hidden">
-            <div class="flex justify-end w-full mb-2">
-                <button id="btn-close-credit" class="text-gray-500 hover:text-[#FF007F] text-lg font-bold">✕</button>
-            </div>
-            
-            <h3 class="text-[#00FF00] font-bold text-sm mb-6">> CREDIT.txt</h3>
-            <div class="text-sm text-white mb-8 leading-relaxed bg-[#1a000d] border border-[#FF007F] p-5 rounded-sm text-left">
-                <p class="mb-2"><span class="text-[#FF007F] font-bold">제작 및 기획</span> @tteo.ditor</p>
-                <p><span class="text-[#FF007F] font-bold">사진 및 영상</span> @nctwish_official</p>
-            </div>
-            <button id="btn-close-credit-btn" class="bg-[#FF007F] text-black font-bold text-xs px-6 py-3 hover:bg-white transition-colors w-full rounded-sm">닫기</button>
-        </div>
-    </div>
-    <!-- 👆 여기까지 추가 👆 -->
-
-    <!-- 4. DM Modal -->
-    <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
-
-    <!-- 4. DM Modal -->
-    <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
-        <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[75vh] lg:h-[65vh] shadow-[0_0_30px_rgba(255,0,127,0.2)] rounded-sm overflow-hidden">
-            <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#0a0005]">
-                <div class="text-xs font-bold text-[#FF007F] tracking-wider">DIRECT MESSAGE :: <span id="dm-target-name" class="text-white"></span></div>
-                <button id="btn-close-dm" class="text-gray-400 hover:text-[#FF007F] text-lg font-bold px-2">✕</button>
-            </div>
-            <div id="dm-messages" class="flex-grow p-4 overflow-y-auto flex flex-col bg-[#050002] gap-1">
-            </div>
-            <div class="p-3 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
-                <input type="text" id="dm-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#00FF00] rounded-sm" placeholder="메시지 보내기..." autocomplete="off">
-                <button id="btn-send-dm" class="text-black bg-[#00FF00] text-xs font-bold px-4 py-2 hover:bg-white transition-colors rounded-sm">SEND</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 통화 방식 선택 팝업 -->
-    <div id="call-choice-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
-        <div class="w-full max-w-xs bg-black border border-[#FF007F] p-6 text-center shadow-[0_0_40px_rgba(255,0,127,0.5)] rounded-sm">
-            <h3 class="text-xs font-bold text-[#00FF00] mb-3">> CALL_METHOD</h3>
-            <p class="text-sm text-gray-300 mb-6">연결 방식을 선택하세요.</p>
-            <div class="flex flex-col gap-3">
-                <button id="btn-choose-voice" class="bg-[#00FF00] text-black text-xs font-bold px-4 py-3 hover:bg-white transition-colors rounded-sm">음성 통화 (VOICE)</button>
-                <button id="btn-choose-video" class="bg-[#FF007F] text-black text-xs font-bold px-4 py-3 hover:bg-white transition-colors rounded-sm">영상 통화 (VIDEO)</button>
-                <button id="btn-close-choice" class="mt-2 text-gray-500 text-sm hover:text-white transition-colors">취소</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. Incoming Call Modal -->
-    <div id="incoming-call-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
-        <div class="w-full max-w-xs bg-black border-2 border-[#FF007F] p-6 text-center ringing-animation shadow-[0_0_40px_rgba(255,0,127,0.5)] rounded-sm">
-            <div class="text-[#FF007F] text-4xl mb-4">📞</div>
-            <h3 class="text-xs font-bold text-[#00FF00] mb-2">> INCOMING_CALL</h3>
-            <p class="text-base text-white mb-6 leading-relaxed">[SYSTEM] <br><span id="incoming-caller-name" class="text-[#FF007F] font-bold"></span>님이<br><span id="incoming-call-text" class="text-[#FF007F]">음성통화를 요청합니다.</span></p>
-            <div class="flex gap-3 justify-center">
-                <button id="btn-accept-call" class="bg-[#00FF00] text-black text-xs font-bold px-4 py-2 hover:bg-white transition-colors flex-1 rounded-sm">수락</button>
-                <button id="btn-reject-call" class="bg-red-600 text-white text-xs font-bold px-4 py-2 hover:bg-red-400 transition-colors flex-1 rounded-sm">거절</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 6. Video/Voice Call Modal -->
-    <div id="call-modal" class="fixed inset-0 bg-black/95 hidden flex-col justify-center z-[110] p-0 md:p-4 backdrop-blur-md overflow-hidden">
-        <div class="w-full max-w-[400px] mx-auto bg-black border-0 md:border border-[#FF007F] flex flex-col h-full md:h-[80vh] shadow-[0_0_50px_rgba(255,0,127,0.4)] relative rounded-sm">
-            <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d] shrink-0 z-30">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <div class="text-xs font-bold text-[#00FF00]" id="call-title-text">ENCRYPTED_CALL...</div>
-                </div>
-                <div class="text-sm text-gray-400" id="call-target-name-modal">@target</div>
-            </div>
-
-            <div class="relative w-full flex-grow bg-black overflow-hidden flex items-center justify-center border-b border-[#333]">
-                <div id="member-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black">
-                    <!-- 연결음 대기 텍스트 -->
-                    <div id="call-connecting-text" class="text-lg lg:text-xl text-gray-400 animate-pulse text-center mb-4 z-20">연결 중...</div>
-                    
-                    <video id="call-video-player" class="absolute inset-0 w-full h-full object-cover hidden" playsinline></video>
-                    <audio id="call-audio-player" class="hidden"></audio>
-
-                    <!-- 통화 배경 -->
-                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                </div>
-                
-                <div id="pip-container" class="absolute bottom-6 right-4 w-24 sm:w-32 aspect-[3/4] bg-black border-2 border-[#00FF00] shadow-[0_0_15px_rgba(0,255,0,0.3)] z-20 overflow-hidden hidden rounded-sm">
-                    <video id="user-cam" autoplay playsinline muted class="pip-cam w-full h-full object-cover"></video>
-                    <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 text-[10px] text-red-500">NO CAM</div>
-                </div>
-            </div>
-
-            <div class="p-4 bg-[#0a0005] flex justify-center items-center shrink-0 z-30">
-                <button id="btn-end-call" class="bg-red-600 text-white text-xs font-bold px-8 py-3 hover:bg-red-500 transition-colors shadow-[0_0_15px_rgba(255,0,0,0.4)] rounded-sm">통화 종료</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ==========================================
-        // 📁 [1] 미디어 연결 영역 
-        // ==========================================
-        const ASSETS = {
-            sfx: {
-                click: './assets/audio/click.mp3',       
-                type: './assets/audio/type.mp3',         
-                scratch: './assets/audio/scratch.mp3',   
-                ringtone: './assets/audio/ring.mp3',     
-                alert: './assets/audio/alert.mp3'        
-            },
-            
-            'sion__5': {
-                profile: './assets/profile/sion_profile.JPG', 
-                videoCall: './assets/video/sion_call.mp4',
-                voiceCall1: './assets/audio/sion_voice1.mp3', 
-                voiceCall2: './assets/audio/sion_voice2.mp3',
-                likeReaction: './assets/like/sionlovesyou.gif',
-                feed: [
-                    './assets/feed/sionfeed.jpg',
-                    './assets/feed/sionfeed2.jpg',
-                    './assets/feed/sionfeed3.jpg',
-                    './assets/feed/sionfeed4.jpg',
-                    './assets/feed/sionfeed5.jpg',
-                    './assets/feed/sionfeed6.jpg',
-                    './assets/feed/sionfeed7.jpg',
-                    './assets/feed/sionfeed8.jpg',
-                    './assets/feed/sionfeed9.jpg'
-                ]
-            },
-            'ri_ku_03': {
-                profile: './assets/profile/riku_profile.PNG',
-                videoCall: './assets/video/riku_call.mp4',
-                voiceCall1: './assets/audio/riku_voice1.mp3',
-                voiceCall2: './assets/audio/riku_voice2.mp3',
-                likeReaction: './assets/like/rikulovesyou.gif',
-                feed: [ 
-                    './assets/feed/rikufeed.jpg',
-                    './assets/feed/rikufeed2.jpg',
-                    './assets/feed/rikufeed3.jpg',
-                    './assets/feed/rikufeed4.jpg',
-                    './assets/feed/rikufeed5.jpg',
-                    './assets/feed/rikufeed6.PNG',
-                    './assets/feed/rikufeed7.PNG',
-                    './assets/feed/rikufeed8.gif',
-                    './assets/feed/rikufeed9.PNG',
-                    './assets/feed/rikufeed10.jpg',
-                    './assets/feed/rikufeed11.jpg',
-                    './assets/feed/rikufeed12.jpg',
-                    './assets/feed/rikufeed13.jpg'
-                ]
-            },
-            'yushihihi_405': { 
-                profile: './assets/profile/yushi_profile.PNG',
-                videoCall: './assets/video/yushi_call.mp4',
-                voiceCall1: './assets/audio/yushi_voice1.mp3',
-                voiceCall2: './assets/audio/yushi_voice2.mp3',
-                likeReaction: './assets/like/yushilovesyou.gif',
-                feed: [ 
-                    './assets/feed/yushifeed.jpg',
-                    './assets/feed/yushifeed2.jpg',
-                    './assets/feed/yushifeed3.jpg',
-                    './assets/feed/yushifeed4.jpg',
-                    './assets/feed/yushifeed5.jpg',
-                    './assets/feed/yushifeed6.jpg',
-                    './assets/feed/yushifeed7.jpg',
-                    './assets/feed/yushifeed8.jpg',
-                    './assets/feed/yushifeed9.jpg',
-                    './assets/feed/yushifeed10.jpg',
-                    './assets/feed/yushifeed11.jpg',
-                    './assets/feed/yushifeed12.jpg',
-                    './assets/feed/yushifeed13.jpg',
-                    './assets/feed/yushifeed14.jpg',
-                    './assets/feed/yushifeed15.jpg',
-                    './assets/feed/yushifeed16.jpg',
-                    './assets/feed/yushifeed17.jpg',
-                    './assets/feed/yushifeed18.jpg',
-                    './assets/feed/yushifeed19.jpg',
-                    './assets/feed/yushifeed20.jpg',
-                    './assets/feed/yushifeed21.jpg',
-                    './assets/feed/yushifeed22.jpg',
-                    './assets/feed/yushifeed23.jpg'
-                ] 
-            }, 
-            'jaehee__zzang': {
-                profile: './assets/profile/jaehee_profile.jpg',
-                videoCall: './assets/video/jaehee_call.mp4',
-                voiceCall1: './assets/audio/jaehee_voice1.mp3',
-                voiceCall2: './assets/audio/jaehee_voice2.mp3',
-                likeReaction: './assets/like/jaeheelovesyou.gif',
-                feed: [
-                    './assets/feed/jaeheefeed.jpg',
-                    './assets/feed/jaeheefeed2.jpg',
-                    './assets/feed/jaeheefeed3.jpg',
-                    './assets/feed/jaeheefeed4.jpg',
-                    './assets/feed/jaeheefeed5.jpg',
-                    './assets/feed/jaeheefeed6.PNG',
-                    './assets/feed/jaeheefeed7.PNG',
-                    './assets/feed/jaeheefeed8.jpg',
-                    './assets/feed/jaeheefeed9.jpg',
-                    './assets/feed/jaeheefeed10.jpg',
-                    './assets/feed/jaeheefeed11.jpg'
-                ] 
-            },
-            'ryo_hi_rose': { 
-                profile: './assets/profile/ryo_profile.jpg',
-                videoCall: './assets/video/ryo_call.mp4',
-                voiceCall1: './assets/audio/ryo_voice1.mp3',
-                voiceCall2: './assets/audio/ryo_voice2.mp3',
-                likeReaction: './assets/like/ryolovesyou.gif',
-                feed: [ 
-                    './assets/feed/ryofeed.jpg',
-                    './assets/feed/ryofeed2.jpg',
-                    './assets/feed/ryofeed3.jpg',
-                    './assets/feed/ryofeed5.jpg',
-                    './assets/feed/ryofeed6.jpg',
-                    './assets/feed/ryofeed7.PNG',
-                    './assets/feed/ryofeed8.PNG',
-                    './assets/feed/ryofeed9.jpg',
-                    './assets/feed/ryofeed10.jpg',
-                    './assets/feed/ryofeed12.jpg'
-                ] 
-            },
-            'sakusakusaku07': { 
-                profile: './assets/profile/sakuya_profile.PNG',
-                videoCall: './assets/video/sakuya_call.mp4',
-                voiceCall1: './assets/audio/sakuya_voice1.mp3',
-                voiceCall2: './assets/audio/sakuya_voice2.mp3',
-                likeReaction: './assets/like/sakuyalovesyou.gif',
-                feed: [
-                    './assets/feed/sakuyafeed.jpg',
-                    './assets/feed/sakuyafeed2.jpg',
-                    './assets/feed/sakuyafeed3.jpg',
-                    './assets/feed/sakuyafeed4.jpg',
-                    './assets/feed/sakuyafeed5.jpg',
-                    './assets/feed/sakuyafeed6.PNG',
-                    './assets/feed/sakuyafeed7.PNG',
-                    './assets/feed/sakuyafeed8.gif',
-                    './assets/feed/sakuyafeed9.jpg',
-                    './assets/feed/sakuyafeed10.jpg',
-                    './assets/feed/sakuyafeed11.jpg',
-                    './assets/feed/sakuyafeed12.jpg'
-                ] 
-            }
-        };
-
-        const audioNodes = {};
-
-        function playSFX(type) {
-            if (type === 'ring') {
-                const ringAudio = document.getElementById('audio-ring');
-                if (ringAudio) { ringAudio.currentTime = 0; ringAudio.play().catch(e=>{}); }
-                return;
-            }
-            if (type === 'ringtone') {
-                const ringtoneAudio = document.getElementById('audio-ringtone');
-                if (ringtoneAudio) { ringtoneAudio.currentTime = 0; ringtoneAudio.play().catch(e=>{}); }
-                return;
-            }
-
-            if(!ASSETS.sfx[type]) return; 
-            if(type === 'scratch') {
-                if(!audioNodes[type]) {
-                    audioNodes[type] = new Audio(ASSETS.sfx[type]);
-                    audioNodes[type].loop = true;
-                }
-                audioNodes[type].play().catch(e => console.log('Audio blocked'));
-                return;
-            }
-            const audio = new Audio(ASSETS.sfx[type]);
-            audio.play().catch(e => console.log('Audio blocked'));
-        }
-
-        function stopSFX(type) {
-            if (type === 'ring') {
-                const ringAudio = document.getElementById('audio-ring');
-                if (ringAudio) { ringAudio.pause(); ringAudio.currentTime = 0; }
-                return;
-            }
-            if (type === 'ringtone') {
-                const ringtoneAudio = document.getElementById('audio-ringtone');
-                if (ringtoneAudio) { ringtoneAudio.pause(); ringtoneAudio.currentTime = 0; }
-                return;
-            }
-            if(audioNodes[type]) {
-                audioNodes[type].pause();
-                audioNodes[type].currentTime = 0;
-            }
-        }
-
-        function linkify(text) {
-            const urlPattern = /(^|[^"'])(https?:\/\/[^\s<]+)/g;
-            return text.replace(urlPattern, '$1<a href="$2" target="_blank" class="text-[#00FF00] underline break-all hover:text-white transition-colors">$2</a>');
-        }
-
-        // ==========================================
-        // 📝 [3] DM 시나리오 스크립트 
-        // ==========================================
-        const dmScripts = {
-            'sion__5': [
-                { type: 'photo', url: './assets/dm/sion_5.gif', text: `hello?\n~♡`},
-                { type: 'text', text: `있잖아\n사진 찍는 거 좋아해?\nㅎㅎ`},
-                { type: 'photo', url: './assets/dm/sion_6.jpg', text: 'ㅎㅎ' },
-                { type: 'photo', urls: [
-                    './assets/dm/sion_7.jpg',
-                    './assets/dm/sion_8.jpg',
-                    './assets/dm/sion_9.jpg'
-                ], next: true},
-                { type: 'text', text: '프사 골라줘'},
-                { type: 'photo', urls: [
-                    './assets/dm/모르겠네.jpg',
-                    './assets/dm/이거괜찮나.jpg',
-                    './assets/dm/이게 낫나.jpg',
-                    './assets/dm/지켜보고있다.jpg',
-                    './assets/dm/프사후보1.jpg',
-                    './assets/dm/프사후보2.jpg',
-                    './assets/dm/프사후보3.jpg',
-                    './assets/dm/프사후보4.JPG'
-                ]},
-                { type: 'text', text: `아\n아 잠만\n보지말고\n오늘 뭐해?\n이따 잠깐 볼래?`},
-                { type: 'text', text: `https://www.instagram.com/reels/Dd_GG7KpszX/\n노래 듣고 있는데\nhttps://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw\n제목은 연관없다~`},
-                { type: 'photo', url: './assets/dm/sion_10.jpg'},
-                { type: 'photo', url: './assets/dm/sion_11.gif', text: '잘자'},
-            ],
-            
-            'yushihihi_405': [
-                { type: 'photo', url: './assets/dm/yushi_5.PNG', text: `안녕~`},
-                { type: 'photo', url: './assets/dm/yushi_6.gif', text: `뭐해？`},
-                { type: 'text', text: `ㅋㅋㅋ\nhttps://www.instagram.com/reels/Dd_GG7KpszX/\n너도 나와ㅎㅎ\n음`},
-                { type: 'text', text: `앗 링크 눌러보지마\n아`, next: true},
-                { type: 'photo', url: './assets/dm/yushi_6.PNG'},
-                { type: 'video', url: './assets/video/yushi2.mp4', text: '지금 몇시〜' },
-                { type: 'video', url: './assets/video/yushi.mp4', text: '좋아해～' }
-            ],
-            
-            'jaehee__zzang': [
-                { type: 'photo', url: './assets/dm/jaehee.jpg', text: `테마를 love로 변경했습니다`},
-                { type: 'text', text: `허허\n웃긴 거 보여줄까ㅋㅋㅋ` },
-                { type: 'photo', url: './assets/dm/jaehee_6.PNG', text: `4&☀️`},
-                { type: 'text', text: `아ㅏㅏㅏ\n좀 이따가\n나와줄 수 있어?\n별 건 아니고ㅋㅋ\n기다릴게` },
-                { type: 'photo', url: './assets/dm/jaehee_7.PNG'},
-                { type: 'photo', urls: [
-                    './assets/dm/jaehee_8.PNG',
-                    './assets/dm/jaehee_9.PNG',
-                    './assets/dm/jaehee_10.PNG',
-                    './assets/dm/jaehee_11.PNG',
-                    './assets/dm/jaehee_12.PNG',
-                    './assets/dm/jaehee_13.PNG'
-                ]},
-                { type: 'text', text: `https://www.instagram.com/reels/Dd_Q02fJNV0/\n으악\n받아줘` },
-                { type: 'photo', url: './assets/dm/jaehee_14.gif'},
-            ],
-            
-            'ryo_hi_rose': [
-                { type: 'photo', url: './assets/dm/ryo_10.PNG', text: `ㅎㅇ`},
-                { type: 'photo', url: './assets/dm/ryo_11.jpg', text: `ㅋ`},
-                { type: 'photo', url: './assets/dm/ryo_8.PNG', text: `나 안경 삼\n어때` },
-                { type: 'text', text: `이거 내가 만든 건데\n너만 특별히 보여줄게\nhttps://www.youtube.com/watch?v=idomU-hwkig&feature=youtu.be` },
-                { type: 'video', url: './assets/video/ryo2.mp4', text: `잠깐만!\n이제 집중해야돼😬`},
-                { type: 'photo', url: './assets/dm/ryo_7.PNG', text: `고백받게해주세요\n고백받게해주세요\n고백받게해주세요`},
-                { type: 'photo', url: './assets/dm/ryo_6.PNG', text: `~♫`},
-                { type: 'video', url: './assets/video/ryo.mp4', text: `와 대박`},
-                { type: 'text', text: `나도 진짜 딱 한번만 말할거야\nhttps://www.instagram.com/reels/Dd_NSlnp1jG/`},
-                { type: 'photo', url: './assets/dm/ryo_5.gif', text: `굿밤`},
-            ],
-            
-            'sakusakusaku07': [
-                { type: 'photo', url: './assets/dm/sakuya_12.PNG', text: `안녕 레이디`},
-                { type: 'photo', url: './assets/dm/sakuya_11.PNG', text: `사귑시다`},
-                { type: 'photo', url: './assets/dm/sakuya_10.PNG', text: `好き`},
-                { type: 'photo', url: './assets/dm/sakuya_10.gif', text: `널 좋아하는 건\n누워서 떡먹기 입니다` },
-                { type: 'video', url: './assets/video/sakuya.mp4', text: `난 너 좋아합니다`},
-                { type: 'text', text: '왜 자꾸 웃는거임'},
-                { type: 'photo', url: './assets/dm/sakuya_8.PNG', text: '진짜 좋아한다고' },
-                { type: 'text', text: `https://www.instagram.com/reels/Dd_Oohup5pL/\nㅈㅇㅎ`, next: true},
-                { type: 'photo', url: './assets/dm/sakuya_6.gif'},
-                { type: 'photo', url: './assets/dm/sakuya_7.gif', text: '너 볼'},
-                { type: 'text', text: `https://www.instagram.com/reels/Dd_O8N7pSOW/\n진짜 좋아하나???`}
-            ],
-                    
-            'ri_ku_03': [
-                { type: 'photo', url: './assets/dm/riku.jpg', text: `안뇽\n뭐해뭐해뭐해`},
-                { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?\nhttps://x.com/Hi_Ohaasa?lang=ko`},
-                { type: 'text', text: `오ㅎㅎㅎ\n나 6위ㅎ`},
-                { type: 'photo', url: './assets/dm/riku_2.jpg', text: `10월의 행운아이템은 하트래\n~두근두근위시운세~\n10월은 애정운이 상승하는 달!\n행운의 아이템: ❤️\n라고 하넹`},
-                { type: 'video', url: './assets/video/riku.mp4', text: `이거진짜???\n매력없어?ㅠ\n음`},
-                { type: 'photo', url: './assets/dm/riku_12.PNG', text: `이거 받아`},
-                { type: 'photo', url: './assets/dm/riku_10.gif', text: `엑` },
-                { type: 'photo', url: './assets/dm/riku_15.gif', text: '나랑 만나자' }
-            ],
-            'default': [
-                { type: 'text', text: '시스템이 이상해... 너 때문이야?' },
-                { type: 'text', text: '대답해줘.' }
-            ]
-        };
-
-        const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaehee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
-        
-        const state = {
-            userId: "",
-            currentMember: members[0],
-            videoStream: null,
-            activeCallType: null, 
-            statusIndex: {}, 
-            statusFlow: [
-                "[현재 상태: 🤯심박수 비정상🤯]", 
-                "[현재 상태: ☺️조금 안도함☺️]", 
-                "[현재 상태: ‼️무언가를 깨달음‼️]", 
-                "[현재 상태: 😍고백하고 싶음😍]"
-            ],
-            dmHistory: {},
-            hasFinishedVideoCall: {},
-            postCallDmStep: {},
-            postCallScripts: {}
-        };
-
-        members.forEach(m => {
-            state.statusIndex[m] = 0;
-            state.dmHistory[m] = [];
-            state.hasFinishedVideoCall[m] = false;
-            state.postCallDmStep[m] = 0;
-            state.postCallScripts[m] = dmScripts[m] || dmScripts['default'];
-        });
-
-        document.addEventListener('click', (e) => {
-            if(e.target.tagName.toLowerCase() === 'button') playSFX('click');
-        });
-
-        function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.add('hidden');
-                s.classList.remove('flex');
-            });
-            const target = document.getElementById(screenId);
-            if (target) {
-                target.classList.remove('hidden');
-                target.classList.add('flex');
-            }
-        }
-
-       window.onload = () => {
-            setTimeout(typeWriter, 500);
-        };
-
-        const introText = "[SYSTEM: 당신을 향한 낯선 감정을 감지했습니다.\n훔쳐보시겠습니까?]";
-        const termElement = document.getElementById('term-text');
-        let charIndex = 0;
-
-        function typeWriter() {
-            if (charIndex < introText.length) {
-                termElement.textContent += introText.charAt(charIndex);
-                charIndex++;
-                if(charIndex % 3 === 0) playSFX('type'); 
-                setTimeout(typeWriter, 50);
-            } else {
-                termElement.classList.remove('typewriter-cursor');
-                document.getElementById('term-choices').classList.remove('hidden');
-            }
-        }
-
-        document.getElementById('btn-y').addEventListener('click', () => {
-            document.getElementById('term-choices').classList.add('hidden');
-            termElement.innerHTML += "<br><br><span class='text-gray-500 text-sm'>[SYSTEM] 우회 경로 확보 중...</span>";
-            setTimeout(() => switchScreen('screen-id-gen'), 1000);
-        });
-
-        document.getElementById('btn-n').addEventListener('click', () => {
-            termElement.innerHTML += "<br><br><span class='text-red-500 text-sm'>[ERROR] 거부할 수 없습니다. 당신은 이미 훔쳐보고 있습니다.</span>";
-            document.getElementById('term-choices').classList.add('hidden');
-            setTimeout(() => switchScreen('screen-id-gen'), 1500);
-        });
-
-        document.getElementById('btn-enter-main').addEventListener('click', () => {
-            const inputVal = document.getElementById('custom-nickname-input').value.trim();
-            state.userId = inputVal !== '' ? inputVal : '익명_User';
-            document.querySelectorAll('.my-user-id').forEach(el => el.textContent = state.userId);
-            initMainDashboard();
-        });
-        
-        document.getElementById('custom-nickname-input').addEventListener('keypress', (e) => {
-            playSFX('type');
-            if(e.key === 'Enter') document.getElementById('btn-enter-main').click();
-        });
-
-        const leftSidebar = document.getElementById('left-sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-        document.getElementById('btn-toggle-nav').addEventListener('click', () => {
-            leftSidebar.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.remove('hidden');
-        });
-
-        const closeSidebar = () => {
-            leftSidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        };
-
-        document.getElementById('btn-close-nav').addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
-
-        function initMainDashboard() {
-            switchScreen('screen-main');
-            renderMemberList();
-            loadFeed(members[0]);
-            startPublicChatBot();
-        }
-
-        function renderMemberList() {
-            const list = document.getElementById('member-list');
-            list.innerHTML = members.map(id => `
-                <button class="member-btn w-full text-left p-4 border-b border-[#333] hover:bg-[#111] transition-all text-xs text-gray-500 flex-shrink-0" data-id="${id}">
-                    > @${id}
-                </button>
-            `).join('');
-
-            document.querySelectorAll('.member-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const targetId = e.currentTarget.getAttribute('data-id');
-                    loadFeed(targetId);
-                    if(window.innerWidth < 1024) closeSidebar();
-                });
-            });
-        }
-
-        function loadFeed(memberId) {
-            state.currentMember = memberId;
-            const assetData = ASSETS[memberId] || {};
-            
-            document.querySelectorAll('.member-btn').forEach(b => {
-                b.classList.remove('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
-                if(b.getAttribute('data-id') === memberId) {
-                    b.classList.add('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
-                }
-            });
-
-            document.getElementById('feed-target-id').textContent = `@${memberId}`;
-            const pfpSrc = assetData.profile ? assetData.profile : `https://api.dicebear.com/7.x/bottts/svg?seed=${memberId}&backgroundColor=111111`;
-            document.getElementById('feed-target-pfp').src = pfpSrc;
-            
-            document.getElementById('feed-target-status').textContent = state.statusFlow[state.statusIndex[memberId]];
-            
-            const grid = document.getElementById('feed-grid');
-            grid.innerHTML = '';
-            
-            const feedImages = assetData.feed && assetData.feed.length > 0 ? assetData.feed : [];
-            const numPhotos = feedImages.length > 0 ? feedImages.length : 9;
-            
-            for(let i = 0; i < numPhotos; i++) {
-                const bgColors = ['1a000d', '002200', '111111', '1a1a00', '220011'];
-                const bgColor = bgColors[(members.indexOf(memberId) + i) % bgColors.length];
-                const imgSrc = feedImages[i] ? feedImages[i] : `https://placehold.co/400x400/${bgColor}/FF007F?text=PIC_${i+1}`;
-                
-                // 클릭하면 바로 원본 사진 팝업
-                grid.innerHTML += `
-                    <div class="relative w-full aspect-square bg-[#111] overflow-hidden feed-item group cursor-pointer" onclick="openPhotoPopup('${imgSrc}')">
-                        <img src="${imgSrc}" class="w-full h-full object-cover absolute inset-0 z-0 revealed">
-                    </div>
-                `;
-            }
-        }
-
-        const photoModal = document.getElementById('photo-popup-modal');
-        const popupImg = document.getElementById('popup-photo-img');
-        const likeBtn = document.getElementById('btn-feed-like');
-        const likeCount = document.getElementById('feed-like-count');
-        const likeReactionContainer = document.getElementById('like-reaction-container');
-        const likeReactionGif = document.getElementById('like-reaction-gif');
-
-        document.getElementById('btn-close-photo').addEventListener('click', () => {
-            photoModal.classList.add('hidden');
-            photoModal.classList.remove('flex');
-            popupImg.src = '';
-            likeBtn.textContent = '♡'; 
-            likeReactionContainer.classList.add('hidden');
-        });
-
-        let currentLikes = 486;
-        likeBtn.addEventListener('click', () => {
-            if (likeBtn.textContent === '♡') {
-                likeBtn.textContent = '♥';
-                currentLikes++;
-                
-                const memberAsset = ASSETS[state.currentMember];
-                if (memberAsset && memberAsset.likeReaction) {
-                    likeReactionGif.src = memberAsset.likeReaction;
-                    likeReactionContainer.classList.remove('hidden');
-                    likeReactionContainer.classList.add('flex');
-                    
-                    likeReactionGif.classList.remove('like-gif-pop-out');
-                    likeReactionGif.classList.add('like-gif-pop-in');
-                    
-                    setTimeout(() => {
-                        likeReactionGif.classList.remove('like-gif-pop-in');
-                        likeReactionGif.classList.add('like-gif-pop-out');
-                        setTimeout(() => {
-                            likeReactionContainer.classList.add('hidden');
-                            likeReactionContainer.classList.remove('flex');
-                        }, 300);
-                    }, 2000);
-                }
-            } else {
-                likeBtn.textContent = '♡';
-                currentLikes--;
-            }
-            likeCount.textContent = currentLikes;
-        });
-
-        document.getElementById('btn-feed-comment').addEventListener('click', postFeedComment);
-        document.getElementById('feed-comment-input').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') postFeedComment();
-        });
-
-        function postFeedComment() {
-            const input = document.getElementById('feed-comment-input');
-            const text = input.value.trim();
-            if(!text) return;
-
-            const list = document.getElementById('feed-comment-list');
-            const div = document.createElement('div');
-            div.innerHTML = `<span class="text-[#00FF00] mr-2">${state.userId}:</span><span>${text}</span>`;
-            list.appendChild(div);
-            list.scrollTop = list.scrollHeight;
-            input.value = '';
-        }
-
-        function openPhotoPopup(src) {
-            playSFX('click');
-            popupImg.src = src;
-            
-            currentLikes = Math.floor(Math.random() * 500) + 100;
-            likeCount.textContent = currentLikes;
-            likeBtn.textContent = '♡';
-            document.getElementById('feed-comment-list').innerHTML = ''; 
-            likeReactionContainer.classList.add('hidden');
-            
-            photoModal.classList.remove('hidden');
-            photoModal.classList.add('flex');
-        }
-
-        /* --- Status System --- */
-        let callTimeout = null;
-
-        document.querySelectorAll('.btn-react').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const memberId = state.currentMember;
-                let sIdx = state.statusIndex[memberId];
-                
-                if (sIdx < 3) {
-                    sIdx++;
-                    state.statusIndex[memberId] = sIdx;
-                    
-                    const newStatusText = state.statusFlow[sIdx];
-                    const statusEl = document.getElementById('feed-target-status');
-                    
-                    statusEl.style.color = '#fff';
-                    setTimeout(() => statusEl.style.color = '#FF007F', 200);
-                    statusEl.textContent = newStatusText;
-                    
-                    appendPublicChat(`[SYSTEM] ${state.userId}님이 @${memberId}에게 감정을 보냈습니다.`);
-                    
-                    if (sIdx === 3) {
-                        clearTimeout(callTimeout);
-                        callTimeout = setTimeout(() => {
-                            showIncomingCall(memberId);
-                        }, 1500);
-                    }
-                }
-            });
-        });
-
-        /* --- Public Chat --- */
-        const publicChatLog = document.getElementById('public-chat-log');
-        const publicChatInput = document.getElementById('public-chat-input');
-        const publicChatWrapper = document.getElementById('public-chat-wrapper');
-        const publicChatHeader = document.getElementById('public-chat-header');
-        const chatToggleIcon = document.getElementById('chat-toggle-icon');
-
-        let isChatExpanded = false;
-        publicChatHeader.addEventListener('click', () => {
-            if (window.innerWidth < 1024) {
-                isChatExpanded = !isChatExpanded;
-                if (isChatExpanded) {
-                    publicChatWrapper.style.height = '80vh';
-                    chatToggleIcon.textContent = '▼';
-                } else {
-                    publicChatWrapper.style.height = '35vh';
-                    chatToggleIcon.textContent = '▲';
-                }
-            }
-        });
-        
-        function appendPublicChat(text, isUser = false) {
-            const isScrolledToBottom = publicChatLog.scrollHeight - publicChatLog.clientHeight - publicChatLog.scrollTop <= 50;
-
-            const div = document.createElement('div');
-            div.className = 'text-xs lg:text-sm text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
-            
-            if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-xs');
-            else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
-            
-            div.innerHTML = linkify(text);
-            publicChatLog.appendChild(div);
-
-            if (isScrolledToBottom || isUser) {
-                publicChatLog.scrollTop = publicChatLog.scrollHeight;
-            }
-        }
-
-        document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
-        publicChatInput.addEventListener('keypress', (e) => { 
-            playSFX('type');
-            if (e.key === 'Enter') submitPublicChat(); 
-        });
-
-        function submitPublicChat() {
-            const text = publicChatInput.value.trim();
-            if(!text) return;
-            appendPublicChat(`[${state.userId}] ${text}`, true);
-            publicChatInput.value = '';
-        }
-
-        function startPublicChatBot() {
-            const botMsgs = [
-                {name: 'ri_ku_03', msg: `안녕<br><img src="./assets/feed/riku.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: `
-                    。o
-                      ｏ
-                       。
-                      o  고독한
-                      。 남자의 등장 . . . 
-                       Ｏ
-                         ｏ
-                         。o<br><img src="./assets/feed/jaehee.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'yushihihi_405', msg: `^_^<br><img src="./assets/feed/yushi.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `안녕하십니까<br><img src="./assets/feed/sakuya.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `hi<br><img src="./assets/feed/sion.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ryo_hi_rose', msg: `ᗜ_ᗜ<br><img src="./assets/feed/ryo.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `나 요즘....\n심장이\n이상합니다<br><img src="./assets/feed/sakuya_myheart.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: `그래?\n나도 그래\nㅍㅠㅠ<br><img src="./assets/feed/jaehee.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: '아무 일도 없는데'},
-                {name: 'yushihihi_405', msg: 'ㅋㅋㅋ'},
-                {name: 'sion__5', msg: '괜히 손에 땀이나네'},
-                {name: 'yushihihi_405', msg: '<img src="./assets/feed/yushi_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
-                {name: 'ryo_hi_rose', msg: '😬😬😬'},
-                {name: 'ryo_hi_rose', msg: '왜이러는거야'},
-                {name: 'ri_ku_03', msg: `ここで一番混乱してる人\n        |\n       V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: '뭔데'},
-                {name: 'sakusakusaku07', msg: `그냥 사진을\n올리고 싶었던 거지 리쿠는`},            
-                {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
-                {name: 'ryo_hi_rose', msg: `잠만\n이거 사랑이라는데<br><img src="./assets/feed/ryo_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `<span class="text-xs">⠀⠀   ⠀
-                    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌‌⣀⠀⠀⠀⠀
-                ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
-                ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
-                ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
-                ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
-                ⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀
-                ⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
-                ⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀
-                ⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠋⠀⠀
-                   
-                      ︵     ‌  ⠈     ︵
-                    (      ╲       /      /
-                      ╲       ╲/      /
-                           ╲       ╲ /
-                        ╭ ͡   ╲        ╲
-                   ╭ ͡  ╲        ╲      ﾉ
-              ╭ ͡  ╲       ╲       ╱
-                ╲      ╲        ╱</span>`},
-                {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sakuya_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
-                {name: 'ryo_hi_rose', msg: '응;'},
-                {name: 'sion__5', msg: `X<br><img src="./assets/feed/sion_@.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: '그럴리가요'},
-                {name: 'yushihihi_405', msg: `그게 뭐지요<br><img src="./assets/feed/yushi_3.gif" controls class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ri_ku_03', msg: '눈이 송아지 같아'},
-                {name: 'ri_ku_03', msg: `나 재밌는거 발견했어\nhttps://confusedlove.com\n이거해봥`},
-                {name: 'sion__5', msg: `??\n리쿠 많이 해<br><img src="./assets/feed/sion_2.gif" controls class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: `🤷‍♂️🤷‍♂️🤷‍♂️<br><img src="./assets/feed/jaehee_2.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: 'ㄱㄷ 디기'},
-                {name: 'ryo_hi_rose', msg: '사쿠 진짜 하러감?'},
-                {name: 'sakusakusaku07', msg: `ㅠㅠ<br><img src="./assets/feed/sakuya_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ryo_hi_rose', msg: `ㅋㅋㅋㅋ<br><img src="./assets/feed/ryo_3.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: '너는'},
-                {name: 'ri_ku_03', msg: 'ㅎㅎㅎ'},
-                {name: 'jaehee__zzang', msg: '잘 나왔나보다'},
-                {name: 'ri_ku_03', msg: `ㅎㅎㅎㅎ<br><img src="./assets/feed/riku_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm"><br><img src="./assets/feed/riku_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ryo_hi_rose', msg: `오늘따라\n많이\nc o n f u s e d 하네..`},
-                {name: 'ryo_hi_rose', msg: `<img src="./assets/feed/ryo_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ryo_hi_rose', msg: `<img src="./assets/feed/ryo_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `https://www.instagram.com/reels/DdtHCXYJUoe/\n릴스 봐줄 사람\n내 릴스`},
-                {name: 'yushihihi_405', msg: '너나 봐'},
-                {name: 'jaehee__zzang', msg: '오우'},
-                {name: 'sion__5', msg: `<img src="./assets/feed/sion_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: `<img src="./assets/feed/sion_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'jaehee__zzang', msg: '🤩🤩🤩ㅋ'},
-                {name: 'sakusakusaku07', msg: `그냥 사진을\n올리고 싶은거야 시온이형도`},
-                {name: 'yushihihi_405', msg: `크왕\n크왕 크왕 크왕 크왕<br><img src="./assets/feed/yushi_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: '???'},
-                {name: 'ri_ku_03', msg: '진정해'},
-                {name: 'jaehee__zzang', msg: `많이 혼.란스러우시구나`},
-                {name: 'jaehee__zzang', msg: `\n근데 전말이죠\n혼란스러울 ㅋ대\n기타를 쳐...`},
-                {name: 'ryo_hi_rose', msg: '그럼 기타를 쳐'},
-                {name: 'jaehee__zzang', msg: `<img src="./assets/feed/jaehee_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ryo_hi_rose', msg: '울지말고 얘기를 해요'},
-                {name: 'yushihihi_405', msg: `
-                눈물이\n검\n정색`},
-                {name: 'ri_ku_03', msg: `<img src="./assets/feed/riku_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'ri_ku_03', msg: `<img src="./assets/feed/riku_6.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sion__5', msg: '사쿠 왜 리쿠한테는 뭐라 안해'},
-                {name: 'sakusakusaku07', msg: '이제야 봤어요'},
-                {name: 'jaehee__zzang', msg: `https://www.instagram.com/reels/DdtJVdRJUtc/\n그래서 기타를 쳤어`},
-                {name: 'ri_ku_03', msg: '잘했어용'},
-                {name: 'sakusakusaku07', msg: `아 왤케 안 보내져<br><img src="./assets/feed/sakuya_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'sakusakusaku07', msg: `ㅂㅂ<br><img src="./assets/feed/sakuya_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
-                {name: 'yushihihi_405', msg: `나도 릴스~\nhttps://www.instagram.com/reels/DdtKaqGphta/`},
-                {name: 'yushihihi_405', msg: `아무도 안보네<br><img src="./assets/feed/yushi_0.jpg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`}
-            ];
-            let msgIdx = 0;
-            
-            function scheduleNextMessage() {
-                if(msgIdx >= botMsgs.length) {
-                    document.getElementById('live-indicator').classList.remove('bg-green-500', 'animate-pulse');
-                    document.getElementById('live-indicator').classList.add('bg-red-600');
-                    return; 
-                }
-                const data = botMsgs[msgIdx++];
-                appendPublicChat(`[${data.name}] ${data.msg}`);
-                
-                const randomDelay = Math.floor(Math.random() * 2500) + 1500;
-                setTimeout(scheduleNextMessage, randomDelay);
-            }
-            
-            scheduleNextMessage();
-        }
-
-        /* --- DM Modal & Scripted Logic --- */
-        const dmModal = document.getElementById('dm-modal');
-        const dmMessages = document.getElementById('dm-messages');
-        const dmInput = document.getElementById('dm-input');
-        const dmToast = document.getElementById('dm-toast');
-
-        function openDMFromToast() {
-            dmToast.classList.add('hidden');
-            document.getElementById('btn-open-dm').click();
-        }
-
-        document.getElementById('btn-open-dm').addEventListener('click', () => {
-    const memberId = state.currentMember;
-    document.getElementById('dm-target-name').textContent = `@${memberId}`;
-    
-    dmMessages.innerHTML = '';
-    
-    state.dmHistory[memberId].forEach(msg => renderDMSingle(msg, true));
-    
-    dmModal.classList.remove('hidden');
-    dmModal.classList.add('flex');
-
-    document.body.classList.add('dm-open');
+    <audio id="audio-ring" src="./assets/audio/ring.mp3" loop preload="auto"></audio>
+    <audio id="audio-ringtone" src="./assets/audio/ringtone.mp3" loop preload="auto"></audio>
+    
+    <!-- DM Toast Notification -->
+    <div id="dm-toast" class="fixed top-4 left-4 right-4 z-[999] flex justify-center hidden pointer-events-none">
+        <div class="bg-[#1a000d] border border-[#FF007F] text-white p-3 rounded shadow-[0_0_15px_rgba(255,0,127,0.5)] cursor-pointer pointer-events-auto toast-slide-down w-full max-w-sm" onclick="openDMFromToast()">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">💌</span>
+                <div>
+                    <p class="text-xs text-[#00FF00] font-bold">새로운 메시지</p>
+                    <p class="text-sm" id="toast-sender">@sender</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. Intro Terminal Screen -->
+    <div id="screen-intro" class="screen flex flex-col items-center justify-center min-h-screen bg-black p-6 z-50 fixed inset-0">
+        <div class="w-full max-w-xl text-left text-base lg:text-lg text-[#00FF00] leading-relaxed drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">
+            <p id="term-text" class="mb-6 typewriter-cursor"></p>
+            <div id="term-choices" class="hidden flex gap-8 mt-6">
+                <button id="btn-y" class="hover:bg-[#00FF00] hover:text-black px-3 py-1 transition-all">> [Y]es</button>
+                <button id="btn-n" class="hover:text-[#FF007F] px-3 py-1 transition-all">> [N]o</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. ID Generation Screen -->
+    <div id="screen-id-gen" class="screen hidden flex-col items-center justify-center min-h-screen bg-black p-4 z-40 fixed inset-0">
+        <div class="border border-[#FF007F] p-6 w-full max-w-sm bg-[#0a0005] shadow-[0_0_20px_rgba(255,0,127,0.4)] text-center relative overflow-hidden rounded-sm">
+            <h2 class="text-xs font-bold text-[#00FF00] mb-4">> USER_REGISTRATION.exe</h2>
+            <p class="text-gray-400 mb-4 text-sm">사용할 닉네임을 입력하세요.</p>
+            
+            <div class="bg-black border border-dashed border-[#FF007F] p-3 mb-6 relative z-10 flex items-center">
+                <span class="text-[#FF007F] text-base mr-2">></span>
+                <input type="text" id="custom-nickname-input" class="bg-transparent text-[#FF007F] text-base focus:outline-none w-full animate-pulse placeholder-[#FF007F]/40" placeholder="cizni" autocomplete="off" maxlength="12">
+            </div>
+            
+            <button id="btn-enter-main" class="bg-[#FF007F] text-black text-xs font-bold px-6 py-2 hover:bg-white transition-colors w-full rounded-sm">접속하기</button>
+        </div>
+    </div>
+
+    <!-- 3. Main Application Layout -->
+    <div id="screen-main" class="screen hidden h-[100dvh] bg-black flex-col lg:flex-row w-full text-white overflow-hidden relative">
+        
+        <!-- Mobile Header -->
+        <div class="lg:hidden p-3 border-b border-[#FF007F] flex justify-between items-center bg-black shrink-0 z-40 relative">
+            <button id="btn-toggle-nav" class="text-[#FF007F] text-lg p-1 hover:text-white transition-colors">☰</button>
+            <img src="./assets/logo.png" alt="i_SPY_u logo" class="h-6 object-contain">
+            <span class="my-user-id text-sm text-[#00FF00]"></span>
+        </div>
+
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-[45] hidden lg:hidden backdrop-blur-sm"></div>
+
+        <!-- Left Column: Following List -->
+        <div id="left-sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 z-[50] w-64 border-r border-[#333] bg-[#030001] transition-transform duration-300 flex flex-col shrink-0 h-full">
+            <div class="p-4 border-b border-[#333] bg-black flex justify-between items-center shrink-0">
+                <h2 class="text-xs font-bold text-[#FF007F] tracking-wider">> FOLLOWING</h2>
+                <button id="btn-close-nav" class="lg:hidden text-white hover:text-[#FF007F] text-lg">X</button>
+            </div>
+            
+            <div id="member-list" class="flex flex-col overflow-y-auto flex-grow">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <!-- ✨ 랜덤 테스트 메뉴 추가 -->
+            <div class="p-4 border-t border-[#333] bg-[#050002] shrink-0">
+                <button id="btn-open-test" class="w-full text-left font-bold text-gray-500 hover:text-[#FF007F] transition-colors text-xs flex items-center gap-2">
+                    <span class="text-lg animate-pulse">👀</span> 
+                    <span>나를 몰래 좋아하는 사람?</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Center Column: Grid Feed -->
+        <div class="flex-grow flex flex-col relative h-full overflow-hidden bg-[#080305]">
+            <!-- Profile Header -->
+            <div class="p-3 lg:p-4 border-b border-[#333] bg-black flex flex-col sm:flex-row justify-between shrink-0 z-20 gap-3">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <img id="feed-target-pfp" src="" alt="profile" class="w-14 h-14 lg:w-16 lg:h-16 aspect-square bg-[#111] border border-[#FF007F] object-cover rounded-full">
+                    <div class="flex flex-col flex-grow">
+                        <h1 id="feed-target-id" class="text-sm font-bold text-white mb-1">TARGET</h1>
+                        <div class="flex items-center gap-2">
+                            <span id="feed-target-status" class="text-xs text-[#FF007F] transition-all bg-[#1a000d] px-2 py-0.5 rounded border border-[#FF007F]">[로딩중]</span>
+                            <div class="flex gap-2">
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❤️">❤️</button>
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="🩹">🩹</button>
+                                <button class="btn-react text-sm hover:scale-125 transition-transform" title="❓">❓</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto sm:justify-end items-center">
+                    <button id="btn-call-member" class="flex-1 sm:flex-none border border-[#FF007F] text-[#FF007F] px-3 py-1.5 text-xs font-bold hover:bg-[#FF007F] hover:text-black transition-colors bg-[#1a000d] rounded-sm">CALL</button>
+                    <button id="btn-open-dm" class="flex-1 sm:flex-none border border-[#00FF00] text-[#00FF00] px-3 py-1.5 text-xs font-bold hover:bg-[#00FF00] hover:text-black transition-colors bg-[#001a00] rounded-sm">MESSAGE</button>
+                </div>
+            </div>
+            
+            <div class="flex-grow bg-[#050002] overflow-y-auto p-1 scroll-smooth">
+                <div id="feed-grid" class="grid grid-cols-3 gap-1">
+                    <!-- Dynamically populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Public Chat -->
+        <div id="public-chat-wrapper" class="w-full lg:w-[350px] lg:border-l border-[#333] bg-black flex flex-col shrink-0 h-[35vh] lg:h-full border-t lg:border-t-0 border-[#333] z-30 transition-[height] duration-500 ease-in-out">
+            <div id="public-chat-header" class="p-3 border-b border-[#333] bg-[#050002] shrink-0 flex justify-between items-center cursor-pointer select-none">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-xs font-bold text-[#00FF00] tracking-wider">> PUBLIC_CHAT</h2>
+                    <span id="chat-toggle-icon" class="text-xs text-gray-500 lg:hidden">▲</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div id="live-indicator" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs text-green-500">LIVE</span>
+                </div>
+            </div>
+
+            <div class="p-3 flex-grow flex flex-col overflow-hidden bg-black">
+                <div id="public-chat-log" class="flex-grow overflow-y-auto space-y-3 pr-2 scroll-smooth">
+                    <div class="text-xs text-gray-500 border-b border-[#222] pb-1">[SYSTEM] 글로벌 감청 채널 접속 완료.</div>
+                </div>
+            </div>
+            
+            <div class="p-2 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
+                <input type="text" id="public-chat-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-1.5 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="메시지 입력..." autocomplete="off">
+                <button id="public-chat-submit" class="text-black bg-[#FF007F] text-xs font-bold px-4 py-1.5 hover:bg-white transition-colors rounded-sm">SEND</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Enlarge Popup -->
+    <div id="photo-popup-modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center z-[120] p-4 backdrop-blur-md">
+        <div class="w-full max-w-md flex flex-col items-center bg-black border border-[#333] rounded-lg overflow-hidden pb-4 relative">
+            <div class="w-full flex justify-end p-2 bg-[#111] relative z-20">
+                <button id="btn-close-photo" class="text-gray-400 hover:text-[#FF007F] text-xl px-3 py-1 font-bold">✕</button>
+            </div>
+            
+            <div class="relative w-full flex justify-center">
+                <img id="popup-photo-img" src="" class="w-full max-h-[50vh] object-contain bg-black relative z-10">
+                
+                <div id="like-reaction-container" class="absolute inset-0 z-30 hidden items-center justify-center pointer-events-none">
+                    <img id="like-reaction-gif" src="" class="w-1/2 max-w-[200px] border-4 border-[#FF007F] shadow-[0_0_30px_rgba(255,0,127,0.8)] rounded-xl opacity-0 transform scale-50">
+                </div>
+            </div>
+            
+            <div class="w-full px-4 pt-4 flex flex-col gap-3 relative z-20">
+                <div class="flex gap-3 items-center border-b border-[#333] pb-3">
+                    <button id="btn-feed-like" class="text-2xl hover:scale-110 transition-transform">♡</button>
+                    <span class="text-white text-sm font-bold">좋아요<span id="feed-like-count" class="mx-1">486</span>개</span>
+                </div>
+                
+                <div id="feed-comment-list" class="max-h-[120px] overflow-y-auto space-y-2 text-sm text-gray-300">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <input type="text" id="feed-comment-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#FF007F] rounded-sm" placeholder="댓글 달기..." autocomplete="off">
+                    <button id="btn-feed-comment" class="text-black bg-[#FF007F] text-xs font-bold px-3 py-2 hover:bg-white transition-colors rounded-sm">게시</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ 랜덤 테스트 모달 -->
+    <div id="secret-test-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[200] p-4 backdrop-blur-md">
+        <div class="border border-[#FF007F] bg-black p-6 w-full max-w-sm text-center shadow-[0_0_30px_rgba(255,0,127,0.3)] rounded-sm relative overflow-hidden">
+            <div class="flex justify-end w-full mb-2">
+                <button id="btn-close-test" class="text-gray-500 hover:text-[#FF007F] text-lg font-bold">✕</button>
+            </div>
+            
+            <!-- Step 1: 인트로 -->
+            <div id="test-step-1">
+                <h3 class="text-[#00FF00] font-bold text-sm mb-6">> RANDOM_TEST.exe</h3>
+                <p class="text-white text-base mb-8 leading-relaxed">나를 몰래<br>좋아하고 있는 사람이 있을까?</p>
+                <button id="btn-start-test" class="bg-[#FF007F] text-black font-bold text-xs px-6 py-3 hover:bg-white transition-colors w-full rounded-sm">START</button>
+            </div>
+
+            <!-- Step 2: 슬롯머신 돌아감 -->
+            <div id="test-step-2" class="hidden py-4">
+                <p class="text-gray-400 text-xs mb-6">대상을 탐색 중입니다...</p>
+                <div class="bg-[#111] border border-[#333] py-6 mb-6 text-xl text-[#00FF00] font-bold tracking-widest rounded-sm" id="test-slot-machine">
+                    ???
+                </div>
+            </div>
+
+            <!-- Step 3: 결과 출력 -->
+            <div id="test-step-3" class="hidden">
+                <p class="text-xs text-[#FF007F] mb-4 font-bold">> RESULT_FOUND</p>
+                <div class="text-sm text-white mb-8 leading-relaxed bg-[#1a000d] border border-[#FF007F] p-5 rounded-sm">
+                    [ <span id="test-result-id" class="text-[#FF007F] font-bold text-glitch-active min-w-[100px]"></span> ] <span id="test-result-desc">님이<br>당신을 오랫동안<br>지켜봐왔던 것 같습니다...</span>
+                </div>
+                <button id="btn-share-test" class="bg-white text-black font-bold text-xs px-4 py-3 hover:bg-gray-300 transition-colors w-full flex items-center justify-center gap-2 rounded-sm">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    공유하고 정체 확인하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. DM Modal -->
+    <div id="dm-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md bg-black border border-[#FF007F] flex flex-col h-[75vh] lg:h-[65vh] shadow-[0_0_30px_rgba(255,0,127,0.2)] rounded-sm overflow-hidden">
+            <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#0a0005]">
+                <div class="text-xs font-bold text-[#FF007F] tracking-wider">DIRECT MESSAGE :: <span id="dm-target-name" class="text-white"></span></div>
+                <button id="btn-close-dm" class="text-gray-400 hover:text-[#FF007F] text-lg font-bold px-2">✕</button>
+            </div>
+            <div id="dm-messages" class="flex-grow p-4 overflow-y-auto flex flex-col bg-[#050002] gap-1">
+            </div>
+            <div class="p-3 border-t border-[#333] bg-[#0a0a0a] flex gap-2 shrink-0">
+                <input type="text" id="dm-input" class="flex-grow bg-[#111] border border-[#333] text-white text-sm px-3 py-2 focus:outline-none focus:border-[#00FF00] rounded-sm" placeholder="메시지 보내기..." autocomplete="off">
+                <button id="btn-send-dm" class="text-black bg-[#00FF00] text-xs font-bold px-4 py-2 hover:bg-white transition-colors rounded-sm">SEND</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 통화 방식 선택 팝업 -->
+    <div id="call-choice-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
+        <div class="w-full max-w-xs bg-black border border-[#FF007F] p-6 text-center shadow-[0_0_40px_rgba(255,0,127,0.5)] rounded-sm">
+            <h3 class="text-xs font-bold text-[#00FF00] mb-3">> CALL_METHOD</h3>
+            <p class="text-sm text-gray-300 mb-6">연결 방식을 선택하세요.</p>
+            <div class="flex flex-col gap-3">
+                <button id="btn-choose-voice" class="bg-[#00FF00] text-black text-xs font-bold px-4 py-3 hover:bg-white transition-colors rounded-sm">음성 통화 (VOICE)</button>
+                <button id="btn-choose-video" class="bg-[#FF007F] text-black text-xs font-bold px-4 py-3 hover:bg-white transition-colors rounded-sm">영상 통화 (VIDEO)</button>
+                <button id="btn-close-choice" class="mt-2 text-gray-500 text-sm hover:text-white transition-colors">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Incoming Call Modal -->
+    <div id="incoming-call-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[105] p-4 backdrop-blur-md">
+        <div class="w-full max-w-xs bg-black border-2 border-[#FF007F] p-6 text-center ringing-animation shadow-[0_0_40px_rgba(255,0,127,0.5)] rounded-sm">
+            <div class="text-[#FF007F] text-4xl mb-4">📞</div>
+            <h3 class="text-xs font-bold text-[#00FF00] mb-2">> INCOMING_CALL</h3>
+            <p class="text-base text-white mb-6 leading-relaxed">[SYSTEM] <br><span id="incoming-caller-name" class="text-[#FF007F] font-bold"></span>님이<br><span id="incoming-call-text" class="text-[#FF007F]">음성통화를 요청합니다.</span></p>
+            <div class="flex gap-3 justify-center">
+                <button id="btn-accept-call" class="bg-[#00FF00] text-black text-xs font-bold px-4 py-2 hover:bg-white transition-colors flex-1 rounded-sm">수락</button>
+                <button id="btn-reject-call" class="bg-red-600 text-white text-xs font-bold px-4 py-2 hover:bg-red-400 transition-colors flex-1 rounded-sm">거절</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Video/Voice Call Modal -->
+    <div id="call-modal" class="fixed inset-0 bg-black/95 hidden flex-col justify-center z-[110] p-0 md:p-4 backdrop-blur-md overflow-hidden">
+        <div class="w-full max-w-[400px] mx-auto bg-black border-0 md:border border-[#FF007F] flex flex-col h-full md:h-[80vh] shadow-[0_0_50px_rgba(255,0,127,0.4)] relative rounded-sm">
+            <div class="p-3 border-b border-[#FF007F] flex justify-between items-center bg-[#1a000d] shrink-0 z-30">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                    <div class="text-xs font-bold text-[#00FF00]" id="call-title-text">ENCRYPTED_CALL...</div>
+                </div>
+                <div class="text-sm text-gray-400" id="call-target-name-modal">@target</div>
+            </div>
+
+            <div class="relative w-full flex-grow bg-black overflow-hidden flex items-center justify-center border-b border-[#333]">
+                <div id="member-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black">
+                    <!-- 연결음 대기 텍스트 -->
+                    <div id="call-connecting-text" class="text-lg lg:text-xl text-gray-400 animate-pulse text-center mb-4 z-20">연결 중...</div>
+                    
+                    <video id="call-video-player" class="absolute inset-0 w-full h-full object-cover hidden" playsinline></video>
+                    <audio id="call-audio-player" class="hidden"></audio>
+
+                    <!-- 통화 배경 -->
+                    <img id="call-member-img" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                </div>
+                
+                <div id="pip-container" class="absolute bottom-6 right-4 w-24 sm:w-32 aspect-[3/4] bg-black border-2 border-[#00FF00] shadow-[0_0_15px_rgba(0,255,0,0.3)] z-20 overflow-hidden hidden rounded-sm">
+                    <video id="user-cam" autoplay playsinline muted class="pip-cam w-full h-full object-cover"></video>
+                    <div id="cam-error-msg" class="absolute inset-0 hidden items-center justify-center text-center p-2 bg-black/80 text-[10px] text-red-500">NO CAM</div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-[#0a0005] flex justify-center items-center shrink-0 z-30">
+                <button id="btn-end-call" class="bg-red-600 text-white text-xs font-bold px-8 py-3 hover:bg-red-500 transition-colors shadow-[0_0_15px_rgba(255,0,0,0.4)] rounded-sm">통화 종료</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 📁 [1] 미디어 연결 영역 
+        // ==========================================
+        const ASSETS = {
+            sfx: {
+                click: './assets/audio/click.mp3',       
+                type: './assets/audio/type.mp3',         
+                scratch: './assets/audio/scratch.mp3',   
+                ringtone: './assets/audio/ring.mp3',     
+                alert: './assets/audio/alert.mp3'        
+            },
+            
+            'sion__5': {
+                profile: './assets/profile/sion_profile.JPG', 
+                videoCall: './assets/video/sion_call.mp4',
+                voiceCall1: './assets/audio/sion_voice1.mp3', 
+                voiceCall2: './assets/audio/sion_voice2.mp3',
+                likeReaction: './assets/like/sionlovesyou.gif',
+                feed: [
+                    './assets/feed/sionfeed.jpg',
+                    './assets/feed/sionfeed2.jpg',
+                    './assets/feed/sionfeed3.jpg',
+                    './assets/feed/sionfeed4.jpg',
+                    './assets/feed/sionfeed5.jpg',
+                    './assets/feed/sionfeed6.jpg',
+                    './assets/feed/sionfeed7.jpg',
+                    './assets/feed/sionfeed8.jpg',
+                    './assets/feed/sionfeed9.jpg'
+                ]
+            },
+            'ri_ku_03': {
+                profile: './assets/profile/riku_profile.PNG',
+                videoCall: './assets/video/riku_call.mp4',
+                voiceCall1: './assets/audio/riku_voice1.mp3',
+                voiceCall2: './assets/audio/riku_voice2.mp3',
+                likeReaction: './assets/like/rikulovesyou.gif',
+                feed: [ 
+                    './assets/feed/rikufeed.jpg',
+                    './assets/feed/rikufeed2.jpg',
+                    './assets/feed/rikufeed3.jpg',
+                    './assets/feed/rikufeed4.jpg',
+                    './assets/feed/rikufeed5.jpg',
+                    './assets/feed/rikufeed6.PNG',
+                    './assets/feed/rikufeed7.PNG',
+                    './assets/feed/rikufeed8.gif',
+                    './assets/feed/rikufeed9.PNG',
+                    './assets/feed/rikufeed10.jpg',
+                    './assets/feed/rikufeed11.jpg',
+                    './assets/feed/rikufeed12.jpg',
+                    './assets/feed/rikufeed13.jpg'
+                ]
+            },
+            'yushihihi_405': { 
+                profile: './assets/profile/yushi_profile.PNG',
+                videoCall: './assets/video/yushi_call.mp4',
+                voiceCall1: './assets/audio/yushi_voice1.mp3',
+                voiceCall2: './assets/audio/yushi_voice2.mp3',
+                likeReaction: './assets/like/yushilovesyou.gif',
+                feed: [ 
+                    './assets/feed/yushifeed.jpg',
+                    './assets/feed/yushifeed2.jpg',
+                    './assets/feed/yushifeed3.jpg',
+                    './assets/feed/yushifeed4.jpg',
+                    './assets/feed/yushifeed5.jpg',
+                    './assets/feed/yushifeed6.jpg',
+                    './assets/feed/yushifeed7.jpg',
+                    './assets/feed/yushifeed8.jpg',
+                    './assets/feed/yushifeed9.jpg',
+                    './assets/feed/yushifeed10.jpg',
+                    './assets/feed/yushifeed11.jpg',
+                    './assets/feed/yushifeed12.jpg',
+                    './assets/feed/yushifeed13.jpg',
+                    './assets/feed/yushifeed14.jpg',
+                    './assets/feed/yushifeed15.jpg',
+                    './assets/feed/yushifeed16.jpg',
+                    './assets/feed/yushifeed17.jpg',
+                    './assets/feed/yushifeed18.jpg',
+                    './assets/feed/yushifeed19.jpg',
+                    './assets/feed/yushifeed20.jpg',
+                    './assets/feed/yushifeed21.jpg',
+                    './assets/feed/yushifeed22.jpg',
+                    './assets/feed/yushifeed23.jpg'
+                ] 
+            }, 
+            'jaehee__zzang': {
+                profile: './assets/profile/jaehee_profile.jpg',
+                videoCall: './assets/video/jaehee_call.mp4',
+                voiceCall1: './assets/audio/jaehee_voice1.mp3',
+                voiceCall2: './assets/audio/jaehee_voice2.mp3',
+                likeReaction: './assets/like/jaeheelovesyou.gif',
+                feed: [
+                    './assets/feed/jaeheefeed.jpg',
+                    './assets/feed/jaeheefeed2.jpg',
+                    './assets/feed/jaeheefeed3.jpg',
+                    './assets/feed/jaeheefeed4.jpg',
+                    './assets/feed/jaeheefeed5.jpg',
+                    './assets/feed/jaeheefeed6.PNG',
+                    './assets/feed/jaeheefeed7.PNG',
+                    './assets/feed/jaeheefeed8.jpg',
+                    './assets/feed/jaeheefeed9.jpg',
+                    './assets/feed/jaeheefeed10.jpg',
+                    './assets/feed/jaeheefeed11.jpg'
+                ] 
+            },
+            'ryo_hi_rose': { 
+                profile: './assets/profile/ryo_profile.jpg',
+                videoCall: './assets/video/ryo_call.mp4',
+                voiceCall1: './assets/audio/ryo_voice1.mp3',
+                voiceCall2: './assets/audio/ryo_voice2.mp3',
+                likeReaction: './assets/like/ryolovesyou.gif',
+                feed: [ 
+                    './assets/feed/ryofeed.jpg',
+                    './assets/feed/ryofeed2.jpg',
+                    './assets/feed/ryofeed3.jpg',
+                    './assets/feed/ryofeed5.jpg',
+                    './assets/feed/ryofeed6.jpg',
+                    './assets/feed/ryofeed7.PNG',
+                    './assets/feed/ryofeed8.PNG',
+                    './assets/feed/ryofeed9.jpg',
+                    './assets/feed/ryofeed10.jpg',
+                    './assets/feed/ryofeed12.jpg'
+                ] 
+            },
+            'sakusakusaku07': { 
+                profile: './assets/profile/sakuya_profile.PNG',
+                videoCall: './assets/video/sakuya_call.mp4',
+                voiceCall1: './assets/audio/sakuya_voice1.mp3',
+                voiceCall2: './assets/audio/sakuya_voice2.mp3',
+                likeReaction: './assets/like/sakuyalovesyou.gif',
+                feed: [
+                    './assets/feed/sakuyafeed.jpg',
+                    './assets/feed/sakuyafeed2.jpg',
+                    './assets/feed/sakuyafeed3.jpg',
+                    './assets/feed/sakuyafeed4.jpg',
+                    './assets/feed/sakuyafeed5.jpg',
+                    './assets/feed/sakuyafeed6.PNG',
+                    './assets/feed/sakuyafeed7.PNG',
+                    './assets/feed/sakuyafeed8.gif',
+                    './assets/feed/sakuyafeed9.jpg',
+                    './assets/feed/sakuyafeed10.jpg',
+                    './assets/feed/sakuyafeed11.jpg',
+                    './assets/feed/sakuyafeed12.jpg'
+                ] 
+            }
+        };
+
+        const audioNodes = {};
+
+        function playSFX(type) {
+            if (type === 'ring') {
+                const ringAudio = document.getElementById('audio-ring');
+                if (ringAudio) { ringAudio.currentTime = 0; ringAudio.play().catch(e=>{}); }
+                return;
+            }
+            if (type === 'ringtone') {
+                const ringtoneAudio = document.getElementById('audio-ringtone');
+                if (ringtoneAudio) { ringtoneAudio.currentTime = 0; ringtoneAudio.play().catch(e=>{}); }
+                return;
+            }
+
+            if(!ASSETS.sfx[type]) return; 
+            if(type === 'scratch') {
+                if(!audioNodes[type]) {
+                    audioNodes[type] = new Audio(ASSETS.sfx[type]);
+                    audioNodes[type].loop = true;
+                }
+                audioNodes[type].play().catch(e => console.log('Audio blocked'));
+                return;
+            }
+            const audio = new Audio(ASSETS.sfx[type]);
+            audio.play().catch(e => console.log('Audio blocked'));
+        }
+
+        function stopSFX(type) {
+            if (type === 'ring') {
+                const ringAudio = document.getElementById('audio-ring');
+                if (ringAudio) { ringAudio.pause(); ringAudio.currentTime = 0; }
+                return;
+            }
+            if (type === 'ringtone') {
+                const ringtoneAudio = document.getElementById('audio-ringtone');
+                if (ringtoneAudio) { ringtoneAudio.pause(); ringtoneAudio.currentTime = 0; }
+                return;
+            }
+            if(audioNodes[type]) {
+                audioNodes[type].pause();
+                audioNodes[type].currentTime = 0;
+            }
+        }
+
+        function linkify(text) {
+            const urlPattern = /(^|[^"'])(https?:\/\/[^\s<]+)/g;
+            return text.replace(urlPattern, '$1<a href="$2" target="_blank" class="text-[#00FF00] underline break-all hover:text-white transition-colors">$2</a>');
+        }
+
+        // ==========================================
+        // 📝 [3] DM 시나리오 스크립트 
+        // ==========================================
+        const dmScripts = {
+            'sion__5': [
+                { type: 'photo', url: './assets/dm/sion_5.gif', text: `hello?\n~♡`},
+                { type: 'text', text: `있잖아\n사진 찍는 거 좋아해?\nㅎㅎ`},
+                { type: 'photo', url: './assets/dm/sion_6.jpg', text: 'ㅎㅎ' },
+                { type: 'photo', urls: [
+                    './assets/dm/sion_7.jpg',
+                    './assets/dm/sion_8.jpg',
+                    './assets/dm/sion_9.jpg'
+                ], next: true},
+                { type: 'text', text: '프사 골라줘'},
+                { type: 'photo', urls: [
+                    './assets/dm/모르겠네.jpg',
+                    './assets/dm/이거괜찮나.jpg',
+                    './assets/dm/이게 낫나.jpg',
+                    './assets/dm/지켜보고있다.jpg',
+                    './assets/dm/프사후보1.jpg',
+                    './assets/dm/프사후보2.jpg',
+                    './assets/dm/프사후보3.jpg',
+                    './assets/dm/프사후보4.JPG'
+                ]},
+                { type: 'text', text: `아\n아 잠만\n보지말고\n오늘 뭐해?\n이따 잠깐 볼래?`},
+                { type: 'text', text: `https://www.instagram.com/reels/Dd_GG7KpszX/\n노래 듣고 있는데\nhttps://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw\n제목은 연관없다~`},
+                { type: 'photo', url: './assets/dm/sion_10.jpg'},
+                { type: 'photo', url: './assets/dm/sion_11.gif', text: '잘자'},
+            ],
+            
+            'yushihihi_405': [
+                { type: 'photo', url: './assets/dm/yushi_5.PNG', text: `안녕~`},
+                { type: 'photo', url: './assets/dm/yushi_6.gif', text: `뭐해？`},
+                { type: 'text', text: `ㅋㅋㅋ\nhttps://www.instagram.com/reels/Dd_GG7KpszX/\n너도 나와ㅎㅎ\n음`},
+                { type: 'text', text: `앗 링크 눌러보지마\n아`, next: true},
+                { type: 'photo', url: './assets/dm/yushi_6.PNG'},
+                { type: 'video', url: './assets/video/yushi2.mp4', text: '지금 몇시〜' },
+                { type: 'video', url: './assets/video/yushi.mp4', text: '좋아해～' }
+            ],
+            
+            'jaehee__zzang': [
+                { type: 'photo', url: './assets/dm/jaehee.jpg', text: `테마를 love로 변경했습니다`},
+                { type: 'text', text: `허허\n웃긴 거 보여줄까ㅋㅋㅋ` },
+                { type: 'photo', url: './assets/dm/jaehee_6.PNG', text: `4&☀️`},
+                { type: 'text', text: `아ㅏㅏㅏ\n좀 이따가\n나와줄 수 있어?\n별 건 아니고ㅋㅋ\n기다릴게` },
+                { type: 'photo', url: './assets/dm/jaehee_7.PNG'},
+                { type: 'photo', urls: [
+                    './assets/dm/jaehee_8.PNG',
+                    './assets/dm/jaehee_9.PNG',
+                    './assets/dm/jaehee_10.PNG',
+                    './assets/dm/jaehee_11.PNG',
+                    './assets/dm/jaehee_12.PNG',
+                    './assets/dm/jaehee_13.PNG'
+                ]},
+                { type: 'text', text: `https://www.instagram.com/reels/Dd_Q02fJNV0/\n으악\n받아줘` },
+                { type: 'photo', url: './assets/dm/jaehee_14.gif'},
+            ],
+            
+            'ryo_hi_rose': [
+                { type: 'photo', url: './assets/dm/ryo_10.PNG', text: `ㅎㅇ`},
+                { type: 'photo', url: './assets/dm/ryo_11.jpg', text: `ㅋ`},
+                { type: 'photo', url: './assets/dm/ryo_8.PNG', text: `나 안경 삼\n어때` },
+                { type: 'text', text: `이거 내가 만든 건데\n너만 특별히 보여줄게\nhttps://www.youtube.com/watch?v=idomU-hwkig&feature=youtu.be` },
+                { type: 'video', url: './assets/video/ryo2.mp4', text: `잠깐만!\n이제 집중해야돼😬`},
+                { type: 'photo', url: './assets/dm/ryo_7.PNG', text: `고백받게해주세요\n고백받게해주세요\n고백받게해주세요`},
+                { type: 'photo', url: './assets/dm/ryo_6.PNG', text: `~♫`},
+                { type: 'video', url: './assets/video/ryo.mp4', text: `와 대박`},
+                { type: 'text', text: `나도 진짜 딱 한번만 말할거야\nhttps://www.instagram.com/reels/Dd_NSlnp1jG/`},
+                { type: 'photo', url: './assets/dm/ryo_5.gif', text: `굿밤`},
+            ],
+            
+            'sakusakusaku07': [
+                { type: 'photo', url: './assets/dm/sakuya_12.PNG', text: `안녕 레이디`},
+                { type: 'photo', url: './assets/dm/sakuya_11.PNG', text: `사귑시다`},
+                { type: 'photo', url: './assets/dm/sakuya_10.PNG', text: `好き`},
+                { type: 'photo', url: './assets/dm/sakuya_10.gif', text: `널 좋아하는 건\n누워서 떡먹기 입니다` },
+                { type: 'video', url: './assets/video/sakuya.mp4', text: `난 너 좋아합니다`},
+                { type: 'text', text: '왜 자꾸 웃는거임'},
+                { type: 'photo', url: './assets/dm/sakuya_8.PNG', text: '진짜 좋아한다고' },
+                { type: 'text', text: `https://www.instagram.com/reels/Dd_Oohup5pL/\nㅈㅇㅎ`, next: true},
+                { type: 'photo', url: './assets/dm/sakuya_6.gif'},
+                { type: 'photo', url: './assets/dm/sakuya_7.gif', text: '너 볼'},
+                { type: 'text', text: `https://www.instagram.com/reels/Dd_O8N7pSOW/\n진짜 좋아하나???`}
+            ],
+                    
+            'ri_ku_03': [
+                { type: 'photo', url: './assets/dm/riku.jpg', text: `안뇽\n뭐해뭐해뭐해`},
+                { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?\nhttps://x.com/Hi_Ohaasa?lang=ko`},
+                { type: 'text', text: `오ㅎㅎㅎ\n나 6위ㅎ`},
+                { type: 'photo', url: './assets/dm/riku_2.jpg', text: `10월의 행운아이템은 하트래\n~두근두근위시운세~\n10월은 애정운이 상승하는 달!\n행운의 아이템: ❤️\n라고 하넹`},
+                { type: 'video', url: './assets/video/riku.mp4', text: `이거진짜???\n매력없어?ㅠ\n음`},
+                { type: 'photo', url: './assets/dm/riku_12.PNG', text: `이거 받아`},
+                { type: 'photo', url: './assets/dm/riku_10.gif', text: `엑` },
+                { type: 'photo', url: './assets/dm/riku_15.gif', text: '나랑 만나자' }
+            ],
+            'default': [
+                { type: 'text', text: '시스템이 이상해... 너 때문이야?' },
+                { type: 'text', text: '대답해줘.' }
+            ]
+        };
+
+        const members = ['sion__5', 'ri_ku_03', 'yushihihi_405', 'jaehee__zzang', 'ryo_hi_rose', 'sakusakusaku07'];
+        
+        const state = {
+            userId: "",
+            currentMember: members[0],
+            videoStream: null,
+            activeCallType: null, 
+            statusIndex: {}, 
+            statusFlow: [
+                "[현재 상태: 🤯심박수 비정상🤯]", 
+                "[현재 상태: ☺️조금 안도함☺️]", 
+                "[현재 상태: ‼️무언가를 깨달음‼️]", 
+                "[현재 상태: 😍고백하고 싶음😍]"
+            ],
+            dmHistory: {},
+            hasFinishedVideoCall: {},
+            postCallDmStep: {},
+            postCallScripts: {}
+        };
+
+        members.forEach(m => {
+            state.statusIndex[m] = 0;
+            state.dmHistory[m] = [];
+            state.hasFinishedVideoCall[m] = false;
+            state.postCallDmStep[m] = 0;
+            state.postCallScripts[m] = dmScripts[m] || dmScripts['default'];
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.tagName.toLowerCase() === 'button') playSFX('click');
+        });
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.add('hidden');
+                s.classList.remove('flex');
+            });
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('flex');
+            }
+        }
+
+       window.onload = () => {
+            setTimeout(typeWriter, 500);
+        };
+
+        const introText = "[SYSTEM: 당신을 향한 낯선 감정을 감지했습니다.\n훔쳐보시겠습니까?]";
+        const termElement = document.getElementById('term-text');
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (charIndex < introText.length) {
+                termElement.textContent += introText.charAt(charIndex);
+                charIndex++;
+                if(charIndex % 3 === 0) playSFX('type'); 
+                setTimeout(typeWriter, 50);
+            } else {
+                termElement.classList.remove('typewriter-cursor');
+                document.getElementById('term-choices').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('btn-y').addEventListener('click', () => {
+            document.getElementById('term-choices').classList.add('hidden');
+            termElement.innerHTML += "<br><br><span class='text-gray-500 text-sm'>[SYSTEM] 우회 경로 확보 중...</span>";
+            setTimeout(() => switchScreen('screen-id-gen'), 1000);
+        });
+
+        document.getElementById('btn-n').addEventListener('click', () => {
+            termElement.innerHTML += "<br><br><span class='text-red-500 text-sm'>[ERROR] 거부할 수 없습니다. 당신은 이미 훔쳐보고 있습니다.</span>";
+            document.getElementById('term-choices').classList.add('hidden');
+            setTimeout(() => switchScreen('screen-id-gen'), 1500);
+        });
+
+        document.getElementById('btn-enter-main').addEventListener('click', () => {
+            const inputVal = document.getElementById('custom-nickname-input').value.trim();
+            state.userId = inputVal !== '' ? inputVal : '익명_User';
+            document.querySelectorAll('.my-user-id').forEach(el => el.textContent = state.userId);
+            initMainDashboard();
+        });
+        
+        document.getElementById('custom-nickname-input').addEventListener('keypress', (e) => {
+            playSFX('type');
+            if(e.key === 'Enter') document.getElementById('btn-enter-main').click();
+        });
+
+        const leftSidebar = document.getElementById('left-sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        document.getElementById('btn-toggle-nav').addEventListener('click', () => {
+            leftSidebar.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+        });
+
+        const closeSidebar = () => {
+            leftSidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        };
+
+        document.getElementById('btn-close-nav').addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        function initMainDashboard() {
+            switchScreen('screen-main');
+            renderMemberList();
+            loadFeed(members[0]);
+            startPublicChatBot();
+        }
+
+        function renderMemberList() {
+            const list = document.getElementById('member-list');
+            list.innerHTML = members.map(id => `
+                <button class="member-btn w-full text-left p-4 border-b border-[#333] hover:bg-[#111] transition-all text-xs text-gray-500 flex-shrink-0" data-id="${id}">
+                    > @${id}
+                </button>
+            `).join('');
+
+            document.querySelectorAll('.member-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('data-id');
+                    loadFeed(targetId);
+                    if(window.innerWidth < 1024) closeSidebar();
+                });
+            });
+        }
+
+        function loadFeed(memberId) {
+            state.currentMember = memberId;
+            const assetData = ASSETS[memberId] || {};
+            
+            document.querySelectorAll('.member-btn').forEach(b => {
+                b.classList.remove('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
+                if(b.getAttribute('data-id') === memberId) {
+                    b.classList.add('text-[#FF007F]', 'border-[#FF007F]', 'bg-[#1a000d]');
+                }
+            });
+
+            document.getElementById('feed-target-id').textContent = `@${memberId}`;
+            const pfpSrc = assetData.profile ? assetData.profile : `https://api.dicebear.com/7.x/bottts/svg?seed=${memberId}&backgroundColor=111111`;
+            document.getElementById('feed-target-pfp').src = pfpSrc;
+            
+            document.getElementById('feed-target-status').textContent = state.statusFlow[state.statusIndex[memberId]];
+            
+            const grid = document.getElementById('feed-grid');
+            grid.innerHTML = '';
+            
+            const feedImages = assetData.feed && assetData.feed.length > 0 ? assetData.feed : [];
+            const numPhotos = feedImages.length > 0 ? feedImages.length : 9;
+            
+            for(let i = 0; i < numPhotos; i++) {
+                const bgColors = ['1a000d', '002200', '111111', '1a1a00', '220011'];
+                const bgColor = bgColors[(members.indexOf(memberId) + i) % bgColors.length];
+                const imgSrc = feedImages[i] ? feedImages[i] : `https://placehold.co/400x400/${bgColor}/FF007F?text=PIC_${i+1}`;
+                
+                // 클릭하면 바로 원본 사진 팝업
+                grid.innerHTML += `
+                    <div class="relative w-full aspect-square bg-[#111] overflow-hidden feed-item group cursor-pointer" onclick="openPhotoPopup('${imgSrc}')">
+                        <img src="${imgSrc}" class="w-full h-full object-cover absolute inset-0 z-0 revealed">
+                    </div>
+                `;
+            }
+        }
+
+        const photoModal = document.getElementById('photo-popup-modal');
+        const popupImg = document.getElementById('popup-photo-img');
+        const likeBtn = document.getElementById('btn-feed-like');
+        const likeCount = document.getElementById('feed-like-count');
+        const likeReactionContainer = document.getElementById('like-reaction-container');
+        const likeReactionGif = document.getElementById('like-reaction-gif');
+
+        document.getElementById('btn-close-photo').addEventListener('click', () => {
+            photoModal.classList.add('hidden');
+            photoModal.classList.remove('flex');
+            popupImg.src = '';
+            likeBtn.textContent = '♡'; 
+            likeReactionContainer.classList.add('hidden');
+        });
+
+        let currentLikes = 486;
+        likeBtn.addEventListener('click', () => {
+            if (likeBtn.textContent === '♡') {
+                likeBtn.textContent = '♥';
+                currentLikes++;
+                
+                const memberAsset = ASSETS[state.currentMember];
+                if (memberAsset && memberAsset.likeReaction) {
+                    likeReactionGif.src = memberAsset.likeReaction;
+                    likeReactionContainer.classList.remove('hidden');
+                    likeReactionContainer.classList.add('flex');
+                    
+                    likeReactionGif.classList.remove('like-gif-pop-out');
+                    likeReactionGif.classList.add('like-gif-pop-in');
+                    
+                    setTimeout(() => {
+                        likeReactionGif.classList.remove('like-gif-pop-in');
+                        likeReactionGif.classList.add('like-gif-pop-out');
+                        setTimeout(() => {
+                            likeReactionContainer.classList.add('hidden');
+                            likeReactionContainer.classList.remove('flex');
+                        }, 300);
+                    }, 2000);
+                }
+            } else {
+                likeBtn.textContent = '♡';
+                currentLikes--;
+            }
+            likeCount.textContent = currentLikes;
+        });
+
+        document.getElementById('btn-feed-comment').addEventListener('click', postFeedComment);
+        document.getElementById('feed-comment-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') postFeedComment();
+        });
+
+        function postFeedComment() {
+            const input = document.getElementById('feed-comment-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const list = document.getElementById('feed-comment-list');
+            const div = document.createElement('div');
+            div.innerHTML = `<span class="text-[#00FF00] mr-2">${state.userId}:</span><span>${text}</span>`;
+            list.appendChild(div);
+            list.scrollTop = list.scrollHeight;
+            input.value = '';
+        }
+
+        function openPhotoPopup(src) {
+            playSFX('click');
+            popupImg.src = src;
+            
+            currentLikes = Math.floor(Math.random() * 500) + 100;
+            likeCount.textContent = currentLikes;
+            likeBtn.textContent = '♡';
+            document.getElementById('feed-comment-list').innerHTML = ''; 
+            likeReactionContainer.classList.add('hidden');
+            
+            photoModal.classList.remove('hidden');
+            photoModal.classList.add('flex');
+        }
+
+        /* --- Status System --- */
+        let callTimeout = null;
+
+        document.querySelectorAll('.btn-react').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const memberId = state.currentMember;
+                let sIdx = state.statusIndex[memberId];
+                
+                if (sIdx < 3) {
+                    sIdx++;
+                    state.statusIndex[memberId] = sIdx;
+                    
+                    const newStatusText = state.statusFlow[sIdx];
+                    const statusEl = document.getElementById('feed-target-status');
+                    
+                    statusEl.style.color = '#fff';
+                    setTimeout(() => statusEl.style.color = '#FF007F', 200);
+                    statusEl.textContent = newStatusText;
+                    
+                    appendPublicChat(`[SYSTEM] ${state.userId}님이 @${memberId}에게 감정을 보냈습니다.`);
+                    
+                    if (sIdx === 3) {
+                        clearTimeout(callTimeout);
+                        callTimeout = setTimeout(() => {
+                            showIncomingCall(memberId);
+                        }, 1500);
+                    }
+                }
+            });
+        });
+
+        /* --- Public Chat --- */
+        const publicChatLog = document.getElementById('public-chat-log');
+        const publicChatInput = document.getElementById('public-chat-input');
+        const publicChatWrapper = document.getElementById('public-chat-wrapper');
+        const publicChatHeader = document.getElementById('public-chat-header');
+        const chatToggleIcon = document.getElementById('chat-toggle-icon');
+
+        let isChatExpanded = false;
+        publicChatHeader.addEventListener('click', () => {
+            if (window.innerWidth < 1024) {
+                isChatExpanded = !isChatExpanded;
+                if (isChatExpanded) {
+                    publicChatWrapper.style.height = '80vh';
+                    chatToggleIcon.textContent = '▼';
+                } else {
+                    publicChatWrapper.style.height = '35vh';
+                    chatToggleIcon.textContent = '▲';
+                }
+            }
+        });
+        
+        function appendPublicChat(text, isUser = false) {
+            const isScrolledToBottom = publicChatLog.scrollHeight - publicChatLog.clientHeight - publicChatLog.scrollTop <= 50;
+
+            const div = document.createElement('div');
+            div.className = 'text-xs lg:text-sm text-gray-400 border-b border-[#222] pb-2 leading-relaxed whitespace-pre-wrap overflow-hidden';
+            
+            if (text.startsWith('[SYSTEM]')) div.classList.add('text-gray-500', 'text-xs');
+            else if (isUser) div.classList.add('text-[#00FF00]', 'font-bold');
+            
+            div.innerHTML = linkify(text);
+            publicChatLog.appendChild(div);
+
+            if (isScrolledToBottom || isUser) {
+                publicChatLog.scrollTop = publicChatLog.scrollHeight;
+            }
+        }
+
+        document.getElementById('public-chat-submit').addEventListener('click', submitPublicChat);
+        publicChatInput.addEventListener('keypress', (e) => { 
+            playSFX('type');
+            if (e.key === 'Enter') submitPublicChat(); 
+        });
+
+        function submitPublicChat() {
+            const text = publicChatInput.value.trim();
+            if(!text) return;
+            appendPublicChat(`[${state.userId}] ${text}`, true);
+            publicChatInput.value = '';
+        }
+
+        function startPublicChatBot() {
+            const botMsgs = [
+                {name: 'ri_ku_03', msg: `안녕<br><img src="./assets/feed/riku.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg: `
+                    。o
+                      ｏ
+                       。
+                      o  고독한
+                      。 남자의 등장 . . . 
+                       Ｏ
+                         ｏ
+                         。o<br><img src="./assets/feed/jaehee.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'yushihihi_405', msg: `^_^<br><img src="./assets/feed/yushi.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: `안녕하십니까<br><img src="./assets/feed/sakuya.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg: `hi<br><img src="./assets/feed/sion.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg: `ᗜ_ᗜ<br><img src="./assets/feed/ryo.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: `나 요즘....\n심장이\n이상합니다<br><img src="./assets/feed/sakuya_myheart.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg: `그래?\n나도 그래\nㅍㅠㅠ<br><img src="./assets/feed/jaehee.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg: '아무 일도 없는데'},
+                {name: 'yushihihi_405', msg: 'ㅋㅋㅋ'},
+                {name: 'sion__5', msg: '괜히 손에 땀이나네'},
+                {name: 'yushihihi_405', msg: '<img src="./assets/feed/yushi_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
+                {name: 'ryo_hi_rose', msg: '😬😬😬'},
+                {name: 'ryo_hi_rose', msg: '왜이러는거야'},
+                {name: 'ri_ku_03', msg: `ここで一番混乱してる人\n        |\n       V<br><img src="./assets/feed/riku_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg: '뭔데'},
+                {name: 'sakusakusaku07', msg: `그냥 사진을\n올리고 싶었던 거지 리쿠는`},            
+                {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
+                {name: 'ryo_hi_rose', msg: `잠만\n이거 사랑이라는데<br><img src="./assets/feed/ryo_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: `<span class="text-xs">⠀⠀   ⠀
+                    ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌‌⣀⠀⠀⠀⠀
+                ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
+                ⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀
+                ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+                ⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀
+                ⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀
+                ⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
+                ⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀
+                ⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠋⠀⠀
+                   
+                      ︵     ‌  ⠈     ︵
+                    (      ╲       /      /
+                      ╲       ╲/      /
+                           ╲       ╲ /
+                        ╭ ͡   ╲        ╲
+                   ╭ ͡  ╲        ╲      ﾉ
+              ╭ ͡  ╲       ╲       ╱
+                ╲      ╲        ╱</span>`},
+                {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sakuya_2.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">'},
+                {name: 'ryo_hi_rose', msg: '응;'},
+                {name: 'sion__5', msg: `X<br><img src="./assets/feed/sion_@.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg: '그럴리가요'},
+                {name: 'yushihihi_405', msg: `그게 뭐지요<br><img src="./assets/feed/yushi_3.gif" controls class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ri_ku_03', msg: '눈이 송아지 같아'},
+                {name: 'ri_ku_03', msg: `나 재밌는거 발견했어\nhttps://confusedlove.com\n이거해봥`},
+                {name: 'sion__5', msg: `??\n리쿠 많이 해<br><img src="./assets/feed/sion_2.gif" controls class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg: `🤷‍♂️🤷‍♂️🤷‍♂️<br><img src="./assets/feed/jaehee_2.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: 'ㄱㄷ 디기'},
+                {name: 'ryo_hi_rose', msg: '사쿠 진짜 하러감?'},
+                {name: 'sakusakusaku07', msg: `ㅠㅠ<br><img src="./assets/feed/sakuya_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg: `ㅋㅋㅋㅋ<br><img src="./assets/feed/ryo_3.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: '너는'},
+                {name: 'ri_ku_03', msg: 'ㅎㅎㅎ'},
+                {name: 'jaehee__zzang', msg: '잘 나왔나보다'},
+                {name: 'ri_ku_03', msg: `ㅎㅎㅎㅎ<br><img src="./assets/feed/riku_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm"><br><img src="./assets/feed/riku_name.jpeg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg: `오늘따라\n많이\nc o n f u s e d 하네..`},
+                {name: 'ryo_hi_rose', msg: `<img src="./assets/feed/ryo_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg: `<img src="./assets/feed/ryo_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: `https://www.instagram.com/reels/DdtHCXYJUoe/\n릴스 봐줄 사람\n내 릴스`},
+                {name: 'yushihihi_405', msg: '너나 봐'},
+                {name: 'jaehee__zzang', msg: '오우'},
+                {name: 'sion__5', msg: `<img src="./assets/feed/sion_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/sion_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'jaehee__zzang', msg: '🤩🤩🤩ㅋ'},
+                {name: 'sakusakusaku07', msg: `그냥 사진을\n올리고 싶은거야 시온이형도`},
+                {name: 'yushihihi_405', msg: `크왕\n크왕 크왕 크왕 크왕<br><img src="./assets/feed/yushi_4.gif" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg: '???'},
+                {name: 'ri_ku_03', msg: '진정해'},
+                {name: 'jaehee__zzang', msg: `많이 혼.란스러우시구나`},
+                {name: 'jaehee__zzang', msg: `\n근데 전말이죠\n혼란스러울 ㅋ대\n기타를 쳐...`},
+                {name: 'ryo_hi_rose', msg: '그럼 기타를 쳐'},
+                {name: 'jaehee__zzang', msg: `<img src="./assets/feed/jaehee_3.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ryo_hi_rose', msg: '울지말고 얘기를 해요'},
+                {name: 'yushihihi_405', msg: `
+                눈물이\n검\n정색`},
+                {name: 'ri_ku_03', msg: `<img src="./assets/feed/riku_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'ri_ku_03', msg: `<img src="./assets/feed/riku_6.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sion__5', msg: '사쿠 왜 리쿠한테는 뭐라 안해'},
+                {name: 'sakusakusaku07', msg: '이제야 봤어요'},
+                {name: 'jaehee__zzang', msg: `https://www.instagram.com/reels/DdtJVdRJUtc/\n그래서 기타를 쳤어`},
+                {name: 'ri_ku_03', msg: '잘했어용'},
+                {name: 'sakusakusaku07', msg: `아 왤케 안 보내져<br><img src="./assets/feed/sakuya_4.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'sakusakusaku07', msg: `ㅂㅂ<br><img src="./assets/feed/sakuya_5.PNG" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`},
+                {name: 'yushihihi_405', msg: `나도 릴스~\nhttps://www.instagram.com/reels/DdtKaqGphta/`},
+                {name: 'yushihihi_405', msg: `아무도 안보네<br><img src="./assets/feed/yushi_0.jpg" class="w-1/2 mt-2 border border-[#FF007F] rounded-sm">`}
+            ];
+            let msgIdx = 0;
+            
+            function scheduleNextMessage() {
+                if(msgIdx >= botMsgs.length) {
+                    document.getElementById('live-indicator').classList.remove('bg-green-500', 'animate-pulse');
+                    document.getElementById('live-indicator').classList.add('bg-red-600');
+                    return; 
+                }
+                const data = botMsgs[msgIdx++];
+                appendPublicChat(`[${data.name}] ${data.msg}`);
+                
+                const randomDelay = Math.floor(Math.random() * 2500) + 1500;
+                setTimeout(scheduleNextMessage, randomDelay);
+            }
+            
+            scheduleNextMessage();
+        }
+
+        /* --- DM Modal & Scripted Logic --- */
+        const dmModal = document.getElementById('dm-modal');
+        const dmMessages = document.getElementById('dm-messages');
+        const dmInput = document.getElementById('dm-input');
+        const dmToast = document.getElementById('dm-toast');
+
+        function openDMFromToast() {
+            dmToast.classList.add('hidden');
+            document.getElementById('btn-open-dm').click();
+        }
+
+        document.getElementById('btn-open-dm').addEventListener('click', () => {
+    const memberId = state.currentMember;
+    document.getElementById('dm-target-name').textContent = `@${memberId}`;
+    
+    dmMessages.innerHTML = '';
+    
+    state.dmHistory[memberId].forEach(msg => renderDMSingle(msg, true));
+    
+    dmModal.classList.remove('hidden');
+    dmModal.classList.add('flex');
+
+    document.body.classList.add('dm-open');
 });
 
-        document.getElementById('btn-close-dm').addEventListener('click', () => {
-    dmModal.classList.add('hidden');
-    dmModal.classList.remove('flex');
+        document.getElementById('btn-close-dm').addEventListener('click', () => {
+    dmModal.classList.add('hidden');
+    dmModal.classList.remove('flex');
 
-    document.body.classList.remove('dm-open');
+    document.body.classList.remove('dm-open');
 });
 
-        function triggerBotReply(memberId) {
-            let step = state.postCallDmStep[memberId];
-            let script = state.postCallScripts[memberId];
-            
-            if (step < script.length) {
-                const nextMsg = script[step];
-                state.postCallDmStep[memberId] = step + 1;
-                
-                setTimeout(() => {
-                    if(dmModal.classList.contains('hidden')) {
-                        playSFX('alert'); 
-                        document.getElementById('toast-sender').textContent = `@${memberId}`;
-                        dmToast.classList.remove('hidden');
-                        setTimeout(() => { dmToast.classList.add('hidden'); }, 5000); 
-                    }
-                    
-                    appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url, nextMsg.type, nextMsg.urls);
-                    
-                    if (nextMsg.next) {
-                        triggerBotReply(memberId);
-                    }
-                }, 1000);
-            }
-        }
+        function triggerBotReply(memberId) {
+            let step = state.postCallDmStep[memberId];
+            let script = state.postCallScripts[memberId];
+            
+            if (step < script.length) {
+                const nextMsg = script[step];
+                state.postCallDmStep[memberId] = step + 1;
+                
+                setTimeout(() => {
+                    if(dmModal.classList.contains('hidden')) {
+                        playSFX('alert'); 
+                        document.getElementById('toast-sender').textContent = `@${memberId}`;
+                        dmToast.classList.remove('hidden');
+                        setTimeout(() => { dmToast.classList.add('hidden'); }, 5000); 
+                    }
+                    
+                    appendDMChat(memberId, nextMsg.text, 'bot', memberId, nextMsg.url, nextMsg.type, nextMsg.urls);
+                    
+                    if (nextMsg.next) {
+                        triggerBotReply(memberId);
+                    }
+                }, 1000);
+            }
+        }
 
-        document.getElementById('btn-send-dm').addEventListener('click', sendDM);
-        dmInput.addEventListener('keypress', (e) => { 
-            playSFX('type');
-            if (e.key === 'Enter') sendDM(); 
-        });
+        document.getElementById('btn-send-dm').addEventListener('click', sendDM);
+        dmInput.addEventListener('keypress', (e) => { 
+            playSFX('type');
+            if (e.key === 'Enter') sendDM(); 
+        });
 
-        function sendDM() {
-            const text = dmInput.value.trim();
-            if(!text) return;
-            const memberId = state.currentMember;
-            
-            appendDMChat(state.userId, text, 'user', memberId);
-            dmInput.value = '';
-            
-            if (state.hasFinishedVideoCall[memberId]) {
-                triggerBotReply(memberId);
-            }
-        }
+        function sendDM() {
+            const text = dmInput.value.trim();
+            if(!text) return;
+            const memberId = state.currentMember;
+            
+            appendDMChat(state.userId, text, 'user', memberId);
+            dmInput.value = '';
+            
+            if (state.hasFinishedVideoCall[memberId]) {
+                triggerBotReply(memberId);
+            }
+        }
 
-        function appendDMChat(name, text, type, memberId, url = null, msgType = 'text', urls = null) {
-            const msgObj = { name, text, type, url, msgType, urls };
-            state.dmHistory[memberId].push(msgObj);
-            if (!dmModal.classList.contains('hidden') && state.currentMember === memberId) {
-                renderDMSingle(msgObj, false);
-            }
-        }
+        function appendDMChat(name, text, type, memberId, url = null, msgType = 'text', urls = null) {
+            const msgObj = { name, text, type, url, msgType, urls };
+            state.dmHistory[memberId].push(msgObj);
+            if (!dmModal.classList.contains('hidden') && state.currentMember === memberId) {
+                renderDMSingle(msgObj, false);
+            }
+        }
 
-        async function renderDMSingle(msg, isHistoryRender = false) {
-            const div = document.createElement('div');
-            
-            if (msg.type === 'bot') {
-                div.className = 'flex flex-col mb-4 items-start w-full';
-                const wrapper = document.createElement('div');
-                wrapper.className = 'flex flex-col gap-1 items-start w-full';
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'text-xs text-[#FF007F] mb-1 font-bold';
-                nameSpan.textContent = msg.name;
-                div.appendChild(nameSpan);
-                div.appendChild(wrapper);
-                dmMessages.appendChild(div);
-                
-                if (msg.msgType === 'photo' && msg.url) {
-                    const imgNode = document.createElement('img');
-                    imgNode.src = msg.url;
-                    imgNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
-                    wrapper.appendChild(imgNode);
-                    dmMessages.scrollTop = dmMessages.scrollHeight;
-                    if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
-                }
-                
-                if (msg.msgType === 'photo' && msg.urls && Array.isArray(msg.urls)) {
-                    for(let u of msg.urls) {
-                        const imgNode = document.createElement('img');
-                        imgNode.src = u;
-                        imgNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
-                        wrapper.appendChild(imgNode);
-                        dmMessages.scrollTop = dmMessages.scrollHeight;
-                        if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
-                    }
-                }
-                
-                if (msg.msgType === 'video' && msg.url) {
-                    const vidNode = document.createElement('video');
-                    vidNode.src = msg.url;
-                    vidNode.controls = true;
-                    vidNode.playsInline = true;
-                    vidNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
-                    wrapper.appendChild(vidNode);
-                    dmMessages.scrollTop = dmMessages.scrollHeight;
-                    if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
-                }
-                
-                if (msg.text) {
-                    const lines = msg.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                    for (let line of lines) {
-                        const txtNode = document.createElement('div');
-                        txtNode.className = 'bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] w-fit text-sm rounded-xl rounded-tl-none break-words whitespace-pre-wrap shadow-[2px_2px_0_rgba(255,0,127,0.3)]';
-                        txtNode.innerHTML = linkify(line);
-                        wrapper.appendChild(txtNode);
-                        dmMessages.scrollTop = dmMessages.scrollHeight;
-                        if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
-                    }
-                }
-            } else {
-                div.className = 'flex flex-col mb-4 items-end w-full';
-                const wrapper = document.createElement('div');
-                wrapper.className = 'flex flex-col gap-1 items-end w-full';
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'text-xs text-gray-500 mb-1 font-bold';
-                nameSpan.textContent = 'ME';
-                div.appendChild(nameSpan);
-                div.appendChild(wrapper);
-                dmMessages.appendChild(div);
-                
-                if (msg.text) {
-                    const lines = msg.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                    for (let line of lines) {
-                        const txtNode = document.createElement('div');
-                        txtNode.className = 'bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] w-fit text-sm rounded-xl rounded-tr-none break-words whitespace-pre-wrap shadow-[-2px_2px_0_rgba(0,255,0,0.3)]';
-                        txtNode.innerHTML = linkify(line);
-                        wrapper.appendChild(txtNode);
-                        dmMessages.scrollTop = dmMessages.scrollHeight;
-                        if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
-                    }
-                }
-            }
-        }
+        async function renderDMSingle(msg, isHistoryRender = false) {
+            const div = document.createElement('div');
+            
+            if (msg.type === 'bot') {
+                div.className = 'flex flex-col mb-4 items-start w-full';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-col gap-1 items-start w-full';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'text-xs text-[#FF007F] mb-1 font-bold';
+                nameSpan.textContent = msg.name;
+                div.appendChild(nameSpan);
+                div.appendChild(wrapper);
+                dmMessages.appendChild(div);
+                
+                if (msg.msgType === 'photo' && msg.url) {
+                    const imgNode = document.createElement('img');
+                    imgNode.src = msg.url;
+                    imgNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
+                    wrapper.appendChild(imgNode);
+                    dmMessages.scrollTop = dmMessages.scrollHeight;
+                    if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
+                }
+                
+                if (msg.msgType === 'photo' && msg.urls && Array.isArray(msg.urls)) {
+                    for(let u of msg.urls) {
+                        const imgNode = document.createElement('img');
+                        imgNode.src = u;
+                        imgNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
+                        wrapper.appendChild(imgNode);
+                        dmMessages.scrollTop = dmMessages.scrollHeight;
+                        if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
+                    }
+                }
+                
+                if (msg.msgType === 'video' && msg.url) {
+                    const vidNode = document.createElement('video');
+                    vidNode.src = msg.url;
+                    vidNode.controls = true;
+                    vidNode.playsInline = true;
+                    vidNode.className = 'max-w-[200px] border border-[#FF007F] rounded-xl rounded-tl-none';
+                    wrapper.appendChild(vidNode);
+                    dmMessages.scrollTop = dmMessages.scrollHeight;
+                    if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
+                }
+                
+                if (msg.text) {
+                    const lines = msg.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                    for (let line of lines) {
+                        const txtNode = document.createElement('div');
+                        txtNode.className = 'bg-[#1a000d] border border-[#FF007F] text-white px-3 py-2 max-w-[85%] w-fit text-sm rounded-xl rounded-tl-none break-words whitespace-pre-wrap shadow-[2px_2px_0_rgba(255,0,127,0.3)]';
+                        txtNode.innerHTML = linkify(line);
+                        wrapper.appendChild(txtNode);
+                        dmMessages.scrollTop = dmMessages.scrollHeight;
+                        if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
+                    }
+                }
+            } else {
+                div.className = 'flex flex-col mb-4 items-end w-full';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-col gap-1 items-end w-full';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'text-xs text-gray-500 mb-1 font-bold';
+                nameSpan.textContent = 'ME';
+                div.appendChild(nameSpan);
+                div.appendChild(wrapper);
+                dmMessages.appendChild(div);
+                
+                if (msg.text) {
+                    const lines = msg.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                    for (let line of lines) {
+                        const txtNode = document.createElement('div');
+                        txtNode.className = 'bg-[#002200] border border-[#00FF00] text-[#00FF00] px-3 py-2 max-w-[85%] w-fit text-sm rounded-xl rounded-tr-none break-words whitespace-pre-wrap shadow-[-2px_2px_0_rgba(0,255,0,0.3)]';
+                        txtNode.innerHTML = linkify(line);
+                        wrapper.appendChild(txtNode);
+                        dmMessages.scrollTop = dmMessages.scrollHeight;
+                        if(!isHistoryRender) await new Promise(r => setTimeout(r, 800));
+                    }
+                }
+            }
+        }
 
-        /* --- ✨ Secret Test Logic --- */
-        const secretModal = document.getElementById('secret-test-modal');
-        const sStep1 = document.getElementById('test-step-1');
-        const sStep2 = document.getElementById('test-step-2');
-        const sStep3 = document.getElementById('test-step-3');
-        const sSlotMachine = document.getElementById('test-slot-machine');
-        const sResultId = document.getElementById('test-result-id');
-        let secretSlotTimer = null;
-        let secretGlitchTimer = null;
-        let selectedSecretMember = '';
+        /* --- ✨ Secret Test Logic --- */
+        const secretModal = document.getElementById('secret-test-modal');
+        const sStep1 = document.getElementById('test-step-1');
+        const sStep2 = document.getElementById('test-step-2');
+        const sStep3 = document.getElementById('test-step-3');
+        const sSlotMachine = document.getElementById('test-slot-machine');
+        const sResultId = document.getElementById('test-result-id');
+        let secretSlotTimer = null;
+        let secretGlitchTimer = null;
+        let selectedSecretMember = '';
 
-        document.getElementById('btn-open-test').addEventListener('click', () => {
-            playSFX('click');
-            sStep1.classList.remove('hidden');
-            sStep2.classList.add('hidden');
-            sStep3.classList.add('hidden');
-            secretModal.classList.remove('hidden');
-            secretModal.classList.add('flex');
-            if(secretGlitchTimer) clearInterval(secretGlitchTimer);
-        });
+        document.getElementById('btn-open-test').addEventListener('click', () => {
+            playSFX('click');
+            sStep1.classList.remove('hidden');
+            sStep2.classList.add('hidden');
+            sStep3.classList.add('hidden');
+            secretModal.classList.remove('hidden');
+            secretModal.classList.add('flex');
+            if(secretGlitchTimer) clearInterval(secretGlitchTimer);
+        });
 
-        document.getElementById('btn-close-test').addEventListener('click', () => {
-            secretModal.classList.add('hidden');
-            secretModal.classList.remove('flex');
-            if(secretSlotTimer) clearInterval(secretSlotTimer);
-            if(secretGlitchTimer) clearInterval(secretGlitchTimer);
-        });
+        document.getElementById('btn-close-test').addEventListener('click', () => {
+            secretModal.classList.add('hidden');
+            secretModal.classList.remove('flex');
+            if(secretSlotTimer) clearInterval(secretSlotTimer);
+            if(secretGlitchTimer) clearInterval(secretGlitchTimer);
+        });
 
-        document.getElementById('btn-start-test').addEventListener('click', () => {
-            playSFX('click');
-            sStep1.classList.add('hidden');
-            sStep2.classList.remove('hidden');
-            
-            let ticks = 0;
-            secretSlotTimer = setInterval(() => {
-                sSlotMachine.textContent = members[Math.floor(Math.random() * members.length)];
-                ticks++;
-                if(ticks % 3 === 0) playSFX('type');
-                
-                if (ticks > 40) {
-                    clearInterval(secretSlotTimer);
-                    selectedSecretMember = members[Math.floor(Math.random() * members.length)];
-                    showSecretResult();
-                }
-            }, 50);
-        });
-        // ✨ 추가: 랜덤으로 띄울 멘트 리스트 (원하는 대로 추가/수정 가능)
-        let randomMsg = '';
-        function showSecretResult() {
-            sStep2.classList.add('hidden');
-            sStep3.classList.remove('hidden');
-            playSFX('alert');
+        document.getElementById('btn-start-test').addEventListener('click', () => {
+            playSFX('click');
+            sStep1.classList.add('hidden');
+            sStep2.classList.remove('hidden');
+            
+            let ticks = 0;
+            secretSlotTimer = setInterval(() => {
+                sSlotMachine.textContent = members[Math.floor(Math.random() * members.length)];
+                ticks++;
+                if(ticks % 3 === 0) playSFX('type');
+                
+                if (ticks > 40) {
+                    clearInterval(secretSlotTimer);
+                    selectedSecretMember = members[Math.floor(Math.random() * members.length)];
+                    showSecretResult();
+                }
+            }, 50);
+        });
+        // ✨ 추가: 랜덤으로 띄울 멘트 리스트 (원하는 대로 추가/수정 가능)
+        let randomMsg = '';
+        function showSecretResult() {
+            sStep2.classList.add('hidden');
+            sStep3.classList.remove('hidden');
+            playSFX('alert');
 
-            // 1~1000 사이의 랜덤 숫자 3개 생성
-            const rand1 = Math.floor(Math.random() * 1000) + 1;
-            const rand2 = Math.floor(Math.random() * 1000) + 1;
-            const rand3 = Math.floor(Math.random() * 1000) + 1;
+            // 1~1000 사이의 랜덤 숫자 3개 생성
+            const rand1 = Math.floor(Math.random() * 1000) + 1;
+            const rand2 = Math.floor(Math.random() * 1000) + 1;
+            const rand3 = Math.floor(Math.random() * 1000) + 1;
 
-            // ✨ 백틱( ` )과 ${}를 사용해 랜덤 숫자를 문장 안에 동적으로 삽입
-            const secretMessages = [
-                "님이 당신을 오랫동안 지켜봐왔던 것 같습니다. . .",
-                "님이 지금 당신을 보고싶어 합니다. . .",
-                `님의 메모장에서 당신의 이름이 ${rand1}번 발견되었습니다. . .`,
-                "님은 지금 당신이 뭘 하는지 궁금해합니다. . .",
-                "님은 당신에게 고백받고 싶어합니다. . .",
-                "님은 지금 당장 당신에게 고백하고 싶어합니다. . .",
-                "님은 당신의 이상형이 되기 위해 취향을 개조 중입니다. . .",
-                "님은 당신의 답장을 기다리고 있습니다. . .",
-                "님은 당신에게 전화하고 싶지만 망설이고 있습니다. . .",
-                "님이 당신을 아주 좋아하고 있습니다. . .",
-                "님은 당신이 자신의 생각을 얼마나 하는지 궁금합니다. . .",
-                `님이 당신과 우연히 마주치려고 오늘 동선을 ${rand2}번이나 수정했습니다. . .`,
-                "님이 당신의 꿈에 출연하려고 현재 대기표를 뽑고 대기 중입니다. . .",
-                `님의 뇌구조 ${rand3}%를 당신이 점유하고 있습니다. . .`,
-                "님이 남몰래 당신과의 MBTI 궁합을 쳐보고 있는 것으로 확인됩니다. . .",
-                "님이 남몰래 당신과의 이름 궁합을 확인해보고 있는 것으로 확인됩니다. . .",
-                "님이 당신을 생각하다가 방금 마시던 물을 뿜은 것으로 확인됩니다. . ."
-            ];
-            
-            // 랜덤으로 하나 뽑아서 화면에 적용
-            randomMsg = secretMessages[Math.floor(Math.random() * secretMessages.length)];
-            document.getElementById('test-result-desc').innerHTML = randomMsg;
+            // ✨ 백틱( ` )과 ${}를 사용해 랜덤 숫자를 문장 안에 동적으로 삽입
+            const secretMessages = [
+                "님이 당신을 오랫동안 지켜봐왔던 것 같습니다. . .",
+                "님이 지금 당신을 보고싶어 합니다. . .",
+                `님의 메모장에서 당신의 이름이 ${rand1}번 발견되었습니다. . .`,
+                "님은 지금 당신이 뭘 하는지 궁금해합니다. . .",
+                "님은 당신에게 고백받고 싶어합니다. . .",
+                "님은 지금 당장 당신에게 고백하고 싶어합니다. . .",
+                "님은 당신의 이상형이 되기 위해 취향을 개조 중입니다. . .",
+                "님은 당신의 답장을 기다리고 있습니다. . .",
+                "님은 당신에게 전화하고 싶지만 망설이고 있습니다. . .",
+                "님이 당신을 아주 좋아하고 있습니다. . .",
+                "님은 당신이 자신의 생각을 얼마나 하는지 궁금합니다. . .",
+                `님이 당신과 우연히 마주치려고 오늘 동선을 ${rand2}번이나 수정했습니다. . .`,
+                "님이 당신의 꿈에 출연하려고 현재 대기표를 뽑고 대기 중입니다. . .",
+                `님의 뇌구조 ${rand3}%를 당신이 점유하고 있습니다. . .`,
+                "님이 남몰래 당신과의 MBTI 궁합을 쳐보고 있는 것으로 확인됩니다. . .",
+                "님이 남몰래 당신과의 이름 궁합을 확인해보고 있는 것으로 확인됩니다. . .",
+                "님이 당신을 생각하다가 방금 마시던 물을 뿜은 것으로 확인됩니다. . ."
+            ];
+            
+            // 랜덤으로 하나 뽑아서 화면에 적용
+            randomMsg = secretMessages[Math.floor(Math.random() * secretMessages.length)];
+            document.getElementById('test-result-desc').innerHTML = randomMsg;
 
-            // 글리치 효과 시작
-            const chars = '!@#$%^&*()_+-=[]{}|;:.,<>?¥§©µ¶';
-            secretGlitchTimer = setInterval(() => {
-                let glitched = '';
-                const length = selectedSecretMember.length;
-                for(let i=0; i<length; i++) {
-                    glitched += chars[Math.floor(Math.random() * chars.length)];
-                }
-                sResultId.textContent = glitched;
-            }, 50);
-        }
-            
-        document.getElementById('btn-share-test').addEventListener('click', () => {
-    playSFX('click');
+            // 글리치 효과 시작
+            const chars = '!@#$%^&*()_+-=[]{}|;:.,<>?¥§©µ¶';
+            secretGlitchTimer = setInterval(() => {
+                let glitched = '';
+                const length = selectedSecretMember.length;
+                for(let i=0; i<length; i++) {
+                    glitched += chars[Math.floor(Math.random() * chars.length)];
+                }
+                sResultId.textContent = glitched;
+            }, 50);
+        }
+            
+        document.getElementById('btn-share-test').addEventListener('click', () => {
+    playSFX('click');
 
-    const shareText = `[ ${selectedSecretMember} ] ${randomMsg}👀\n\n🔽나를 몰래 좋아하고 있는 사람 찾기🔽\nhttps://ispyou.vercel.app/\n\n❤️NCT WISH【I SPY - The 4th Mini Album\n➫ 2026.10.12 6PM (KST)❤️\nhttps://nctwish.lnk.to/ISPY\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
+    const shareText = `[ ${selectedSecretMember} ] ${randomMsg}👀\n\n🔽나를 몰래 좋아하고 있는 사람 찾기🔽\nhttps://ispyou.vercel.app/\n\n❤️NCT WISH【I SPY - The 4th Mini Album\n➫ 2026.10.12 6PM (KST)❤️\nhttps://nctwish.lnk.to/ISPY\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
 
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-    window.open(url, '_blank');
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+    window.open(url, '_blank');
 });
 
-        /* --- ✨ Credit Logic --- */
-        const creditModal = document.getElementById('credit-modal');
-        
-        document.getElementById('btn-open-credit').addEventListener('click', () => {
-            playSFX('click');
-            creditModal.classList.remove('hidden');
-            creditModal.classList.add('flex');
-        });
+        /* --- Video/Voice Call Logic --- */
+        const callModal = document.getElementById('call-modal');
+        const incomingModal = document.getElementById('incoming-call-modal');
+        const callChoiceModal = document.getElementById('call-choice-modal');
+        const userCam = document.getElementById('user-cam');
+        const camErrorMsg = document.getElementById('cam-error-msg');
+        const videoPlayer = document.getElementById('call-video-player');
+        const audioPlayer = document.getElementById('call-audio-player');
+        const placeholderImg = document.getElementById('call-member-img');
+        const connectingText = document.getElementById('call-connecting-text');
+        
+        document.getElementById('btn-call-member').addEventListener('click', () => {
+            // 상태 인덱스(statusIndex)와 무관하게 무조건 선택 모달 띄우기
+            callChoiceModal.classList.remove('hidden');
+            callChoiceModal.classList.add('flex');
+        });
 
-        const closeCreditModal = () => {
-            playSFX('click');
-            creditModal.classList.add('hidden');
-            creditModal.classList.remove('flex');
-        };
+        document.getElementById('btn-close-choice').addEventListener('click', () => {
+            callChoiceModal.classList.add('hidden');
+            callChoiceModal.classList.remove('flex');
+        });
 
-        document.getElementById('btn-close-credit').addEventListener('click', closeCreditModal);
-        document.getElementById('btn-close-credit-btn').addEventListener('click', closeCreditModal);
-        // 👆 여기까지 추가 👆
+        document.getElementById('btn-choose-voice').addEventListener('click', () => {
+            callChoiceModal.classList.add('hidden');
+            callChoiceModal.classList.remove('flex');
+            startCall('voice1');
+        });
 
-        /* --- Video/Voice Call Logic --- */
-        const callModal = document.getElementById('call-modal');
-        const incomingModal = document.getElementById('incoming-call-modal');
-        const callChoiceModal = document.getElementById('call-choice-modal');
-        const userCam = document.getElementById('user-cam');
-        const camErrorMsg = document.getElementById('cam-error-msg');
-        const videoPlayer = document.getElementById('call-video-player');
-        const audioPlayer = document.getElementById('call-audio-player');
-        const placeholderImg = document.getElementById('call-member-img');
-        const connectingText = document.getElementById('call-connecting-text');
-        
-        document.getElementById('btn-call-member').addEventListener('click', () => {
-            // 상태 인덱스(statusIndex)와 무관하게 무조건 선택 모달 띄우기
-            callChoiceModal.classList.remove('hidden');
-            callChoiceModal.classList.add('flex');
-        });
+        document.getElementById('btn-choose-video').addEventListener('click', () => {
+            callChoiceModal.classList.add('hidden');
+            callChoiceModal.classList.remove('flex');
+            startCall('video');
+        });
 
-        document.getElementById('btn-close-choice').addEventListener('click', () => {
-            callChoiceModal.classList.add('hidden');
-            callChoiceModal.classList.remove('flex');
-        });
+        function showIncomingCall(memberId) {
+            document.getElementById('incoming-caller-name').textContent = `@${memberId}`;
+            document.getElementById('incoming-call-text').textContent = "음성통화를 요청합니다.";
+            incomingModal.classList.remove('hidden');
+            incomingModal.classList.add('flex');
+            
+            playSFX('ringtone'); 
+            appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 음성통화를 시도 중입니다...`);
+        }
 
-        document.getElementById('btn-choose-voice').addEventListener('click', () => {
-            callChoiceModal.classList.add('hidden');
-            callChoiceModal.classList.remove('flex');
-            startCall('voice1');
-        });
+        document.getElementById('btn-accept-call').addEventListener('click', () => {
+            stopSFX('ringtone'); 
+            incomingModal.classList.add('hidden');
+            incomingModal.classList.remove('flex');
+            startCall('voice2'); 
+        });
 
-        document.getElementById('btn-choose-video').addEventListener('click', () => {
-            callChoiceModal.classList.add('hidden');
-            callChoiceModal.classList.remove('flex');
-            startCall('video');
-        });
+        async function startCall(type) {
+            const current = state.currentMember;
+            const assetData = ASSETS[current] || {};
+            state.activeCallType = type; 
+            
+            document.getElementById('call-target-name-modal').textContent = `@${current}`;
+            
+            placeholderImg.src = assetData.profile || '';
+            
+            callModal.classList.remove('hidden');
+            callModal.classList.add('flex');
+            
+            const pipContainer = document.getElementById('pip-container');
+            const titleText = document.getElementById('call-title-text');
+            camErrorMsg.classList.add('hidden');
+            
+            connectingText.classList.remove('hidden');
+            videoPlayer.classList.add('hidden');
+            placeholderImg.classList.add('hidden');
+            pipContainer.classList.add('hidden'); 
+            
+            // ✨ 추가된 핵심 로직: 수신(voice2)일 때는 연결음(ring) 생략하고 즉시 연결(딜레이 0초)
+            const isIncoming = (type === 'voice2');
+            const delay = isIncoming ? 0 : 3000;
 
-        function showIncomingCall(memberId) {
-            document.getElementById('incoming-caller-name').textContent = `@${memberId}`;
-            document.getElementById('incoming-call-text').textContent = "음성통화를 요청합니다.";
-            incomingModal.classList.remove('hidden');
-            incomingModal.classList.add('flex');
-            
-            playSFX('ringtone'); 
-            appendPublicChat(`[SYSTEM] ⚠️ @${memberId}가 ${state.userId}님에게 음성통화를 시도 중입니다...`);
-        }
+            if (!isIncoming) {
+                playSFX('ring'); // 수동 발신 시에만 뚜-뚜- 연결음 재생
+            }
+            
+            setTimeout(async () => {
+                if (!isIncoming) stopSFX('ring');
+                connectingText.classList.add('hidden');
 
-        document.getElementById('btn-accept-call').addEventListener('click', () => {
-            stopSFX('ringtone'); 
-            incomingModal.classList.add('hidden');
-            incomingModal.classList.remove('flex');
-            startCall('voice2'); 
-        });
+                if (type === 'video') {
+                    pipContainer.classList.remove('hidden');
+                    titleText.textContent = "ENCRYPTED_VIDEO_CALL...";
+                    
+                    if(assetData.videoCall) {
+                        videoPlayer.src = assetData.videoCall;
+                        videoPlayer.classList.remove('hidden');
+                        placeholderImg.classList.add('hidden');
+                        videoPlayer.play().catch(e => console.log("Video autoplay prevented"));
+                        
+                        videoPlayer.onended = () => document.getElementById('btn-end-call').click();
+                    }
+                    
+                    try {
+                        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                        userCam.srcObject = state.videoStream;
+                        appendPublicChat(`[SYSTEM] 스파이캠(PIP) 연결 성공. 대상이 당신을 보고 있습니다.`);
+                    } catch (err) {
+                        camErrorMsg.classList.remove('hidden');
+                        camErrorMsg.classList.add('flex');
+                        appendPublicChat(`[ERROR] 카메라 접근 실패. 음성 전용으로 우회합니다.`);
+                    }
+                } else {
+                    titleText.textContent = "ENCRYPTED_VOICE_CALL...";
+                    placeholderImg.classList.remove('hidden');
+                    
+                    let targetAudio = type === 'voice2' ? assetData.voiceCall2 : assetData.voiceCall1;
+                    
+                    if(targetAudio) {
+                        audioPlayer.src = targetAudio;
+                        audioPlayer.play().catch(e => console.log("Audio autoplay prevented"));
+                        
+                        audioPlayer.onended = () => document.getElementById('btn-end-call').click();
+                    }
+                    appendPublicChat(`[SYSTEM] ${state.userId}님이 @${current}와 음성 통화를 연결했습니다.`);
+                }
+            }, delay); 
+        }
 
-        async function startCall(type) {
-            const current = state.currentMember;
-            const assetData = ASSETS[current] || {};
-            state.activeCallType = type; 
-            
-            document.getElementById('call-target-name-modal').textContent = `@${current}`;
-            
-            placeholderImg.src = assetData.profile || '';
-            
-            callModal.classList.remove('hidden');
-            callModal.classList.add('flex');
-            
-            const pipContainer = document.getElementById('pip-container');
-            const titleText = document.getElementById('call-title-text');
-            camErrorMsg.classList.add('hidden');
-            
-            connectingText.classList.remove('hidden');
-            videoPlayer.classList.add('hidden');
-            placeholderImg.classList.add('hidden');
-            pipContainer.classList.add('hidden'); 
-            
-            // ✨ 추가된 핵심 로직: 수신(voice2)일 때는 연결음(ring) 생략하고 즉시 연결(딜레이 0초)
-            const isIncoming = (type === 'voice2');
-            const delay = isIncoming ? 0 : 3000;
+        document.getElementById('btn-reject-call').addEventListener('click', () => {
+            stopSFX('ringtone'); 
+            incomingModal.classList.add('hidden');
+            incomingModal.classList.remove('flex');
+            appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}의 통화를 무시했습니다.`);
+        });
 
-            if (!isIncoming) {
-                playSFX('ring'); // 수동 발신 시에만 뚜-뚜- 연결음 재생
-            }
-            
-            setTimeout(async () => {
-                if (!isIncoming) stopSFX('ring');
-                connectingText.classList.add('hidden');
+        document.getElementById('btn-end-call').addEventListener('click', () => {
+            stopSFX('ring'); 
+            stopSFX('ringtone');
+            if (state.videoStream) {
+                state.videoStream.getTracks().forEach(track => track.stop());
+                state.videoStream = null;
+            }
+            userCam.srcObject = null;
+            
+            videoPlayer.pause();
+            videoPlayer.removeAttribute('src');
+            videoPlayer.onended = null;
+            
+            audioPlayer.pause();
+            audioPlayer.removeAttribute('src');
+            audioPlayer.onended = null;
+            
+            callModal.classList.add('hidden');
+            callModal.classList.remove('flex');
+            
+            appendPublicChat(`[SYSTEM] @${state.currentMember}와의 통화 연결이 종료되었습니다.`);
 
-                if (type === 'video') {
-                    pipContainer.classList.remove('hidden');
-                    titleText.textContent = "ENCRYPTED_VIDEO_CALL...";
-                    
-                    if(assetData.videoCall) {
-                        videoPlayer.src = assetData.videoCall;
-                        videoPlayer.classList.remove('hidden');
-                        placeholderImg.classList.add('hidden');
-                        videoPlayer.play().catch(e => console.log("Video autoplay prevented"));
-                        
-                        videoPlayer.onended = () => document.getElementById('btn-end-call').click();
-                    }
-                    
-                    try {
-                        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                        userCam.srcObject = state.videoStream;
-                        appendPublicChat(`[SYSTEM] 스파이캠(PIP) 연결 성공. 대상이 당신을 보고 있습니다.`);
-                    } catch (err) {
-                        camErrorMsg.classList.remove('hidden');
-                        camErrorMsg.classList.add('flex');
-                        appendPublicChat(`[ERROR] 카메라 접근 실패. 음성 전용으로 우회합니다.`);
-                    }
-                } else {
-                    titleText.textContent = "ENCRYPTED_VOICE_CALL...";
-                    placeholderImg.classList.remove('hidden');
-                    
-                    let targetAudio = type === 'voice2' ? assetData.voiceCall2 : assetData.voiceCall1;
-                    
-                    if(targetAudio) {
-                        audioPlayer.src = targetAudio;
-                        audioPlayer.play().catch(e => console.log("Audio autoplay prevented"));
-                        
-                        audioPlayer.onended = () => document.getElementById('btn-end-call').click();
-                    }
-                    appendPublicChat(`[SYSTEM] ${state.userId}님이 @${current}와 음성 통화를 연결했습니다.`);
-                }
-            }, delay); 
-        }
-
-        document.getElementById('btn-reject-call').addEventListener('click', () => {
-            stopSFX('ringtone'); 
-            incomingModal.classList.add('hidden');
-            incomingModal.classList.remove('flex');
-            appendPublicChat(`[SYSTEM] ${state.userId}님이 @${state.currentMember}의 통화를 무시했습니다.`);
-        });
-
-        document.getElementById('btn-end-call').addEventListener('click', () => {
-            stopSFX('ring'); 
-            stopSFX('ringtone');
-            if (state.videoStream) {
-                state.videoStream.getTracks().forEach(track => track.stop());
-                state.videoStream = null;
-            }
-            userCam.srcObject = null;
-            
-            videoPlayer.pause();
-            videoPlayer.removeAttribute('src');
-            videoPlayer.onended = null;
-            
-            audioPlayer.pause();
-            audioPlayer.removeAttribute('src');
-            audioPlayer.onended = null;
-            
-            callModal.classList.add('hidden');
-            callModal.classList.remove('flex');
-            
-            appendPublicChat(`[SYSTEM] @${state.currentMember}와의 통화 연결이 종료되었습니다.`);
-
-            const current = state.currentMember;
-            
-            if (state.statusIndex[current] >= 3 && !state.hasFinishedVideoCall[current] && state.activeCallType === 'voice2') {
-                state.hasFinishedVideoCall[current] = true;
-                
-                setTimeout(() => {
-                    triggerBotReply(current);
-                }, 2000);
-            }
-        });
-    </script>
+            const current = state.currentMember;
+            
+            if (state.statusIndex[current] >= 3 && !state.hasFinishedVideoCall[current] && state.activeCallType === 'voice2') {
+                state.hasFinishedVideoCall[current] = true;
+                
+                setTimeout(() => {
+                    triggerBotReply(current);
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
