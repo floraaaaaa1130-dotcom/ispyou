@@ -287,7 +287,7 @@
                 </div>
                 <button id="btn-share-test" class="bg-white text-black font-bold text-xs px-4 py-3 hover:bg-gray-300 transition-colors w-full flex items-center justify-center gap-2 rounded-sm">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    X에 공유하고 정체 확인하기
+                    공유하고 정체 확인하기
                 </button>
             </div>
         </div>
@@ -1308,7 +1308,7 @@
 
         document.getElementById('btn-share-test').addEventListener('click', () => {
             playSFX('click');
-            const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다... 👀❤️\n\n나를 몰래 좋아하고 있는 사람 찾기 🔽\nhttps://ispyou.vercel.app/\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
+            const shareText = `[ ${selectedSecretMember} ] 님이 당신을 오랫동안 지켜봐왔던 것 같습니다...👀\n\n🔽나를 몰래 좋아하고 있는 사람 찾기🔽\nhttps://ispyou.vercel.app/\n\n❤️NCT WISH【I SPY - The 4th Mini Album\n➫ 2026.10.12 6PM (KST)❤️\nhttps://nctwish.lnk.to/ISPY\n\n#NCTWISH #WISHLAND\n#ISPY #NCTWISH_ISPY`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
             window.open(url, '_blank');
         });
