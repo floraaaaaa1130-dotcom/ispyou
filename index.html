@@ -302,14 +302,18 @@
                 ringtone: './assets/audio/ring.mp3',     
                 alert: './assets/audio/alert.mp3'        
             },
+            
             'sion__5': {
                 profile: './assets/profile/sion_profile.JPG', 
                 videoCall: './assets/video/sion_call.mp4',
                 voiceCall1: './assets/audio/sion_voice1.mp3', 
                 voiceCall2: './assets/audio/sion_voice2.mp3',
                 feed: [
-                    './assets/feed/sion_pic1.jpg',
-                    './assets/feed/sion_pic2.jpg'
+                    './assets/feed/sionfeed.jpg',
+                    './assets/feed/sionfeed2.jpg',
+                    './assets/feed/sionfeed3.jpg',
+                    './assets/feed/sionfeed4.jpg',
+                    './assets/feed/sionfeed5.jpg'
                 ]
             },
             'ri_ku_03': {
@@ -317,7 +321,13 @@
                 videoCall: './assets/video/riku_call.mp4',
                 voiceCall1: './assets/audio/riku_voice1.mp3',
                 voiceCall2: './assets/audio/riku_voice2.mp3',
-                feed: [ './assets/feed/riku_pic1.jpg' ]
+                feed: [ 
+                    './assets/feed/rikufeed.jpg',
+                    './assets/feed/rikufeed2.jpg',
+                    './assets/feed/rikufeed3.jpg',
+                    './assets/feed/rikufeed4.jpg',
+                    './assets/feed/rikufeed5.jpg'
+                ]
             },
             'yushihihi_405': { 
                 profile: './assets/profile/yushi_profile.PNG',
@@ -325,8 +335,11 @@
                 voiceCall1: './assets/audio/yushi_voice1.mp3',
                 voiceCall2: './assets/audio/yushi_voice2.mp3',
                 feed: [ 
-                    './assets/feed/yushi.PNG',
-                    './assets/feed/yushi_2.PNG'
+                    './assets/feed/yushifeed.jpg',
+                    './assets/feed/yushifeed2.jpg',
+                    './assets/feed/yushifeed3.jpg',
+                    './assets/feed/yushifeed4.jpg',
+                    './assets/feed/yushifeed5.jpg'
                 ] 
             }, 
             'jaehee__zzang': {
@@ -334,21 +347,39 @@
                 videoCall: './assets/video/jaehee_call.mp4',
                 voiceCall1: './assets/audio/jaehee_voice1.mp3',
                 voiceCall2: './assets/audio/jaehee_voice2.mp3',
-                feed: [ './assets/feed/jaehee_pic1.jpg' ] 
+                feed: [
+                    './assets/feed/jaeheefeed.jpg',
+                    './assets/feed/jaeheefeed2.jpg',
+                    './assets/feedjaeheefeed3.jpg',
+                    './assets/feed/jaeheefeed4.jpg',
+                    './assets/feed/jaeheefeed5.jpg'
+                ] 
             },
             'ryo_hi_rose': { 
                 profile: './assets/profile/ryo_profile.PNG',
                 videoCall: './assets/video/ryo_call.mp4',
                 voiceCall1: './assets/audio/ryo_voice1.mp3',
                 voiceCall2: './assets/audio/ryo_voice2.mp3',
-                feed: [ './assets/feed/ryo_pic1.jpg' ] 
+                feed: [ 
+                    './assets/feed/ryofeed.jpg',
+                    './assets/feed/ryofeed2.jpg',
+                    './assets/feed/ryofeed3.jpg',
+                    './assets/feed/ryofeed4.jpg',
+                    './assets/feed/ryofeed5.jpg'
+                ] 
             },
             'sakusakusaku07': { 
                 profile: './assets/profile/sakuya_profile.PNG',
                 videoCall: './assets/video/sakuya_call.mp4',
                 voiceCall1: './assets/audio/sakuya_voice1.mp3',
                 voiceCall2: './assets/audio/sakuya_voice2.mp3',
-                feed: [ './assets/feed/sakuya_pic1.jpg' ] 
+                feed: [
+                    './assets/feed/sakuyafeed.jpg',
+                    './assets/feed/sakuyafeed2.jpg',
+                    './assets/feed/sakuyafeed3.jpg',
+                    './assets/feed/sakuyafeed4.jpg',
+                    './assets/feed/sakuyafeed5.jpg'
+                ] 
             }
         };
 
@@ -389,80 +420,131 @@
         // ==========================================
         const dmScripts = {
             'sion__5': [
-                { type: 'video', url: './assets/dm/sion_dm_video1.mp4', text: `
+                { type: 'photo', url: './assets/dm/sion_5.gif', text: `
                 hello?
                 ~♡`},
                 { type: 'text', text: `
                 있잖아
                 사진 찍는 거 좋아해?
                 ㅎㅎ`},
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg' },
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: 'ㅎㅎ' },
+                { type: 'photo', url: './assets/dm/sion_6.jpg', text: 'ㅎㅎ' },
+                { type: 'photo', url: './assets/dm/sion_7.jpg'},
+                { type: 'photo', url: './assets/dm/sion_8.jpg'},
+                { type: 'photo', url: './assets/dm/sion_9.jpg'},
+                { type: 'text', text: '프사 골라줘'},
+                { type: 'photo', url: './assets/dm/모르겠네.jpg'},
+                { type: 'photo', url: './assets/dm/이거괜찮나.jpg'},
+                { type: 'photo', url: './assets/dm/이게 낫나.jpg'},
+                { type: 'photo', url: './assets/dm/지켜보고있다.jpg'},
+                { type: 'photo', url: './assets/dm/프사후보1.jpg'},
+                { type: 'photo', url: './assets/dm/프사후보2.jpg'},
+                { type: 'photo', url: './assets/dm/프사후보3.jpg'},
+                { type: 'photo', url: './assets/dm/프사후보4.jpg'},
                 { type: 'text', text: `
-                아 잠만 보지말고
-                오늘 뭐해?
-                이따 잠깐 볼래?` }
+                https://www.instagram.com/reels/Dd_GG7KpszX/
+                노래 듣고 있는데
+                https://open.spotify.com/playlist/2lJYTQDvhU8VbBp3zuGAvw?si=V1jpF7gOQguG-U1LTy27pg&utm_source=copy-link&pi=XP-yHwWPSsuOq&nd=1&dlsi=c0406ef100bb4dc6
+                제목은 연관없다~` },
+                { type: 'photo', url: './assets/dm/sion_10.jpg'},
+                { type: 'photo', url: './assets/dm/sion_11.gif', text: '잘자'},
             ],
-            'ri_ku_03': [
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `안녕~`},
-                { type: 'text', text: `뭐해？`},
+            
+            'yushihihi_405': [
+                { type: 'photo', url: './assets/dm/yushi_5.png', text: `안녕~`},
+                { type: 'photo', url: './assets/dm/yushi_6.gif', text: `뭐해？`},
                 { type: 'text', text: `
                 ㅋㅋㅋ
                 https://www.instagram.com/reels/Dd_GG7KpszX/
-                너도 나와ㅎㅎ`},
-                { type: 'text', text: `앗 링크 눌러보지마`},
+                너도 나와ㅎㅎ
+                음`},
+                { type: 'text', text: `
+                앗 링크 눌러보지마
+                아`},
+                { type: 'photo', url: './assets/dm/yushi_6.png'},
                 { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '지금 몇시〜' },
                 { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '좋아해～' }
             ],
-            'yushihihi_405': [
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `테마를 love로 변경했습니다`},
+            
+            'jaehee__zzang': [
+                { type: 'photo', url: './assets/dm/jaehee.jpg', text: `테마를 love로 변경했습니다`},
                 { type: 'text', text: `
                 허허
-                웃긴 거 보여줄까ㅋㅋㅋ` },
+                웃긴 거 보여줄까ㅋㅋㅋ
+                4&☀️` },
+                { type: 'photo', url: './assets/dm/jaehee_6.png'},
                 { type: 'text', text: `
                 아ㅏㅏㅏ
-                좀 이따가 나와줄 수 있어?
-                기다릴게` }, 
-                { type: 'text', text: `으악 받아줘` }
-            ],
-            'jaehee__zzang': [
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `ㅎㅇ ㅋ`},
+                좀 이따가
+                나와줄 수 있어?
+                별 건 아니고ㅋㅋ
+                기다릴게` },
+                { type: 'photo', url: './assets/dm/jaehee_7.png'},
                 { type: 'text', text: `
-                나 안경 삼 어때
-                이거 내가 만든 건데 너만 특별히 보여줄게`},
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg' },
+                https://www.instagram.com/reels/Dd_Q02fJNV0/
+                으악
+                받아줘` },
+                { type: 'photo', url: './assets/dm/jaehee_14.gif'},
+            ],
+            
+            'ryo_hi_rose': [
+                { type: 'photo', url: './assets/dm/ryo_10.png', text: `ㅎㅇ`},
+                { type: 'photo', url: './assets/dm/ryo_11.jpg', text: `ㅋ`},
+                { type: 'photo', url: './assets/dm/ryo_8.png', text: `
+                나 안경 삼
+                어때` },
+                { type: 'text', text: `
+                이거 내가 만든 건데
+                너만 특별히 보여줄게
+                https://www.youtube.com/watch?v=idomU-hwkig&feature=youtu.be` }
                 { type: 'text', text: `
                 잠깐만!
                 이제 집중해야돼😬`},
-                { type: 'text', text: `고백받게해주세요\n고백받게해주세요`},
+                { type: 'photo', url: './assets/dm/ryo_7.png', text: `
+                고백받게해주세요
+                고백받게해주세요
+                고백받게해주세요`},
+                { type: 'photo', url: './assets/dm/ryo_6.png', text: `~♫`},
                 { type: 'text', text: `
                 나도 진짜 딱 한번만 말할거야
-                https://www.instagram.com/reels/Dd_NSlnp1jG/`}
+                https://www.instagram.com/reels/Dd_NSlnp1jG/`},
+                { type: 'photo', url: './assets/dm/ryo_5.gif', text: `굿밤`},
+                    
             ],
-            'ryo_hi_rose': [
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `안녕 레이디 사귑시다`},
-                { type: 'text', text: `好き`},
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `널 좋아하는 건 누워서 떡먹기 입니다` },
+            
+            'sakusakusaku07': [
+                { type: 'photo', url: './assets/dm/sakuya_12.png', text: `안녕 레이디`},
+                { type: 'photo', url: './assets/dm/sakuya_11.png', text: `사귑시다`},
+                { type: 'photo', url: './assets/dm/sakuya_10.png', text: `好き`},
+                { type: 'photo', url: './assets/dm/sakuya_10.gif', text: `
+                널 좋아하는 건
+                누워서 떡먹기 입니다` },
                 { type: 'text', text: '왜 자꾸 웃는거임'},
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '진짜 좋아한다고' },
+                { type: 'photo', url: './assets/dm/sakuya_8.png', text: '진짜 좋아한다고' },
                 { type: 'text', text: `
                 https://www.instagram.com/reels/Dd_Oohup5pL/
                 ㅈㅇㅎ`},
+                { type: 'photo', url: './assets/dm/sakuya_6.gif'},
+                { type: 'photo', url: './assets/dm/sakuya_7.gif', text: '너 볼'},
                 { type: 'text', text: `
                 https://www.instagram.com/reels/Dd_O8N7pSOW/
                 진짜 좋아하나???`}
             ],
-            'sakusakusaku07': [
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `안뇽 뭐해뭐해뭐해`},
+                    
+            'ri_ku_03': [
+                { type: 'photo', url: './assets/dm/riku.jpg', text: `
+                안뇽
+                뭐해뭐해뭐해`},
+                { type: 'photo', url: './assets/dm/riku_9.gif', text: `오늘의 운세 볼래?`},
                 { type: 'text', text: `
-                오늘의 운세 볼래?
-                오ㅎㅎㅎ 나 6위ㅎ`},
-                { type: 'text', text: `
+                오ㅎㅎㅎ
+                나 6위ㅎ`},
+                { type: 'photo', url: './assets/dm/riku_2.jpg', text: `
                 10월의 행운아이템은 하트래
                 ~두근두근위시운세~
                 행운의 아이템: ❤️`},
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: `매력없어?ㅠ` },
-                { type: 'photo', url: './assets/dm/sion_dm_photo1.jpg', text: '나랑 만나자' }
+                { type: 'photo', url: './assets/dm/riku_12.png', text: `이거 받아` },
+                { type: 'photo', url: './assets/dm/riku_10.gif', text: `엑` },
+                { type: 'photo', url: './assets/dm/riku_15.gif', text: '나랑 만나자' }
             ],
             'default': [
                 { type: 'text', text: '시스템이 이상해... 너 때문이야?' },
@@ -851,7 +933,7 @@
 
         function startPublicChatBot() {
             const botMsgs = [
-                {name: 'sakusakusaku07', msg: `안녕`},
+                {name: 'sakusakusaku07', msg: `안녕<br><img src="./assets/feed/riku.png" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'jaehee__zzang', msg: `
                     。o
                       ｏ
@@ -860,29 +942,28 @@
                       。 남자의 등장 . . . 
                        Ｏ
                          ｏ
-                         。o`},
-                {name: 'yushihihi_405', msg: `^_^`},
-                {name: 'sakusakusaku07', msg: '안녕하십니까'},
-                {name: 'sion__5', msg: 'hi'},
-                {name: 'ryo_hi_rose', msg: 'ᗜ_ᗜ'},
-                // 비디오 태그 추가 예시
+                         。o<br><img src="./assets/feed/jaehee.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'yushihihi_405', msg: `^_^<br><img src="./assets/feed/yushi.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sakusakusaku07', msg: `안녕하십니까<br><img src="./assets/feed/sakuya.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `hi<br><img src="./assets/feed/sion.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'ryo_hi_rose', msg: `ᗜ_ᗜ<br><img src="./assets/feed/ryo.png" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'jaehee__zzang', msg: `나 요즘....
                 심장이
-                이상합니다<br><video src="./assets/video/jaehee_call.mp4" autoplay loop muted playsinline class="w-full mt-2 border border-[#FF007F]"></video>`},
+                이상합니다<br><img src="./assets/feed/sakuya_myheart.gif" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'jaehee__zzang', msg: `
                 그래?
                 나도 그래
-                ㅍㅠㅠ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                ㅍㅠㅠ<br><img src="./assets/feed/jaehee.gif" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '아무 일도 없는데'},
                 {name: 'yushihihi_405', msg: 'ㅋㅋㅋ'},
                 {name: 'sion__5', msg: '괜히 손에 땀이나네'},
-                {name: 'yushihihi_405', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
+                {name: 'yushihihi_405', msg: '<img src="./assets/feed/yushi_2.png" class="w-full mt-2 border border-[#FF007F]">'},
                 {name: 'ryo_hi_rose', msg: '😬😬😬'},
                 {name: 'ryo_hi_rose', msg: '왜이러는거야'},
                 {name: 'ryo_hi_rose', msg: `
     ここで一番混乱してる人
               |
-              V<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+              V<br><img src="./assets/feed/riku_2.png" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '뭔데'},
                 {name: 'sakusakusaku07', msg: 
                 `그냥 사진을
@@ -890,7 +971,7 @@
                 {name: 'ri_ku_03', msg: '우리 뭐 잘못먹었낭 ㅠㅠ'},
                 {name: 'ryo_hi_rose', msg: 
                 `잠만
-                이거 사랑이라는데<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                이거 사랑이라는데<br><img src="./assets/feed/ryo_2.png" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sakusakusaku07', msg: `<span class="text-[8px]">⠀⠀   ⠀
                     ⣀⣤‌⣤⣤⣀⠀⠀⠀     ⠀⣀⣤⣤‌⣤‌⣀⠀⠀⠀⠀
                 ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣧⣄⠀⠀⣠⣼⣿⣿⣿⣿⣿⣷⣄⠀⠀
@@ -913,11 +994,11 @@
                    ╭ ͡  ╲        ╲      ﾉ
               ╭ ͡  ╲       ╲       ╱
                 ╲      ╲        ╱</span>`},
-                {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">'},
+                {name: 'sakusakusaku07', msg: '<img src="./assets/feed/sakuya_2.png" class="w-full mt-2 border border-[#FF007F]">'},
                 {name: 'sion__5', msg: '응;'},
-                {name: 'jaehee__zzang', msg: `X<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'jaehee__zzang', msg: `X<br><img src="./assets/feed/sion_@.png" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '그럴리가요'},
-                {name: 'sion__5', msg: `그게 뭐지요<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `그게 뭐지요<br><img src="./assets/feed/yushi_3.gif" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '눈이 송아지 같아'},
                 {name: 'sion__5', msg: `
                 나 재밌는거 발견했어
@@ -925,26 +1006,35 @@
                 이거해봥`},
                 {name: 'sion__5', msg: `
                 ??
-                리쿠 많이 해`},
-                {name: 'sion__5', msg: '🤷‍♂️🤷‍♂️🤷‍♂️'},
+                리쿠 많이 해<br><img src="./assets/feed/sion_2.gif" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `🤷‍♂️🤷‍♂️🤷‍♂️<br><img src="./assets/feed/jaehee_2.gif" class="w-full mt-2 border border-[#FF007F]"`},
                 {name: 'sion__5', msg: 'ㄱㄷ 디기'},
                 {name: 'sion__5', msg: '사쿠 진짜 하러감?'},
-                {name: 'sion__5', msg: `ㅠㅠ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `ㅠㅠ<br><img src="./assets/feed/sakuya_name.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `ㅋㅋㅋㅋ<br><img src="./assets/feed/ryo_3.gif" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '너는'},
-                {name: 'sion__5', msg: `ㅎㅎㅎ<br><img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `ㅎㅎㅎ<br><img src="./assets/feed/riku_name.jpg" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: `
                 오늘따라
                 많이
                 c o n f u s e d 하네..`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/ryo_3.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/ryo_4.gif" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: `
                 https://www.instagram.com/reels/DdtHCXYJUoe/
                 릴스 봐줄 사람
                 내 릴스`},
                 {name: 'sion__5', msg: '너나 봐'},
                 {name: 'sion__5', msg: '오우'},
+                {name: 'sion__5', msg: `<img src="./assets/feed/sion_3.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/sion_4.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: '🤩🤩🤩ㅋ'},
+                {name: 'sion__5', msg: `
+                그냥 사진을
+                올리고 싶은거야 시온이형도`},
                 {name: 'sion__5', msg: `
                 크왕
-                크왕 크왕 크왕 크왕`},
+                크왕 크왕 크왕 크왕<br><img src="./assets/feed/yushi_4.gif" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '???'},
                 {name: 'sion__5', msg: '진정해'},
                 {name: 'sion__5', msg: `
@@ -953,23 +1043,27 @@
                 혼란스러울 ㅋ대
                 기타를 쳐...`},
                 {name: 'sion__5', msg: '그럼 기타를 쳐'},
-                {name: 'sion__5', msg: `<img src="./assets/feed/sion_pic1.jpg" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/jaehee_3.png" class="w-full mt-2 border border-[#FF007F]">`},
                 {name: 'sion__5', msg: '울지말고 얘기를 해요'},
                 {name: 'sion__5', msg: `
                 눈물이
                 검
                 정색`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/riku_5.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `<img src="./assets/feed/riku_6.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: '사쿠 왜 리쿠한테는 뭐라 안해'},
+                {name: 'sion__5', msg: '이제야 봤어요'},
                 {name: 'sion__5', msg: `
                 https://www.instagram.com/reels/DdtJVdRJUtc/
                 그래서 기타를 쳤어`},
                 {name: 'sion__5', msg: '잘했어용'},
                 {name: 'sion__5', msg: `
-                아 왤케 안 보내져
-                ㅂㅂ`},
+                아 왤케 안 보내져<br><img src="./assets/feed/sakuya_4.png" class="w-full mt-2 border border-[#FF007F]">`},
+                {name: 'sion__5', msg: `ㅂㅂ<br><img src="./assets/feed/sakuya_5.png" class="w-full mt-2 border border-[#FF007F]`},
                 {name: 'sion__5', msg: `
-                https://www.instagram.com/reels/DdtKaqGphta/
-                나도 릴스~`},
-                {name: 'sion__5', msg: '아무도 안보네'}
+                나도 릴스~
+                https://www.instagram.com/reels/DdtKaqGphta/`},
+                {name: 'sion__5', msg: `아무도 안보네<br><img src="./assets/feed/yushi_0.jpg" class="w-full mt-2 border border-[#FF007F]`}
             ];
             let msgIdx = 0;
             
